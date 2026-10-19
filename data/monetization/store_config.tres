@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StoreConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/store_config.gd" id="1_store"]
+
+[resource]
+script = ExtResource("1_store")
+id = "main"
+admob_app_id = "ca-app-pub-3940256099942544~3347511713"
+rewarded_unit_id = "ca-app-pub-3940256099942544/5224354917"
+interstitial_unit_id = "ca-app-pub-3940256099942544/1033173712"
+billing_public_key = ""
+use_test_ids = true
+consent_required = true

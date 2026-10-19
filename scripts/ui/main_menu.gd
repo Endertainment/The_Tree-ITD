@@ -16,6 +16,7 @@ const MENU_SCREENS := {
 const TAB_ORDER: Array[String] = ["home", "upgrades", "cards", "missions", "shop", "settings"]
 const BATTLE_SCENE := "res://scenes/battle/Battle.tscn"
 const BOOT_SCENE := "res://scenes/boot/Boot.tscn"
+const DEBUG_PANEL_SCENE := "res://ui/debug/MonetizationDebug.tscn"
 const VERSION_SETTING := "application/config/version"
 const SIDE_MARGIN := 24
 const TOP_MARGIN := 16
@@ -39,6 +40,7 @@ var _screens: Dictionary = {}
 var _tab_buttons: Dictionary = {}
 var _active_id := ""
 var _active_screen: MenuScreen
+var _debug_panel
 
 
 func _ready() -> void:
@@ -126,6 +128,34 @@ func fly_reward(from_global: Vector2, text: String) -> void:
 ## Id of the visible tab ("home" before the first selection).
 func get_active_tab() -> String:
 	return _active_id
+
+
+## Opens the debug-only monetization panel. Called from the Home 5-tap.
+func open_monetization_debug() -> void:
+	if not OS.is_debug_build():
+		return
+	if _debug_panel == null:
+		var packed := load(DEBUG_PANEL_SCENE) as PackedScene
+		if packed == null:
+			push_warning("[MainMenu] missing debug panel: %s" % DEBUG_PANEL_SCENE)
+			return
+		_debug_panel = packed.instantiate()
+		if _debug_panel == null:
+			return
+		add_child(_debug_panel)
+		_debug_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_debug_panel.open()
+
+
+## True while the monetization debug panel is on screen.
+func is_debug_panel_open() -> bool:
+	return _debug_panel != null and _debug_panel.visible
+
+
+## Closes the debug panel if it is open.
+func close_monetization_debug() -> void:
+	if _debug_panel != null:
+		_debug_panel.close()
 
 
 ## Android back behaviour, also used by the desktop Esc key and the tests.
@@ -252,8 +282,12 @@ func _notification(what: int) -> void:
 		go_back()
 
 
-## Android back: close the sheet, then return to Home, then confirm exit.
+## Android back: close the debug panel, then the sheet, then return to Home,
+## then confirm exit.
 func _handle_back() -> void:
+	if is_debug_panel_open():
+		close_monetization_debug()
+		return
 	if _modal.visible:
 		_modal.close()
 		return

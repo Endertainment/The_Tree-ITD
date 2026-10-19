@@ -17,6 +17,7 @@ var _base_gold := 0
 var _milestone := false
 var _doubled := false
 var _rewards_applied := false
+var _actions_busy := false
 
 @onready var _header: Label = %Header
 @onready var _best_label: Label = %BestLabel
@@ -29,6 +30,7 @@ var _rewards_applied := false
 @onready var _gold_counter: RewardCounter = %GoldCounter
 @onready var _gems_counter: RewardCounter = %GemsCounter
 @onready var _double_button: Button = %DoubleGoldButton
+@onready var _spinner: AdSpinner = %AdSpinner
 @onready var _milestone_label: Label = %MilestoneLabel
 @onready var _play_button: Button = %PlayAgainButton
 @onready var _menu_button: Button = %MenuButton
@@ -48,6 +50,9 @@ func _ready() -> void:
 	_base_gold = compute_gold(summary)
 	_gold = _base_gold
 	_gems = compute_gems(summary, _milestone)
+	# Count the run before `apply_run_result` saves, so one synchronous write
+	# carries both the reward and the interstitial counter.
+	Monetization.note_completed_run(GameState.get_stat("runs") + 1)
 	var applied := GameState.apply_run_result(summary, _gold, _gems)
 	_rewards_applied = true
 
@@ -118,13 +123,17 @@ func _maybe_toast_elf_level(applied: Dictionary) -> void:
 
 
 func _on_double_gold_pressed() -> void:
-	if _doubled or not _rewards_applied:
+	if _doubled or not _rewards_applied or _actions_busy:
 		return
+	_actions_busy = true
 	_double_button.disabled = true
-	Monetization.show_rewarded("results_double_gold", _on_double_gold_result)
+	_spinner.start()
+	Monetization.show_rewarded(AdPolicy.P_RESULTS_DOUBLE_GOLD, _on_double_gold_result)
 
 
 func _on_double_gold_result(success: bool) -> void:
+	_spinner.stop()
+	_actions_busy = false
 	if success and _rewards_applied and not _doubled:
 		_doubled = true
 		GameState.add_gold(_base_gold)
@@ -144,16 +153,33 @@ func _on_language_changed(_locale: String) -> void:
 
 
 func _on_play_again_pressed() -> void:
+	if _actions_busy:
+		return
 	AudioManager.play_ui("ui_click")
 	SceneRouter.goto(BATTLE_SCENE)
 
 
 func _on_menu_pressed() -> void:
 	AudioManager.play_ui("ui_click")
-	SceneRouter.goto(MENU_SCENE)
+	go_to_menu()
+
+
+## Results -> menu, with the every-third-run interstitial in between.
+func go_to_menu() -> void:
+	if _actions_busy:
+		return
+	_actions_busy = true
+	_play_button.disabled = true
+	_menu_button.disabled = true
+	_double_button.disabled = true
+	_spinner.start()
+	Monetization.show_results_interstitial(func(_shown: bool) -> void:
+		_spinner.stop()
+		SceneRouter.goto(MENU_SCENE)
+	)
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		SceneRouter.goto(MENU_SCENE)
+		go_to_menu()
 		get_viewport().set_input_as_handled()

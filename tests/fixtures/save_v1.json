@@ -1,0 +1,65 @@
+{
+	"version": 1,
+	"created_at": 1700000000,
+	"last_seen": 1700000100,
+	"currencies": {
+		"gold": 321,
+		"gems": 77
+	},
+	"upgrades": {
+		"tree_hp": 3,
+		"tree_regen": 1,
+		"archer_dmg": 2,
+		"archer_speed": 0,
+		"start_coins": 2,
+		"tower_discount": 0,
+		"coin_gain": 0,
+		"gold_gain": 0
+	},
+	"cards": {
+		"owned": ["heartwood"],
+		"equipped": ["heartwood"]
+	},
+	"unlocks": {
+		"speed_15": true,
+		"speed_2": false,
+		"remove_ads": false
+	},
+	"stats": {
+		"runs": 9,
+		"best_wave": 14,
+		"total_kills": 222,
+		"bosses_killed": 1,
+		"total_gold_earned": 1111,
+		"total_waves_cleared": 45,
+		"towers_built": 12,
+		"ads_watched": 2
+	},
+	"missions": {
+		"daily": {
+			"date": "2026-10-18",
+			"progress": {},
+			"claimed": []
+		},
+		"achievements": {
+			"progress": {},
+			"claimed": ["ach_slay_1000"]
+		}
+	},
+	"settings": {
+		"music": 0.5,
+		"sfx": 1.0,
+		"haptics": false,
+		"locale": "uk",
+		"quality": "high",
+		"show_damage_numbers": true
+	},
+	"shop": {
+		"owned_products": ["starter_bundle"]
+	},
+	"flags": {
+		"tutorial_done": true,
+		"milestone_30": false
+	},
+	"unknown_key": "keep me"
+}

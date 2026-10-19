@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/battle/results.gd" id="1_results"]
 [ext_resource type="PackedScene" path="res://ui/RewardCounter.tscn" id="2_counter"]
 [ext_resource type="PackedScene" path="res://ui/Toast.tscn" id="3_toast"]
+[ext_resource type="PackedScene" path="res://ui/AdSpinner.tscn" id="4_spinner"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_card"]
 content_margin_left = 44.0
@@ -157,6 +158,13 @@ custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
 text = "DOUBLE GOLD (AD)"
+
+[node name="SpinnerBox" type="CenterContainer" parent="SafeArea/Center/Card/Column"]
+layout_mode = 2
+
+[node name="AdSpinner" parent="SafeArea/Center/Card/Column/SpinnerBox" instance=ExtResource("4_spinner")]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="Buttons" type="HBoxContainer" parent="SafeArea/Center/Card/Column"]
 layout_mode = 2

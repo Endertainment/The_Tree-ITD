@@ -16,12 +16,14 @@ var _boss_deaths := 0
 
 ## Ad provider that always fails, to exercise the no-reward path.
 class FailingAdsProvider extends AdsProvider:
-	func is_ready() -> bool:
+	func initialize() -> bool:
 		return true
 
-	func show_rewarded(_placement: String, callback: Callable) -> void:
-		if callback.is_valid():
-			callback.call(false)
+	func is_ready(_placement: String) -> bool:
+		return true
+
+	func load_rewarded(placement: String) -> void:
+		rewarded_failed.emit(placement, "forced_fail")
 
 
 func _ready() -> void:
@@ -320,7 +322,7 @@ func _run() -> void:
 	await get_tree().process_frame
 	var fail_button := fail_screen.find_child("DoubleGoldButton", true, false) as Button
 	var old_provider := Monetization.ads_provider
-	Monetization.ads_provider = FailingAdsProvider.new()
+	Monetization.set_ads_provider(FailingAdsProvider.new())
 	if fail_button != null:
 		fail_button.pressed.emit()
 		await get_tree().create_timer(0.05, true, false, true).timeout
@@ -330,7 +332,7 @@ func _run() -> void:
 			fail_button.visible and not fail_button.disabled,
 			"the button can be retried after a failed ad"
 		)
-	Monetization.ads_provider = old_provider
+	Monetization.set_ads_provider(old_provider)
 	Monetization.set_fake_ad_delay(0.0)
 	fail_screen.queue_free()
 	await get_tree().process_frame

@@ -1,0 +1,179 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/debug/monetization_debug.gd" id="1_debug"]
+
+[node name="MonetizationDebug" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+visible = false
+script = ExtResource("1_debug")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.027451, 0.039216, 0.027451, 0.82)
+
+[node name="Safe" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 60
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 60
+
+[node name="Center" type="CenterContainer" parent="Safe"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Safe/Center"]
+custom_minimum_size = Vector2(920, 0)
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="Column" type="VBoxContainer" parent="Safe/Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Safe/Center/Panel/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PanelTitle"
+text = "MONETIZATION DEBUG"
+autowrap_mode = 3
+
+[node name="Status" type="Label" parent="Safe/Center/Panel/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+autowrap_mode = 3
+
+[node name="Divider" type="HSeparator" parent="Safe/Center/Panel/Column"]
+layout_mode = 2
+
+[node name="RewardedTitle" type="Label" parent="Safe/Center/Panel/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "FORCE NEXT REWARDED"
+
+[node name="RewardedGrid" type="GridContainer" parent="Safe/Center/Panel/Column"]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="SuccessButton" type="Button" parent="Safe/Center/Panel/Column/RewardedGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RowButton"
+text = "SUCCESS"
+
+[node name="FailButton" type="Button" parent="Safe/Center/Panel/Column/RewardedGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RowButton"
+text = "FAIL"
+
+[node name="CloseAdButton" type="Button" parent="Safe/Center/Panel/Column/RewardedGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RowButton"
+text = "CLOSE (NO REWARD)"
+
+[node name="TimeoutButton" type="Button" parent="Safe/Center/Panel/Column/RewardedGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RowButton"
+text = "TIMEOUT"
+
+[node name="PurchaseTitle" type="Label" parent="Safe/Center/Panel/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "FORCE NEXT PURCHASE"
+
+[node name="PurchaseGrid" type="GridContainer" parent="Safe/Center/Panel/Column"]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 3
+
+[node name="BuySuccessButton" type="Button" parent="Safe/Center/Panel/Column/PurchaseGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RowButton"
+text = "SUCCESS"
+
+[node name="BuyCancelButton" type="Button" parent="Safe/Center/Panel/Column/PurchaseGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RowButton"
+text = "CANCEL"
+
+[node name="BuyFailButton" type="Button" parent="Safe/Center/Panel/Column/PurchaseGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RowButton"
+text = "FAIL"
+
+[node name="Divider2" type="HSeparator" parent="Safe/Center/Panel/Column"]
+layout_mode = 2
+
+[node name="UtilityGrid" type="GridContainer" parent="Safe/Center/Panel/Column"]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 3
+
+[node name="ResetButton" type="Button" parent="Safe/Center/Panel/Column/UtilityGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RowButton"
+text = "RESET COUNTERS"
+
+[node name="ConsentButton" type="Button" parent="Safe/Center/Panel/Column/UtilityGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RowButton"
+text = "TOGGLE CONSENT"
+
+[node name="ClosePanelButton" type="Button" parent="Safe/Center/Panel/Column/UtilityGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SecondaryButton"
+text = "CLOSE"

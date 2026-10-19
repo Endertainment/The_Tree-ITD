@@ -19,10 +19,25 @@ static func migrate(data: Dictionary) -> Dictionary:
 	if version > CURRENT_VERSION:
 		push_warning("[SaveMigrations] save v%d is newer than v%d; loading it as-is" % [version, CURRENT_VERSION])
 		return out
-	# Future steps plug in here, e.g.:
-	#   if version == 1:
-	#       out = _migrate_v1_to_v2(out)
-	#   version = 2
-	# v1 is the first shipped schema, so there is nothing to do yet.
+	if version == 1:
+		out = _migrate_v1_to_v2(out)
+		version = 2
 	out["version"] = CURRENT_VERSION
+	return out
+
+
+## Inserts the stage-6 monetization block. Existing values always win, so a
+## partially written v2 block is repaired without losing counters.
+static func _migrate_v1_to_v2(data: Dictionary) -> Dictionary:
+	var out: Dictionary = data.duplicate(true)
+	var defaults: Dictionary = SaveDefaults.create()["ads"]
+	var existing: Variant = out.get("ads", null)
+	if existing is Dictionary:
+		for key: Variant in defaults:
+			if not (existing as Dictionary).has(key):
+				(existing as Dictionary)[key] = defaults[key]
+		out["ads"] = existing
+	else:
+		out["ads"] = defaults.duplicate(true)
+	out["version"] = 2
 	return out

@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_shop")
 id = "remove_ads"
+store_id = "thetree.remove_ads"
 title_key = "SHOP_TITLE_REMOVE_ADS"
 description_key = "SHOP_DESC_REMOVE_ADS"
 price_text = "$3.99"

@@ -29,6 +29,10 @@ func _run() -> void:
 	_check(SaveManager.get_save_path().ends_with("save.json"), "save path points at save.json")
 	_check(GameState.get_gold() == 0, "fresh profile starts with 0 Gold")
 	_check(GameState.get_gems() == 0, "fresh profile starts with 0 Gems")
+	var fresh_ads := GameState.get_ads()
+	_check(int(fresh_ads.get("runs_since_interstitial", -1)) == 0, "fresh profile has an ads counter")
+	_check(int(fresh_ads.get("free_gems_today", -1)) == 0, "fresh profile has no free Gems today")
+	_check(SaveDefaults.CURRENT_VERSION == 2, "save schema is version 2")
 
 	_section("round trip")
 	GameState.add_gold(123)
@@ -86,8 +90,10 @@ func _run() -> void:
 
 	_section("migrations")
 	var migrated := SaveMigrations.migrate({"version": 1, "currencies": {"gold": 7}})
-	_check(int(migrated.get("version", 0)) == 1, "v1 stays v1")
+	_check(int(migrated.get("version", 0)) == 2, "v1 migrates to v2")
 	_check(migrated.has("currencies"), "migration preserves the payload")
+	var migrated_ads: Dictionary = migrated.get("ads", {})
+	_check(int(migrated_ads.get("runs_since_interstitial", -1)) == 0, "migration inserts ads defaults")
 	var unknown := SaveMigrations.migrate({"version": 1, "unknown_key": "keep me"})
 	_check(unknown.get("unknown_key", "") == "keep me", "unknown keys are preserved")
 	var unversioned := SaveMigrations.migrate({"currencies": {"gold": 99}})

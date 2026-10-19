@@ -11,7 +11,8 @@ signal quit_requested
 signal call_wave_requested
 signal upgrades_requested
 signal settings_requested
-signal speed_trial_requested
+signal revive_requested
+signal revive_give_up_requested
 signal speed_info_requested
 
 ## Android back / Escape. `Battle` decides whether to close a sheet or pause.
@@ -34,7 +35,7 @@ const DEBUG_REFRESH_SECONDS := 0.25
 @onready var _pause_button: Button = %PauseButton
 @onready var _call_button: Button = %CallButton
 @onready var _upgrades_button: Button = %UpgradesButton
-@onready var _trial_chip: Button = %TrialChip
+@onready var _revive_prompt: RevivePrompt = %RevivePrompt
 @onready var _banner: VBoxContainer = %Banner
 @onready var _banner_title: Label = %BannerTitle
 @onready var _banner_bonus: Label = %BannerBonus
@@ -66,7 +67,6 @@ var _debug_accum := 0.0
 var _banner_tween: Tween
 var _coin_tween: Tween
 var _bottom_inset := 0
-var _trial_available := false
 
 
 func _ready() -> void:
@@ -74,7 +74,7 @@ func _ready() -> void:
 	_pause_menu.visible = false
 	_quit_confirm.visible = false
 	_sheet_host.visible = false
-	_trial_chip.visible = false
+	_revive_prompt.close()
 	_banner.modulate.a = 0.0
 	_debug_label.visible = false
 
@@ -86,8 +86,9 @@ func _ready() -> void:
 	_quit_confirm_button.pressed.connect(_on_quit_confirmed)
 	_call_button.pressed.connect(_on_call_pressed)
 	_upgrades_button.pressed.connect(_on_upgrades_pressed)
-	_trial_chip.pressed.connect(_on_trial_pressed)
 	_speed_button.info_requested.connect(_on_speed_info_pressed)
+	_revive_prompt.revive_requested.connect(func() -> void: revive_requested.emit())
+	_revive_prompt.give_up_requested.connect(func() -> void: revive_give_up_requested.emit())
 
 	EventBus.coins_changed.connect(_on_coins_changed)
 	EventBus.core_damaged.connect(_on_core_damaged)
@@ -222,10 +223,26 @@ func show_wave_cleared(wave: int, bonus: int) -> void:
 	_banner_tween.tween_property(_banner, "modulate:a", 0.0, 0.45)
 
 
-## Enables the speed-trial chip (only shown during the first preparation).
-func set_trial_available(available: bool) -> void:
-	_trial_available = available
-	_refresh_trial_chip()
+## Shows the defeat revive prompt and pauses input on the HUD behind it.
+func show_revive_prompt() -> void:
+	_pause_menu.visible = false
+	_quit_confirm.visible = false
+	_revive_prompt.open()
+
+
+## Hides the revive prompt.
+func hide_revive_prompt() -> void:
+	_revive_prompt.close()
+
+
+## True while the revive prompt is visible.
+func is_revive_visible() -> bool:
+	return _revive_prompt.is_open()
+
+
+## Disables the revive actions while the ad is pending.
+func set_revive_busy(busy: bool) -> void:
+	_revive_prompt.set_busy(busy)
 
 
 ## Repaints the speed button after the trial or an unlock changed.
@@ -245,8 +262,11 @@ func is_debug_visible() -> bool:
 	return _debug_label.visible
 
 
-## Android back / Escape: close the top panel, else open pause.
+## Android back / Escape: the revive prompt requires a choice, then close the
+## top panel, else open pause.
 func handle_back() -> void:
+	if _revive_prompt.is_open():
+		return
 	if _quit_confirm.visible:
 		_quit_confirm.visible = false
 		return
@@ -286,7 +306,6 @@ func _refresh_wave_state() -> void:
 		return
 	_last_state = _waves.get_state()
 	var wave := _waves.get_wave()
-	_refresh_trial_chip()
 
 	match _last_state:
 		WaveManager.State.PREPARE:
@@ -307,16 +326,9 @@ func _refresh_wave_state() -> void:
 			_call_button.text = Loc.t_key("HUD_CALL_WAVE")
 
 
-func _refresh_trial_chip() -> void:
-	var first_prep := _waves != null and _waves.get_wave() == 0 and _waves.is_preparing()
-	_trial_chip.text = Loc.t_key("SPEED_TRIAL_CHIP")
-	_trial_chip.visible = _trial_available and first_prep
-
-
 func _refresh_texts() -> void:
 	_coins_caption.text = Loc.t_key("HUD_COINS")
 	_upgrades_button.text = Loc.t_key("HUD_UPGRADES")
-	_trial_chip.text = Loc.t_key("SPEED_TRIAL_CHIP")
 	_pause_title.text = Loc.t_key("PAUSE_TITLE")
 	_resume_button.text = Loc.t_key("PAUSE_RESUME")
 	_quit_button.text = Loc.t_key("PAUSE_QUIT")
@@ -327,6 +339,7 @@ func _refresh_texts() -> void:
 	_quit_confirm_button.text = Loc.t_key("QUIT_CONFIRM")
 	_pad_hint.text = Loc.t_key("HUD_TAP_PAD")
 	_speed_button.refresh()
+	_revive_prompt.refresh_texts()
 
 	var version := str(ProjectSettings.get_setting("application/config/version", "0.1.0"))
 	_pause_version.text = Loc.t_key("VERSION_LABEL", {"version": version})
@@ -442,10 +455,6 @@ func _on_upgrades_pressed() -> void:
 
 func _on_settings_pressed() -> void:
 	settings_requested.emit()
-
-
-func _on_trial_pressed() -> void:
-	speed_trial_requested.emit()
 
 
 func _on_speed_info_pressed() -> void:

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/menu/home_screen.gd" id="1_home"]
+[ext_resource type="PackedScene" path="res://scenes/menu/PreBattle.tscn" id="2_pre"]
 
 [node name="HomeScreen" type="Control"]
 layout_mode = 3
@@ -81,12 +82,9 @@ max_value = 100.0
 value = 0.0
 show_percentage = false
 
-[node name="BattleButton" type="Button" parent="Scroll/Margin/Content"]
+[node name="PreBattle" parent="Scroll/Margin/Content" instance=ExtResource("2_pre")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-text = "BATTLE"
 
 [node name="DailyCard" type="PanelContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
@@ -115,31 +113,6 @@ layout_mode = 2
 theme_type_variation = &"RowButton"
 text = "VIEW"
 
-[node name="EquippedTitle" type="Label" parent="Scroll/Margin/Content"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"HudSmall"
-text = "EQUIPPED CARDS"
-
-[node name="EquippedEmpty" type="Label" parent="Scroll/Margin/Content"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"HudSmall"
-text = "No cards equipped"
-
-[node name="EquippedRow" type="HBoxContainer" parent="Scroll/Margin/Content"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="SpeedChip" type="Button" parent="Scroll/Margin/Content"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 88)
-layout_mode = 2
-disabled = true
-theme_type_variation = &"RowButton"
-text = "SPEED TRIAL"
-
 [node name="Footer" type="HBoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
 theme_override_constants/separation = 16
@@ -148,6 +121,7 @@ theme_override_constants/separation = 16
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 0
 theme_type_variation = &"Caption"
 text = "v0.1.0"
 vertical_alignment = 1

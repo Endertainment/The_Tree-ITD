@@ -56,11 +56,12 @@ Battle (battle.gd: coins, kills, pause, RunStats, RunSummary, results hand-off)
 ├── FloatingTextLayer 40 pooled "+N" labels
 ├── Sheets (BattleSheets: build/tower/upgrade sheet ownership + pause claim)
 └── HUD (CanvasLayer, PROCESS_MODE_ALWAYS)
-    ├── TopSafe / BottomSafe (safe-area padded, speed button, trial chip)
+    ├── TopSafe / BottomSafe (safe-area padded, speed button)
     ├── BossBar (name, HP %, enrage pulse)
     ├── WaveBanner (1.5 s modifier announcement)
     ├── SheetHost (BuildSheet + TowerSheet + UpgradePanel)
     ├── PauseMenu + QuitConfirm
+    ├── RevivePrompt (defeat -> rewarded revive / give up)
     └── DebugLabel (F3)
 ```
 
@@ -128,11 +129,11 @@ waves and Coins are all reset per run and never persisted.
 MainMenu (shell: top bar, ScreenHost, TabBar, Modal, Toast)
 ├── TopBar        Gold / Gems / Elf Level / best wave + BATTLE shortcut
 ├── ScreenHost    cached screen instances, one visible at a time
-│   ├── HomeScreen        BATTLE, daily summary, equipped cards, music, version
+│   ├── HomeScreen        PreBattle panel, best wave, daily summary, music, version
 │   ├── UpgradesScreen    8 x UpgradeTrackRow (data/meta_upgrades)
 │   ├── CardsScreen       6 x CardWidget (data/cards) + detail/replace modal
 │   ├── MissionsScreen    3 daily or 8 achievements, MissionRow list
-│   ├── ShopScreen        8 x ShopProductCard (data/shop) + restore
+│   ├── ShopScreen        8 x ShopProductCard (data/shop), free Gems, restore
 │   └── SettingsScreen    audio, haptics, language, quality, reset, credits
 ├── TabBar        six stacked icon+label buttons, 112 px tall
 ├── ModalSheet    one shared bottom sheet for confirmations and card details
@@ -182,14 +183,45 @@ save.upgrades / save.cards ─┘                        ▼
   pool, three per day. `MissionTracker.refresh_daily()` rolls over on boot, menu
   show, run end and ad completion; progress is never written mid-run.
 - Claims and purchases are one atomic operation: append to `claimed`/owned, grant
-  currency or the unlock flag, then `SaveManager.save_now()`. The shop sets its
-  busy flag before calling `Monetization`, because the fake provider resolves
-  synchronously.
+  currency or the unlock flag, then `SaveManager.save_now()`. The shop locks its
+  card before calling `Monetization`; the facade owns the provider call and the
+  grant, so one purchase can never pay twice.
 - Restore reports the save's owned products (the fake provider has no server
   state) and only re-applies permanent unlock flags; it never pays currency.
 - Settings are persisted through `GameState.set_setting()` (debounced save).
   Quality is read live by the VFX guards; the locale switch is immediate and the
   audio sliders write straight to the buses.
+
+## Stage 6 monetization
+
+```
+Home.PreBattle ──trial ad──▶ Monetization ──▶ AdsProvider (Fake | AdMob)
+Results ──double Gold / interstitial──▶ Monetization
+Battle ──revive ad──▶ Monetization
+Shop ──free Gems / purchase / restore──▶ Monetization ──▶ IapProvider (Fake | Billing)
+```
+
+- `Monetization` is the only caller of a provider. It allows one ad request at a
+  time, resolves every request exactly once (close, failure, 15 s timeout or
+  background), checks `ConsentManager` first, and refuses to start a non-revive
+  ad while the tree is paused.
+- Providers are signal-based (`rewarded_loaded/shown/failed/closed`,
+  `purchase_succeeded/failed/cancelled`). `FakeAdsProvider` and
+  `FakeIapProvider` are the defaults. `AdMobProvider` and
+  `PlayBillingProvider` are written but disabled behind `USE_REAL_ADS` /
+  `USE_REAL_IAP`; a missing plugin logs one warning and falls back to fake.
+- Placements: `run_speed_trial` is a runtime flag consumed by `Battle.start_run()`
+  (never saved); `results_double_gold` is once per results screen; `revive` is
+  once per run and the only ad allowed while paused; `free_gems` uses the
+  `AdPolicy` 4 h / 3-per-day rules; `interstitial_results` is counted in the save
+  and shown only after the third run and every third run after that.
+- Save schema v2 adds `ads { runs_since_interstitial, free_gems_last_ts,
+  free_gems_day, free_gems_today }`; `SaveMigrations` inserts the block for v1
+  profiles. `GameState._sanitize_ads()` clamps every counter on load.
+- Rewards are granted synchronously before the UI callback and flushed with
+  `save_now()`, so an app kill can lose the run but never duplicate a grant.
+- Debug: five taps on the Home version label (debug builds) open
+  `MonetizationDebug`, which forces every fake outcome and resets counters.
 
 ## Data flow
 

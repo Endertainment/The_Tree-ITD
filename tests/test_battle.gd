@@ -29,6 +29,9 @@ func _run() -> void:
 	_battle = BATTLE_SCENE.instantiate()
 	# Keep the battle alive after a defeat; the real game routes to Results.
 	_battle.auto_route_results = false
+	# Stage 6 inserts the revive prompt before results; this suite covers the
+	# raw defeat path, and `TestMonetization` covers the revive prompt itself.
+	_battle.offer_revive = false
 	add_child(_battle)
 	# The test root runs ALWAYS so it survives pause; the battle itself must be
 	# pausable, exactly like the real scene root.

@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_shop")
 id = "starter_bundle"
+store_id = "thetree.starter_bundle"
 title_key = "SHOP_TITLE_STARTER"
 description_key = "SHOP_DESC_STARTER"
 price_text = "$2.99"

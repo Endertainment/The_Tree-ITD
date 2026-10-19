@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/menu/shop_screen.gd" id="1_shop"]
+[ext_resource type="PackedScene" path="res://ui/AdSpinner.tscn" id="2_spinner"]
 
 [node name="ShopScreen" type="Control"]
 layout_mode = 3
@@ -37,8 +38,43 @@ text = "SHOP"
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Purchases are disabled in this build"
+text = "TEST MODE — no real charges"
 autowrap_mode = 3
+
+[node name="FreeCard" type="PanelContainer" parent="Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="Values" type="VBoxContainer" parent="Margin/Content/FreeCard"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FreeTitle" type="Label" parent="Margin/Content/FreeCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CardTitle"
+text = "FREE GEMS"
+
+[node name="FreeStatus" type="Label" parent="Margin/Content/FreeCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "0 / 3 today"
+
+[node name="FreeButton" type="Button" parent="Margin/Content/FreeCard/Values"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+theme_override_font_sizes/font_size = 36
+text = "WATCH AD  +5 GEMS"
+
+[node name="FreeSpinnerBox" type="CenterContainer" parent="Margin/Content/FreeCard/Values"]
+layout_mode = 2
+
+[node name="FreeSpinner" parent="Margin/Content/FreeCard/Values/FreeSpinnerBox" instance=ExtResource("2_spinner")]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="Scroll" type="ScrollContainer" parent="Margin/Content"]
 layout_mode = 2

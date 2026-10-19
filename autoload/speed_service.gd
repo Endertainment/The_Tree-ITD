@@ -17,6 +17,7 @@ const BEST_WAVE_FOR_2 := 25
 var _speed := BASE_SPEED
 var _trial_15 := false
 var _trial_2 := false
+var _pending_trial_15 := false
 
 
 func _ready() -> void:
@@ -52,6 +53,33 @@ func set_run_trials(trial_15: bool, trial_2: bool) -> void:
 	_trial_2 = trial_2
 
 
+## Records a trial bought on the pre-battle panel. Consumed by `Battle`.
+func grant_pending_trial_15() -> void:
+	_pending_trial_15 = true
+
+
+## True while a pre-battle trial is waiting for the next run.
+func has_pending_trial_15() -> bool:
+	return _pending_trial_15
+
+
+## Consumes the pre-battle trial and returns whether it was active.
+func consume_pending_trial_15() -> bool:
+	var value := _pending_trial_15
+	_pending_trial_15 = false
+	return value
+
+
+## Drops a pending trial without starting a run.
+func clear_pending_trial_15() -> void:
+	_pending_trial_15 = false
+
+
+## True when 1.5x is owned permanently, ignoring a trial.
+func is_speed_15_permanently_unlocked() -> bool:
+	return GameState.is_unlocked(UNLOCK_FLAGS[1.5]) or GameState.get_elf_level() >= ELF_LEVEL_FOR_15
+
+
 ## True while any per-run speed trial is active.
 func is_run_trial_active() -> bool:
 	return _trial_15 or _trial_2
@@ -63,9 +91,9 @@ func is_speed_unlocked(multiplier: float) -> bool:
 		return true
 	if is_equal_approx(multiplier, 1.5):
 		return (
-			GameState.is_unlocked(UNLOCK_FLAGS[1.5])
-			or GameState.get_elf_level() >= ELF_LEVEL_FOR_15
+			is_speed_15_permanently_unlocked()
 			or _trial_15
+			or _pending_trial_15
 		)
 	if is_equal_approx(multiplier, 2.0):
 		return (
@@ -136,4 +164,5 @@ func _on_run_started() -> void:
 func _on_run_ended(_summary: Variant) -> void:
 	_trial_15 = false
 	_trial_2 = false
+	_pending_trial_15 = false
 	reset()

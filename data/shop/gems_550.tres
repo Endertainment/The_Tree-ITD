@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_shop")
 id = "gems_550"
+store_id = "thetree.gems_550"
 title_key = "SHOP_TITLE_GEMS_550"
 description_key = "SHOP_DESC_GEMS"
 price_text = "$4.99"

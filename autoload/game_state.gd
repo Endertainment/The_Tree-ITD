@@ -327,6 +327,28 @@ func own_product(id: String) -> bool:
 	return true
 
 
+## --- Ads ------------------------------------------------------------------
+
+## Copy of the persisted monetization counters (schema v2).
+func get_ads() -> Dictionary:
+	return _section("ads").duplicate(true)
+
+
+## Merges `values` into the ads block and queues a save. Callers that grant a
+## reward flush synchronously with `SaveManager.save_now()`.
+func update_ads(values: Dictionary) -> void:
+	var ads := _section("ads")
+	for key: Variant in values:
+		ads[key] = values[key]
+	_persist()
+
+
+## Clears every cooldown and counter. Debug panel only.
+func reset_ads() -> void:
+	_data["ads"] = SaveDefaults.create()["ads"]
+	_persist()
+
+
 ## --- Settings -------------------------------------------------------------
 
 ## Low quality disables decorative particles and camera shake.
@@ -432,6 +454,7 @@ func _sanitize() -> void:
 	_sanitize_upgrades()
 	_sanitize_missions()
 	_sanitize_shop()
+	_sanitize_ads()
 	_sanitize_settings()
 
 
@@ -483,6 +506,16 @@ func _sanitize_shop() -> void:
 		if ConfigDB.get_product(id) != null and not owned.has(id):
 			owned.append(id)
 	_section("shop")["owned_products"] = owned
+
+
+func _sanitize_ads() -> void:
+	var ads := _section("ads")
+	ads["runs_since_interstitial"] = maxi(0, int(ads.get("runs_since_interstitial", 0)))
+	ads["free_gems_last_ts"] = maxi(0, int(ads.get("free_gems_last_ts", 0)))
+	var day := str(ads.get("free_gems_day", ""))
+	var day_ok := day.length() == 10 and day[4] == "-" and day[7] == "-"
+	ads["free_gems_day"] = day if day_ok else ""
+	ads["free_gems_today"] = clampi(int(ads.get("free_gems_today", 0)), 0, 3)
 
 
 func _sanitize_settings() -> void:

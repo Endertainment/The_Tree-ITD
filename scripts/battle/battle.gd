@@ -34,6 +34,9 @@ var rng := RandomNumberGenerator.new()
 var run_modifiers: RunModifiers
 var run_stats: RunStats
 
+## Tests switch this off to exercise the old immediate-defeat path.
+var offer_revive := true
+
 ## Tests switch this off to keep the battle scene alive after a defeat.
 var auto_route_results := true
 
@@ -57,6 +60,9 @@ var _sheets: BattleSheets
 var _archer_scene: PackedScene
 var _boss_slow_mo := false
 var _starting_run := false
+var _revive_used := false
+var _reviving := false
+var _speed_before_defeat := 1.0
 
 
 func _ready() -> void:
@@ -84,7 +90,8 @@ func _ready() -> void:
 	hud.upgrades_requested.connect(_on_upgrades)
 	hud.settings_requested.connect(_on_settings)
 	hud.back_requested.connect(_handle_back)
-	hud.speed_trial_requested.connect(_on_speed_trial_requested)
+	hud.revive_requested.connect(_on_revive_requested)
+	hud.revive_give_up_requested.connect(_on_revive_give_up)
 	hud.speed_info_requested.connect(_on_speed_info_requested)
 
 	core.died.connect(_on_core_died)
@@ -105,7 +112,11 @@ func start_run(modifiers: RunModifiers = null) -> void:
 	_ended = false
 	_ending = false
 	_boss_slow_mo = false
+	_revive_used = false
+	_reviving = false
+	_speed_before_defeat = 1.0
 	close_sheet()
+	hud.hide_revive_prompt()
 	# A run always starts from a clean pause state, even when the previous run
 	# ended on the results panel or with a sheet open.
 	get_tree().paused = false
@@ -120,11 +131,18 @@ func start_run(modifiers: RunModifiers = null) -> void:
 	kills = 0
 	run_time = 0.0
 
-	run_modifiers = modifiers if modifiers != null else RunModifiers.build(
-		GameState.to_dict(),
-		GameState.get_equipped_cards(),
-		false
-	)
+	# A trial bought on the pre-battle panel is consumed by the run it starts.
+	var trial := SpeedService.consume_pending_trial_15()
+	if modifiers != null:
+		run_modifiers = modifiers
+		if trial:
+			run_modifiers.speed_trial_15 = true
+	else:
+		run_modifiers = RunModifiers.build(
+			GameState.to_dict(),
+			GameState.get_equipped_cards(),
+			trial
+		)
 	SpeedService.set_run_trials(run_modifiers.speed_trial_15, run_modifiers.speed_trial_2)
 	_ensure_run_stats()
 	_starting_run = true
@@ -143,7 +161,6 @@ func start_run(modifiers: RunModifiers = null) -> void:
 	coins = run_stats.start_coins
 	hud.set_pause_enabled(true)
 	hud.set_stats(run_stats)
-	hud.set_trial_available(not run_modifiers.speed_trial_15 and not SpeedService.is_speed_unlocked(1.5))
 	hud.refresh_speed()
 	wave_manager.start(rng.randi())
 	_refresh_tower_hud()
@@ -259,6 +276,7 @@ func end_run(reason: StringName) -> void:
 		return
 	_ended = true
 	close_sheet()
+	hud.hide_revive_prompt()
 	wave_manager.stop()
 	hud.set_pause_enabled(false)
 	hud.hide_boss()
@@ -532,8 +550,35 @@ func _on_settings() -> void:
 func _on_core_died() -> void:
 	if _ending or _ended:
 		return
+	if offer_revive and not _revive_used:
+		_offer_revive()
+		return
+	_finish_defeat()
+
+
+## Slow-mo into the revive prompt. The tree stays paused until the player
+## chooses, and the wave state is left untouched so a revive resumes it.
+func _offer_revive() -> void:
 	_ending = true
 	close_sheet()
+	hud.set_pause_enabled(false)
+	hud.hide_boss()
+	_speed_before_defeat = SpeedService.get_speed()
+	Engine.time_scale = DEFEAT_SLOW_MO
+	await get_tree().create_timer(DEFEAT_SLOW_MO_SECONDS, true, false, true).timeout
+	SpeedService.reset()
+	get_tree().paused = true
+	hud.show_revive_prompt()
+
+
+## Final defeat: slow-mo, then results. Used by quit/give-up and by a second
+## death after a revive.
+func _finish_defeat() -> void:
+	if _ended:
+		return
+	_ending = true
+	close_sheet()
+	hud.hide_revive_prompt()
 	wave_manager.stop()
 	hud.set_pause_enabled(false)
 	hud.hide_boss()
@@ -544,11 +589,67 @@ func _on_core_died() -> void:
 	end_run(&"defeat")
 
 
+func _on_revive_requested() -> void:
+	if not hud.is_revive_visible() or _revive_used:
+		return
+	Monetization.show_rewarded(AdPolicy.P_REVIVE, _on_revive_ad_result)
+
+
+func _on_revive_ad_result(success: bool) -> void:
+	if not hud.is_revive_visible():
+		return
+	if not success:
+		_toast.show_message(Loc.t_key("REVIVE_FAILED"))
+		_close_revive_prompt_and_end()
+		return
+	hud.hide_revive_prompt()
+	get_tree().paused = false
+	_revive_used = true
+	_reviving = true
+	Analytics.log_event("revive_used", {})
+	core.revive(0.5)
+	_clear_enemies_near_core(250.0)
+	core.grant_invulnerability(3.0)
+	hud.set_pause_enabled(true)
+	_ending = false
+	if not SpeedService.set_speed(_speed_before_defeat):
+		SpeedService.reset()
+	_reviving = false
+	_toast.show_message(Loc.t_key("REVIVE_SUCCESS"))
+
+
+func _on_revive_give_up() -> void:
+	if not hud.is_revive_visible() or _revive_used:
+		return
+	_close_revive_prompt_and_end()
+
+
+func _close_revive_prompt_and_end() -> void:
+	hud.hide_revive_prompt()
+	get_tree().paused = false
+	_ending = false
+	end_run(&"defeat")
+
+
+## Kills every targetable enemy within `radius` of the Tree, awarding their
+## Coins through the normal death flow. Returns how many were cleared.
+func _clear_enemies_near_core(radius: float) -> int:
+	var cleared := 0
+	var snapshot := enemy_pool.get_active().duplicate()
+	for enemy: Enemy in snapshot:
+		if enemy == null or not is_instance_valid(enemy) or not enemy.is_targetable():
+			continue
+		if enemy.global_position.distance_to(core.global_position) <= radius:
+			enemy.die()
+			cleared += 1
+	return cleared
+
+
 func _on_boss_died(_boss_index: int) -> void:
 	if summary != null:
 		summary.bosses_killed += 1
 	hud.hide_boss()
-	if _ended or _ending or _boss_slow_mo:
+	if _reviving or _ended or _ending or _boss_slow_mo:
 		return
 	_boss_slow_mo = true
 	Engine.time_scale = BOSS_SLOW_MO
@@ -560,23 +661,6 @@ func _on_boss_died(_boss_index: int) -> void:
 
 func _on_wave_announced(wave: int, modifier: int) -> void:
 	hud.show_wave_modifier(wave, modifier)
-
-
-func _on_speed_trial_requested() -> void:
-	if _ended or run_modifiers == null or run_modifiers.speed_trial_15:
-		return
-	Monetization.show_rewarded("run_speed_trial", _on_speed_trial_result)
-
-
-func _on_speed_trial_result(success: bool) -> void:
-	if not success or _ended or run_modifiers == null:
-		_toast.show_message(Loc.t_key("SPEED_TRIAL_FAILED"))
-		return
-	run_modifiers.speed_trial_15 = true
-	SpeedService.set_run_trials(true, run_modifiers.speed_trial_2)
-	hud.set_trial_available(false)
-	hud.refresh_speed()
-	_toast.show_message(Loc.t_key("SPEED_TRIAL_GRANTED"))
 
 
 func _on_speed_info_requested() -> void:

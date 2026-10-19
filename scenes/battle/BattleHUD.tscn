@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/battle/battle_hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" path="res://ui/SpeedButton.tscn" id="2_speed"]
 [ext_resource type="PackedScene" path="res://ui/BossBar.tscn" id="3_boss"]
 [ext_resource type="PackedScene" path="res://ui/WaveBanner.tscn" id="4_banner"]
+[ext_resource type="PackedScene" path="res://scenes/battle/RevivePrompt.tscn" id="5_revive"]
 
 [node name="BattleHUD" type="CanvasLayer"]
 process_mode = 3
@@ -138,14 +139,6 @@ size_flags_horizontal = 3
 theme_type_variation = &"HudSmall"
 text = "Tap a pad to build"
 horizontal_alignment = 2
-
-[node name="TrialChip" type="Button" parent="BottomSafe/BottomBar"]
-unique_name_in_owner = true
-visible = false
-custom_minimum_size = Vector2(0, 76)
-layout_mode = 2
-theme_type_variation = &"SecondaryButton"
-text = "SPEED TRIAL +1.5x (AD)"
 
 [node name="CallButton" type="Button" parent="BottomSafe/BottomBar"]
 unique_name_in_owner = true
@@ -359,3 +352,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"PrimaryButton"
 text = "QUIT"
+
+[node name="RevivePrompt" parent="." instance=ExtResource("5_revive")]
+unique_name_in_owner = true

@@ -1,16 +1,16 @@
 # Decisions
 
 Append-only log. Newest decisions at the bottom. To change a decision, add a new
-row that supersedes the old one — never rewrite or delete history.
+row that supersedes the old one â€” never rewrite or delete history.
 
-## Locked product decisions (master context §4)
+## Locked product decisions (master context Â§4)
 
 | Date | Decision | Why |
 |---|---|---|
 | 2026-10-19 | Coins are run-only; Gold and Gems are persisted meta currencies. | Keeps the in-run economy and the long-term economy separately meaningful. |
 | 2026-10-19 | Towers are built on eight fixed circular pads around the Tree; no free placement. | Removes path-blocking exploits and keeps touch input simple. |
 | 2026-10-19 | Enemies target only the Tree; towers are indestructible obstacles. | Preserves the "no lanes" pillar and avoids tower HP bookkeeping. |
-| 2026-10-19 | Endless mode: no victory screen, run ends at Tree death or quit, `best_wave` persisted. | Matches the session length target of 8–15 minutes. |
+| 2026-10-19 | Endless mode: no victory screen, run ends at Tree death or quit, `best_wave` persisted. | Matches the session length target of 8â€“15 minutes. |
 | 2026-10-19 | The Tree auto-attacks with 2 base archers, up to 5 through in-run upgrades. | Gives the player a baseline defense before the first tower. |
 | 2026-10-19 | Speed 1x always available; 1.5x and 2x are unlocks driven by `Engine.time_scale`. | Single implementation point, resets cleanly on pause and scene change. |
 | 2026-10-19 | Portrait-only, 1080x1920 reference, `canvas_items` / `expand`. | One-thumb play on phones; `expand` avoids letterboxing on tall screens. |
@@ -24,19 +24,19 @@ row that supersedes the old one — never rewrite or delete history.
 |---|---|---|
 | 2026-10-19 | `strings.csv` is parsed at runtime into `Translation` objects instead of relying on Godot's CSV import pipeline. | A fresh clone must run `--headless` without an editor import pass; the import step would otherwise be a hidden prerequisite. The BOM is still required for editors and for a future switch to the importer, and the parser strips it from the header cell. |
 | 2026-10-19 | `ConfigDB` returns plain `Resource` values for now. | The seven typed data classes (`EnemyData`, `TowerData`, ...) arrive in stage 2; defining them half-used in stage 1 would be dead code. |
-| 2026-10-19 | `ui/theme.tres` and `ui/Toast.tscn` live in `res://ui/`, while `scenes/ui/` keeps a `.gitkeep`. | Stage 1 file list prescribes `ui/`; master §7.1 lists `scenes/ui/` for screens. The theme is a project-level resource, not a screen. |
+| 2026-10-19 | `ui/theme.tres` and `ui/Toast.tscn` live in `res://ui/`, while `scenes/ui/` keeps a `.gitkeep`. | Stage 1 file list prescribes `ui/`; master Â§7.1 lists `scenes/ui/` for screens. The theme is a project-level resource, not a screen. |
 | 2026-10-19 | Default `settings.locale` is `en`; Boot applies the stored locale. | Deterministic default for tests and a sane fallback when the CSV lacks the OS locale. |
 | 2026-10-19 | Atomic save: write `save.tmp`, verify JSON, refresh `save.bak`, rename onto `save.json`; if the rename fails, remove the target and retry, then fall back to a copy. | Windows can refuse a rename over an existing file. `save.bak` always holds the previous good profile, so a crash between remove and rename still recovers. |
 | 2026-10-19 | Verified with the non-mono Godot 4.7.2 build extracted to `C:\Tools\godot-4.7.2`. | The only installed build is the .NET/mono editor, which reintroduces a `[dotnet]` section and `.csproj` scaffolding that this project must not contain. |
 | 2026-10-19 | Removed the tracked `addons/godot-git-plugin/windows/~libgit_plugin.windows.editor.x86_64.dll`. | 6.1 MB temporary copy left behind by an editor/antivirus cycle; it is not referenced by `git_plugin.gdextension` and exceeds the 5 MB blob limit. |
 | 2026-10-19 | Speed resets on `NOTIFICATION_APPLICATION_PAUSED` and on run start/end, not on focus loss. | Losing window focus on desktop must not silently drop the player's chosen speed; backgrounding the app on Android does pause it. |
-| 2026-10-19 | `docs/` and `tests/` are part of the shipped repository; `tools/` is dev-only and must be excluded from export filters. | Matches master §7.1 and keeps the screenshot helper out of the APK. |
+| 2026-10-19 | `docs/` and `tests/` are part of the shipped repository; `tools/` is dev-only and must be excluded from export filters. | Matches master Â§7.1 and keeps the screenshot helper out of the APK. |
 
 ## Stage 2 decisions
 
 | Date | Decision | Why |
 |---|---|---|
-| 2026-10-19 | Scene files use `PascalCase.tscn` per master §8.2; the stage-2 list's lowercase names would contradict the master. Scripts stay `snake_case.gd`. | One naming rule across the project. |
+| 2026-10-19 | Scene files use `PascalCase.tscn` per master Â§8.2; the stage-2 list's lowercase names would contradict the master. Scripts stay `snake_case.gd`. | One naming rule across the project. |
 | 2026-10-19 | Typed data classes live in `resources/`; their `.tres` instances stay under `data/`. | The stage-2 file list names `resources/...`; the stage-1 architecture note suggested `scripts/core/data/`, which would separate definitions from instances. |
 | 2026-10-19 | `WaveTable` is one authored file with flat `WaveEntry` groups tagged `wave` and ordered by `start_delay`; waves 11+ are generated in `WaveManager`. | Keeps the promised `waves_01_10.tres` + two classes while staying data-driven for waves 1-10. |
 | 2026-10-19 | Placeholder art is code-drawn in `_draw()` (`Arena`, `Core`, `Enemy`, `Archer`) and tinted from `EnemyData`; no sprites or binary art are added and no `AnimatedSprite2D` is needed. | Stage 2 forbids final art and this needs no import pipeline or external assets. |
@@ -50,29 +50,29 @@ row that supersedes the old one — never rewrite or delete history.
 | 2026-10-19 | The speed button shows a disabled `1x` with a tooltip; no unlock UI is built. | Speed unlocks are stage 4/6 scope. |
 | 2026-10-19 | The spatial hash clears buckets in place and each enemy owns a reusable neighbour array; `EnemyPool` rebuilds the hash before pooled enemies move. | Steady-state frames avoid allocating arrays or dictionaries. |
 | 2026-10-19 | `project.godot` names the three 2D physics layers and restores the explicit 60 Hz physics tick the editor had dropped. | Scene files reference the layer names; the explicit tick documents the target. |
-| 2026-10-19 | UK `CURRENCY_GEMS` changed from `Монети` to `Самоцвіти`. | `Монети` means coins; stage 2 now shows Coins and Gems as separate concepts. |
-| 2026-10-19 | Verification added: `TestFlow` (menu → battle → 10 s prep → wave 1 → quit confirmation → menu), `TestBattle` (42 checks), `TestSoak` (10 simulated minutes, 0 orphans, 701 nodes stable), and battle screenshots through `CaptureTool`. | Headless plus a desktop window only; no Android device is available. |
+| 2026-10-19 | UK `CURRENCY_GEMS` changed from `ÐœÐ¾Ð½ÐµÑ‚Ð¸` to `Ð¡Ð°Ð¼Ð¾Ñ†Ð²Ñ–Ñ‚Ð¸`. | `ÐœÐ¾Ð½ÐµÑ‚Ð¸` means coins; stage 2 now shows Coins and Gems as separate concepts. |
+| 2026-10-19 | Verification added: `TestFlow` (menu â†’ battle â†’ 10 s prep â†’ wave 1 â†’ quit confirmation â†’ menu), `TestBattle` (42 checks), `TestSoak` (10 simulated minutes, 0 orphans, 701 nodes stable), and battle screenshots through `CaptureTool`. | Headless plus a desktop window only; no Android device is available. |
 
 ## Stage 3 decisions
 
 | Date | Decision | Why |
 |---|---|---|
-| 2026-10-19 | Scene files are `Tower.tscn`, `BuildPad.tscn`, `BuildSheet.tscn`, `TowerSheet.tscn`, `TowerProjectile.tscn`, `ui/TowerCard.tscn`, while the stage file list used lowercase names. | Follows the stage-2 naming decision and master §8.2; one naming rule across the project. |
+| 2026-10-19 | Scene files are `Tower.tscn`, `BuildPad.tscn`, `BuildSheet.tscn`, `TowerSheet.tscn`, `TowerProjectile.tscn`, `ui/TowerCard.tscn`, while the stage file list used lowercase names. | Follows the stage-2 naming decision and master Â§8.2; one naming rule across the project. |
 | 2026-10-19 | `TowerManager` (a `Node2D` child of `Battle`) owns the eight pads, the built towers and the obstacle list. `Battle.obstacles` is the *same* `Array` instance and is rebuilt in place on build/sell. | Keeps `battle.gd` within the size guideline and lets every pooled enemy hold one stable array reference for the whole run. |
 | 2026-10-19 | `TowerLevel` / `TowerData` live in `resources/`, their instances in `data/towers/*.tres` as `Array[ExtResource("tower_level.gd")]`. | Matches the stage-2 rule that typed data classes live in `resources/`; typed arrays keep the editor honest. |
 | 2026-10-19 | Pad taps are resolved by a hit-test in `Battle._unhandled_input` against `BuildPad.get_tap_radius()` (56 px), not by `Area2D.input_event`. The pad is still an `Area2D` on the `pads` layer with a radius-56 collider. | Physics picking for touch is fragile and untestable headless; the explicit hit-test behaves the same for `InputEventScreenTouch`, mouse clicks and injected test events. |
-| 2026-10-19 | Upgrade costs are rounded to the nearest 5, so the Archer Tower goes 60 → 95 → 155. The stage table's `UPGRADE — 96` is treated as illustrative. | Requirement 3 says "rounded to nearest 5"; that rule is stated twice, the 96 appears once as a mock value. |
+| 2026-10-19 | Upgrade costs are rounded to the nearest 5, so the Archer Tower goes 60 â†’ 95 â†’ 155. The stage table's `UPGRADE â€” 96` is treated as illustrative. | Requirement 3 says "rounded to nearest 5"; that rule is stated twice, the 96 appears once as a mock value. |
 | 2026-10-19 | The Frost Spire keeps its 70 px splash at levels 2 and 3. | The stage table lists the splash only in the L1 column; removing it on upgrade would be a balance trap, so it is a per-level data field that stays 70. |
 | 2026-10-19 | Build/tower sheets live under `BattleHUD %SheetHost`, which sits before `PauseMenu` in the HUD scene. They pause the tree themselves and `Battle` owns a single `_sheet_open` flag. | The pause sheet and quit confirm must still draw above an open sheet; `start_run` forces `paused = false` so a rerun never starts frozen. |
 | 2026-10-19 | Backgrounding the app while a sheet is open does not stack the pause sheet: the run is already paused and the sheet stays intact. | Matches the stage manual test; opening pause over a bottom sheet is still possible from the pause button. |
-| 2026-10-19 | Tower shots get their own 72-node pool next to the 48 arrows (120 total). | Master §8.5 caps projectiles at 120; one shared pool would starve either archers or towers. |
+| 2026-10-19 | Tower shots get their own 72-node pool next to the 48 arrows (120 total). | Master Â§8.5 caps projectiles at 120; one shared pool would starve either archers or towers. |
 | 2026-10-19 | Obstacle radius is `body_radius + 18` and `SteeringComponent` no longer adds its own margin; avoidance now also has a hard push-out plus a 2 s no-progress nudge. | The stage specifies the margin once; the push-out is what stops an enemy from clipping through a tower when the crowd pushes it inside the circle. |
 | 2026-10-19 | `Enemy.apply_slow()` wraps the existing `StatusComponent`: strongest slow wins, reapplication refreshes duration, plus a blue tint and a 0.3 s snowflake marker. | The component already had the right semantics; only the feedback was missing. |
-| 2026-10-19 | `Archer.tscn` is `load()`ed in `Battle._ready()` instead of `preload`ed. | A cyclic preload (Battle → Archer → Enemy → Battle) produced an empty `PackedScene` in one windowed load order (`CaptureTool`), which left the battle without archers. Loading after the script compiles removes the race; `_spawn_archers` also guards null. |
+| 2026-10-19 | `Archer.tscn` is `load()`ed in `Battle._ready()` instead of `preload`ed. | A cyclic preload (Battle â†’ Archer â†’ Enemy â†’ Battle) produced an empty `PackedScene` in one windowed load order (`CaptureTool`), which left the battle without archers. Loading after the script compiles removes the race; `_spawn_archers` also guards null. |
 | 2026-10-19 | `tower_cost_mult` is read from the `start_run(modifiers)` dictionary (default 1.0). | `RunModifiers` is stage-4 scope; the cost pipeline already accepts the multiplier without inventing a stage-4 class. |
 | 2026-10-19 | `Battle.start_run()` clears the pause flag and hides the pause sheet. | Needed by `TestTowers`, which reruns `start_run` after a defeat; a real "play again" flow needs the same. |
 | 2026-10-19 | Verification: `TestTowers` (74 checks), plus `TestBattle` 42, `TestSave` 42, `TestFlow`, `TestSoak`, and new `CaptureTool` screenshots for the ring, both sheets, the locked cards and the 8-tower stress frame. | Desktop window only; no Android device, no 720x1280 device pass. |
-| 2026-10-19 | Known deviation: `battle.gd` grew to ~520 lines (master §8.1 suggests ~300). Tower world state already moved into `TowerManager`; the remaining run lifecycle, economy, pause ownership and sheet plumbing stay in the scene controller until stage 4 adds `RunModifiers`/`RunState`. | Splitting the economy now would duplicate stage 4's work; the behaviour is covered by 74 tower checks plus the stage-2 suites. Recorded so stage 4 pays this debt instead of forgetting it. |
+| 2026-10-19 | Known deviation: `battle.gd` grew to ~520 lines (master Â§8.1 suggests ~300). Tower world state already moved into `TowerManager`; the remaining run lifecycle, economy, pause ownership and sheet plumbing stay in the scene controller until stage 4 adds `RunModifiers`/`RunState`. | Splitting the economy now would duplicate stage 4's work; the behaviour is covered by 74 tower checks plus the stage-2 suites. Recorded so stage 4 pays this debt instead of forgetting it. |
 
 
 ## Stage 4 decisions
@@ -123,3 +123,23 @@ row that supersedes the old one — never rewrite or delete history.
 | 2026-10-19 | `stats.ads_watched` was added to the v1 save defaults. | Achievements need a lifetime ad counter; `SaveManager._merge_missing` adds it to older profiles, so the schema version does not change. |
 | 2026-10-19 | Verification: `TestMenu` (110 checks) plus `TestSave` 42, `TestFlow`, `TestBattle` 42, `TestTowers` 74, `TestProgression` 120 and `TestSoak` 5 all pass; 12 menu screenshots (six tabs, EN + UK) at 540x960 and 60 FPS in a windowed run. | Desktop/headless only: no Android device, no 720x1280 pass, no real IAP/ads. The reset flow and the reward-fly animation were code-reviewed, not executed end to end. |
 | 2026-10-19 | Known deviation: `GameState` is ~495 lines (master 8.1 suggests ~300). | Stage 5 added the card/mission/shop accessors and load-time validation to the canonical store. Splitting the dictionary behind another indirection would not remove the logic; the single-writer property is worth more than the line count. Recorded for a future refactor alongside `battle.gd` (~644). |
+
+## Stage 6 decisions
+
+| Date | Decision | Why |
+|---|---|---|
+| 2026-10-20 | Save schema v2 adds one `ads` block (`runs_since_interstitial`, `free_gems_last_ts`, `free_gems_day`, `free_gems_today`); `SaveMigrations` inserts it for v1 and `GameState._sanitize_ads()` clamps every value on load. | The counters must survive an app kill and a date change, and the migration test keeps a real v1 fixture from being silently repaired by `_merge_missing`. |
+| 2026-10-20 | The facade is split into `Monetization` (315 lines), `AdsFlow` (275) and `PurchaseFlow` (240). | The first draft was 669 lines. One ad machine and one billing machine are independently testable; the autoload only owns provider selection, placements and save-visible rewards. |
+| 2026-10-20 | Providers are signal-based (`rewarded_loaded/shown/failed/closed`, `purchase_succeeded/failed/cancelled`); `initialize()` returns `bool` even though the stage sketch says `void`. | A missing plugin must report failure so the facade can fall back; the stage section 7 text explicitly asks for `false` from `initialize()`. The facade keeps the old callback API for callers. |
+| 2026-10-20 | `PreBattle.tscn` is embedded in Home instead of becoming a scene between menu and battle; the file list's `scripts/menu/pre_battle.gd` is at `scripts/ui/menu/pre_battle.gd`. | Master 7.4 locks `MainMenu -> Battle`, and stage 6 explicitly permits a Home panel; `BATTLE` stays one tap. The path follows the stage-5 screen-controller convention. |
+| 2026-10-20 | The stage list's `scripts/core/monetization.gd` is the existing `autoload/monetization.gd`; its state machines live in `scripts/core/ads_flow.gd` and `purchase_flow.gd`. | Master 7.2 fixes the autoload names and paths; moving the singleton would break every caller. The split keeps each file near the 300-line guideline. |
+| 2026-10-20 | The pre-battle trial is a runtime flag in `SpeedService` (`pending_trial_15`), consumed by `Battle.start_run()`; the in-battle trial chip is removed. | A trial is run-only and must not be saved. `SpeedService` already owns the per-run trial unlock matrix, so one consume call moves it into `RunModifiers` and the old HUD placement becomes dead code. |
+| 2026-10-20 | Revive pauses the tree and leaves the wave untouched; only give-up/failure calls `WaveManager.stop()`. The ad-close/failure path goes straight to results. `Battle.offer_revive = false` exists for the stage-2 defeat test. | Stopping the wave would make a successful revive continue without its remaining spawns. The manual stage test requires a closed revive ad to show results, not a retry. |
+| 2026-10-20 | The interstitial counter is held at zero for the profile's first three runs, then increments; a successful show resets it. The first possible ad is therefore run 6. | Satisfies both "every 3rd completed run" and "never in the first 3 runs". A failed/interrupted interstitial keeps the counter so the next eligible run retries. |
+| 2026-10-20 | `AdPolicy` is a pure static class for free-Gems cooldowns and interstitial cadence; it takes the clock and date as parameters. A backwards clock cannot shorten the 4 h wait. | The policy is testable without waiting four hours or touching the save, and the clock-rollback rule prevents a free-Gems loop by moving the device clock back. |
+| 2026-10-20 | Purchase grants moved from `ShopScreen` into `PurchaseFlow`: the provider success signal triggers `MetaShop.grant()` and the synchronous save, then the screen receives an outcome (`success`/`owned`/`cancelled`/`failed`/`busy`/`no_consent`). | One grant path for the shop and restore, idempotent for one-time products, and the UI only renders the outcome. `PurchaseStatus` records idle/pending/success/cancelled/failed for the debug panel. |
+| 2026-10-20 | The debug panel lives at `ui/debug/MonetizationDebug.tscn` with its script under `scripts/ui/debug/`; it is opened only by five taps on the Home version label in a debug build. | Matches the project's `ui/` scene and `scripts/ui/` controller split; the 5-tap check is covered by `TestMenu`. |
+| 2026-10-20 | `AdMobProvider` and `PlayBillingProvider` are reflection-guarded and never executed without a plugin; plugin method/signal names carry `TODO(verify)` comments and real IDs live in `data/monetization/store_config.tres` (AdMob) and `data/shop/*.tres` (`store_id`). | The adapters must compile and boot without a plugin, and a human must supply accounts before enabling `USE_REAL_ADS` / `USE_REAL_IAP`. |
+| 2026-10-20 | Two pre-existing Ukrainian rows (`HUD_TAP_PAD`, `SHEET_BUILD_HINT`) were quoted after a comma. | Godot's CSV parser split them into four columns, so the UK text was truncated. This is a small stage-6 localization fix found while adding the new keys. |
+| 2026-10-20 | Verification: `TestMigrations` 25 checks, `TestMonetization` 136, `TestMenu` 112, `TestSave` 46, `TestProgression` 120, `TestBattle` 42, `TestTowers` 74, `TestFlow` and `TestSoak` 5 pass headless on Godot 4.7.2. | Desktop/headless only: no Android device, no real AdMob/Billing sandbox, no app-kill test. A real application pause/resume notification during a live ad covers the background path; an actual kill was not executed. |
+| 2026-10-20 | Known deviation: `battle.gd` is ~728 lines and `battle_hud.gd` ~461 (master 8.1 suggests ~300); `Monetization` is 315. | Revive ownership and the HUD prompt push the existing controllers further over the guideline. The new state machines and prompt were split out, but the run lifecycle still lives in `Battle`; recorded for the stage-7 refactor pass. |

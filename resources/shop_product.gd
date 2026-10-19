@@ -8,6 +8,9 @@ extends Resource
 
 @export var id: String = ""
 
+## Billing product id used by the store adapter. The fake provider ignores it.
+@export var store_id: String = ""
+
 @export var title_key: String = ""
 @export var description_key: String = ""
 
@@ -33,6 +36,11 @@ extends Resource
 ## True when this product can only ever be bought once.
 func is_one_time() -> bool:
 	return not consumable
+
+
+## Billing id for the real store, falling back to the logical id.
+func get_store_id() -> String:
+	return id if store_id.is_empty() else store_id
 
 
 ## Human-readable contents for the card, using `Loc`.

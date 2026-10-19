@@ -226,6 +226,14 @@ func _run() -> void:
 	await get_tree().process_frame
 	_check(cards_tab.text == "CARDS", "tab labels return to English")
 
+	var home_screen := host.get_child(0)
+	for _tap in 5:
+		home_screen.call("register_version_tap")
+	await get_tree().process_frame
+	_check(_menu.is_debug_panel_open(), "five version taps open the debug panel")
+	_menu.close_monetization_debug()
+	_check(not _menu.is_debug_panel_open(), "the debug panel closes")
+
 	var modal := _menu.get_node("%Modal") as ModalSheet
 	_check(not modal.visible, "the modal starts hidden")
 	_menu.open_modal("Test", "Body", "COMMON_CLOSE", "COMMON_CLOSE", Callable())

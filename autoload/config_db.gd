@@ -13,6 +13,7 @@ const DATA_DIRS := {
 	"cards": "res://data/cards",
 	"missions": "res://data/missions",
 	"shop": "res://data/shop",
+	"monetization": "res://data/monetization",
 }
 
 var _by_kind: Dictionary = {}
@@ -62,6 +63,13 @@ func get_mission(id: String) -> MissionData:
 ## Shop product, or null.
 func get_product(id: String) -> ShopProduct:
 	return _lookup("shop", id) as ShopProduct
+
+
+## Real ad/billing identifiers. Falls back to a fresh default resource so the
+## disabled adapters can never crash on a missing file.
+func get_store_config() -> StoreConfig:
+	var config := _lookup("monetization", "main") as StoreConfig
+	return config if config != null else StoreConfig.new()
 
 
 func all_enemies() -> Array:

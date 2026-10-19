@@ -1,12 +1,12 @@
 class_name SaveDefaults
 extends RefCounted
-## Canonical v1 save dictionary.
+## Canonical save dictionary.
 ##
 ## Every consumer (SaveManager, GameState, the tests) starts from this one
 ## definition so there is a single source of truth for the schema in
-## master context section 7.6.
+## master context section 7.6. Version 2 adds the monetization counters.
 
-const CURRENT_VERSION := 1
+const CURRENT_VERSION := 2
 
 
 ## Returns a fresh, fully populated save dictionary.
@@ -69,6 +69,12 @@ static func create() -> Dictionary:
 		},
 		"shop": {
 			"owned_products": [],
+		},
+		"ads": {
+			"runs_since_interstitial": 0,
+			"free_gems_last_ts": 0,
+			"free_gems_day": "",
+			"free_gems_today": 0,
 		},
 		"flags": {
 			"tutorial_done": false,

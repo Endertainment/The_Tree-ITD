@@ -35,7 +35,7 @@ QUIT_BODY,Cleared waves count as a finished run. This cannot be undone.,Прой
 QUIT_CANCEL,KEEP PLAYING,ГРАТИ ДАЛІ
 QUIT_CONFIRM,QUIT,ВИЙТИ
 HUD_TOWERS,TOWERS {built} / {total},ВЕЖІ {built} / {total}
-HUD_TAP_PAD,Tap a pad to build,Торкніться майданчика, щоб збудувати
+HUD_TAP_PAD,Tap a pad to build,"Торкніться майданчика, щоб збудувати"
 TOWER_ARCHER_NAME,Archer Tower,Вежа лучників
 TOWER_ARCHER_ROLE,Cheap single target,"Дешева, одна ціль"
 TOWER_FROST_NAME,Frost Spire,Крижаний шпиль
@@ -43,7 +43,7 @@ TOWER_FROST_ROLE,Slows groups,Сповільнює гурт
 TOWER_BALLISTA_NAME,Ballista,Баліста
 TOWER_BALLISTA_ROLE,"Heavy, ignores armor","Важка, крізь броню"
 SHEET_BUILD_TITLE,BUILD,БУДУВАТИ
-SHEET_BUILD_HINT,Tap a tower to build it,Торкніться вежі, щоб збудувати
+SHEET_BUILD_HINT,Tap a tower to build it,"Торкніться вежі, щоб збудувати"
 SHEET_CARD_DPS,DPS {value},DPS {value}
 SHEET_NEED_COINS,Need {cost} more Coins,Потрібно ще {cost} монет
 SHEET_LOCKED,LOCKED,ЗАЧИНЕНО
@@ -61,7 +61,7 @@ TOWER_TARGET,TARGET,ЦІЛЬ
 TOWER_TARGET_NEAREST,NEAREST,НАЙБЛИЖЧА
 TOWER_TARGET_STRONGEST,STRONGEST,НАЙМІЦНІША
 TOWER_TARGET_FIRST,FIRST,ПЕРША
-SPEED_TRIAL_CHIP,SPEED TRIAL +1.5x (AD),СПРОБА ШВИДКОСТІ +1.5x (РЕКЛАМА)
+SPEED_TRIAL_CHIP,SPEED TRIAL +1.5x (AD),1.5x ЗА РЕКЛАМУ
 SPEED_TRIAL_GRANTED,1.5x is available for this run,Швидкість 1.5x доступна в цьому бою
 SPEED_TRIAL_FAILED,No ad available. Try again later.,Реклама недоступна. Спробуйте пізніше.
 SPEED_LOCK_15,1.5x: 250 Gems / Elf Level 3 / one-run ad trial,1.5x: 250 самоцвітів / рівень ельфа 3 / пробна реклама
@@ -304,3 +304,68 @@ STAT_TOWER_COST,Tower cost,Вартість веж
 STAT_SLOW,Slow strength,Сила сповільнення
 STAT_START_COINS,Starting Coins,Стартові монети
 STAT_START_ARCHERS,Starting archers,Стартові лучники
+PREPARE_TITLE,PREPARE FOR BATTLE,ПІДГОТУЙТЕСЯ ДО БОЮ
+PREPARE_BEST,BEST WAVE {wave},КРАЩА ХВИЛЯ {wave}
+PREPARE_DIFFICULTY,DIFFICULTY: {level},СКЛАДНІСТЬ: {level}
+PREPARE_CARDS,EQUIPPED CARDS,ЕКІПІРОВАНІ КАРТИ
+PREPARE_NO_CARDS,No cards equipped,Карти не екіпіровано
+PREPARE_SPEED_UNLOCKED,1.5x UNLOCKED,1.5x ВІДКРИТО
+PREPARE_TRIAL_ACTIVE,1.5x ACTIVE,1.5x АКТИВНО
+PREPARE_DIFFICULTY_EASY,EASY,ЛЕГКА
+PREPARE_DIFFICULTY_FAIR,FAIR,СЕРЕДНЯ
+PREPARE_DIFFICULTY_HARD,HARD,СКЛАДНА
+PREPARE_DIFFICULTY_DEADLY,DEADLY,СМЕРТЕЛЬНА
+REVIVE_TITLE,THE TREE FALLS,ДЕРЕВО ПАДАЄ
+REVIVE_BODY,Watch an ad to rise again?,Подивіться рекламу щоб відродитися?
+REVIVE_REWARD,50% HP · clear nearby orcs · 3 s shield,50% ЖИТТЯ · очистити орків поруч · щит 3 с
+REVIVE_BUTTON,REVIVE (AD),ВІДРОДИТИ (РЕКЛАМА)
+REVIVE_GIVE_UP,GIVE UP,ЗДАТИСЯ
+REVIVE_SUCCESS,The Tree rises again,Дерево знову піднялося
+REVIVE_FAILED,No revive. Your rewards are safe.,Відродження немає. Нагороди збережено.
+SHOP_TEST_MODE,TEST MODE — no real charges,ТЕСТОВИЙ РЕЖИМ — без справжніх списань
+FREE_GEMS_TITLE,FREE GEMS,БЕЗКОШТОВНІ САМОЦВІТИ
+FREE_GEMS_STATUS,{today} / {cap} today,{today} / {cap} сьогодні
+FREE_GEMS_READY,+{amount} GEMS (AD),+{amount} САМОЦВІТІВ
+FREE_GEMS_CAP,DAILY LIMIT,ДЕННИЙ ЛІМІТ
+FREE_GEMS_COOLDOWN,NEXT IN {time},ЧЕРЕЗ {time}
+FREE_GEMS_LOADING,LOADING…,ЗАВАНТАЖЕННЯ…
+FREE_GEMS_SUCCESS,+{amount} Gems,+{amount} самоцвітів
+FREE_GEMS_FAILED,No ad available. Try again later.,Реклама недоступна. Спробуйте пізніше.
+ADS_FREE_GEMS_CAP,Daily limit reached,Денний ліміт досягнуто
+ADS_FREE_GEMS_COOLDOWN,Available soon,Незабаром доступно
+SHOP_CANCELLED,Purchase cancelled. Nothing was charged.,Покупку скасовано. Кошти не списано.
+SHOP_NO_CONSENT,Consent is required to purchase.,Для покупки потрібна згода.
+SHOP_RESTORE_FAILED,Could not restore purchases.,Не вдалося відновити покупки.
+DEBUG_TITLE,MONETIZATION DEBUG,НАЛАШТУВАННЯ МОНЕТИЗАЦІЇ
+DEBUG_FORCE_REWARDED,FORCE NEXT REWARDED,НАСТУПНА РЕКЛАМА
+DEBUG_FORCE_PURCHASE,FORCE NEXT PURCHASE,НАСТУПНА ПОКУПКА
+DEBUG_SUCCESS,SUCCESS,УСПІХ
+DEBUG_FAIL,FAIL,ПОМИЛКА
+DEBUG_CLOSE_AD,CLOSE (NO REWARD),ЗАКРИТИ (БЕЗ НАГОРОДИ)
+DEBUG_TIMEOUT,TIMEOUT,ТАЙМ-АУТ
+DEBUG_PURCHASE_SUCCESS,SUCCESS,УСПІХ
+DEBUG_PURCHASE_CANCEL,CANCEL,СКАСУВАТИ
+DEBUG_PURCHASE_FAIL,FAIL,ПОМИЛКА
+DEBUG_RESET,RESET COUNTERS,СКИНУТИ ЛІЧИЛЬНИКИ
+DEBUG_TOGGLE_CONSENT,TOGGLE CONSENT,ЗМІНИТИ ЗГОДУ
+DEBUG_CLOSE,CLOSE,ЗАКРИТИ
+DEBUG_ADS_LINE,ADS: {ads}   IAP: {iap},РЕКЛАМА: {ads}   ПОКУПКИ: {iap}
+DEBUG_CONSENT_LINE,CONSENT: {state},ЗГОДА: {state}
+DEBUG_PHASE_LINE,STATE: {phase}  {placement},СТАН: {phase}  {placement}
+DEBUG_INTERSTITIAL_LINE,INTERSTITIAL: {count} / 3   due: {due},МІЖСТОРІНКОВА: {count} / 3   час: {due}
+DEBUG_FREE_GEMS_LINE,FREE GEMS: {today} / 3   next: {next},БЕЗКОШТОВНІ: {today} / 3   далі: {next}
+DEBUG_RUNS_LINE,RUNS: {runs},ЗАБІГІВ: {runs}
+DEBUG_CONSENT_GRANTED,granted,надано
+DEBUG_CONSENT_DENIED,denied,відхилено
+DEBUG_YES,YES,ТАК
+DEBUG_NO,NO,НІ
+DEBUG_PHASE_IDLE,IDLE,ОЧІКУВАННЯ
+DEBUG_PHASE_LOADING,LOADING,ЗАВАНТАЖЕННЯ
+DEBUG_PHASE_SHOWING,SHOWING,ПОКАЗ
+DEBUG_READY,ready,готово
+DEBUG_NEXT_REWARDED,Next rewarded: {outcome},Наступна реклама: {outcome}
+DEBUG_NEXT_PURCHASE,Next purchase: {outcome},Наступна покупка: {outcome}
+DEBUG_COUNTERS_RESET,Counters reset,Лічильники скинуто
+TIME_HOURS_MINUTES,{hours}h {minutes}m,{hours}г {minutes}хв
+TIME_MINUTES,{minutes}m,{minutes}хв
+DEBUG_PLACEMENTS_LINE,READY — speed: {speed}  free: {free}  interstitial: {interstitial},ГОТОВО — швидкість: {speed}  безкоштовні: {free}  міжсторінкова: {interstitial}

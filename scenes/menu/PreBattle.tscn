@@ -1,0 +1,91 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/menu/pre_battle.gd" id="1_pre"]
+[ext_resource type="PackedScene" path="res://ui/AdSpinner.tscn" id="2_spinner"]
+
+[node name="PreBattle" type="PanelContainer"]
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+script = ExtResource("1_pre")
+
+[node name="Column" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PanelTitle"
+text = "PREPARE FOR BATTLE"
+autowrap_mode = 3
+
+[node name="InfoRow" type="HBoxContainer" parent="Column"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BestLabel" type="Label" parent="Column/InfoRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HudLabel"
+text = "BEST: 0"
+
+[node name="DifficultyLabel" type="Label" parent="Column/InfoRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "DIFFICULTY: EASY"
+vertical_alignment = 1
+
+[node name="CardsTitle" type="Label" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "EQUIPPED CARDS"
+
+[node name="CardsRow" type="HBoxContainer" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="CardsEmpty" type="Label" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "No cards equipped"
+
+[node name="SpeedTrialButton" type="Button" parent="Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"RowButton"
+text = "SPEED TRIAL"
+
+[node name="SpeedUnlockedLabel" type="Label" parent="Column"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "1.5x UNLOCKED"
+
+[node name="StatusRow" type="HBoxContainer" parent="Column"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Spinner" parent="Column/StatusRow" instance=ExtResource("2_spinner")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="Column/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HudSmall"
+autowrap_mode = 3
+
+[node name="BattleButton" type="Button" parent="Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "BATTLE"

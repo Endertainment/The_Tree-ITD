@@ -30,6 +30,8 @@ var _shake_offset := Vector2.ZERO
 var _base_position := Vector2.ZERO
 var _dead := false
 var _regen_tick := 0.0
+var _invuln := 0.0
+var _pulse := 0.0
 
 
 func _ready() -> void:
@@ -49,6 +51,8 @@ func setup(new_max_hp: float) -> void:
 	_regen_tick = 0.0
 	position = _base_position
 	_dead = false
+	_invuln = 0.0
+	_pulse = 0.0
 	queue_redraw()
 
 
@@ -72,7 +76,7 @@ func add_max_hp(amount: float, heal_amount: float) -> void:
 
 ## Applies contact damage. Ignore-armor does not apply to the Tree.
 func take_damage(amount: float) -> void:
-	if _dead or amount <= 0.0:
+	if _dead or amount <= 0.0 or _invuln > 0.0:
 		return
 	hp = maxf(0.0, hp - amount)
 	_flash = 1.0
@@ -91,12 +95,41 @@ func take_damage(amount: float) -> void:
 		EventBus.core_died.emit()
 
 
-## Restores HP. The revive flow in stage 4 uses this.
+## Restores HP. Used by the revive flow.
 func heal(amount: float) -> void:
 	if _dead or amount <= 0.0:
 		return
 	hp = minf(max_hp, hp + amount)
 	EventBus.core_damaged.emit(hp, max_hp)
+	queue_redraw()
+
+
+## Brings the Tree back after a defeat with `ratio` of its max HP.
+func revive(ratio: float = 0.5) -> void:
+	_dead = false
+	hp = clampf(max_hp * clampf(ratio, 0.01, 1.0), 1.0, max_hp)
+	_display_hp = hp
+	_flash = 0.0
+	_regen_tick = 0.0
+	EventBus.core_damaged.emit(hp, max_hp)
+	queue_redraw()
+
+
+## Ignores all contact damage for `seconds`. Refreshed, never stacked.
+func grant_invulnerability(seconds: float) -> void:
+	_invuln = maxf(_invuln, maxf(0.0, seconds))
+	_pulse = 0.0
+	queue_redraw()
+
+
+## True while the revive shield is active.
+func is_invulnerable() -> bool:
+	return _invuln > 0.0
+
+
+## Drops the shield immediately. Used by tests and by a future debug command.
+func clear_invulnerability() -> void:
+	_invuln = 0.0
 	queue_redraw()
 
 
@@ -139,6 +172,11 @@ func get_archer_anchor(index: int) -> Vector2:
 
 func _process(delta: float) -> void:
 	var needs_redraw := false
+
+	if _invuln > 0.0:
+		_invuln = maxf(0.0, _invuln - delta)
+		_pulse += delta
+		needs_redraw = true
 
 	if regen > 0.0 and not _dead and hp > 0.0 and hp < max_hp:
 		_regen_tick += delta
@@ -195,6 +233,23 @@ func _draw() -> void:
 	draw_circle(Vector2(6.0, -78.0), 11.0, leaf_light.lightened(0.2))
 
 	_draw_health_bar()
+	if _invuln > 0.0:
+		_draw_shield()
+
+
+func _draw_shield() -> void:
+	var alpha := 0.35 + 0.18 * sin(_pulse * 6.0)
+	draw_circle(Vector2.ZERO, 176.0, Color(0.42, 0.78, 1.0, alpha * 0.18))
+	draw_arc(
+		Vector2.ZERO,
+		190.0,
+		0.0,
+		TAU,
+		64,
+		Color(0.55, 0.86, 1.0, alpha),
+		6.0,
+		true
+	)
 
 
 func _draw_health_bar() -> void:
