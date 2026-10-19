@@ -129,6 +129,7 @@ func _on_double_gold_result(success: bool) -> void:
 	if success and _rewards_applied and not _doubled:
 		_doubled = true
 		GameState.add_gold(_base_gold)
+		SaveManager.save_now(GameState.to_dict())
 		_gold += _base_gold
 		_gold_counter.count_to(_gold)
 		_double_button.visible = false

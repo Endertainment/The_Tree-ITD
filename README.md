@@ -47,7 +47,7 @@ simulates ten minutes at fixed 60 FPS and checks orphan/node growth.
 `TestTowers` covers pads, build/upgrade/sell maths, tower combat, frost slow,
 ballista armor piercing, steering obstacles and sheet pause handling (74 checks).
 `TestProgression` covers upgrade costs/effects, boss thresholds and enrage, wave
-modifiers, results maths, persistence and the speed matrix (107 checks).
+modifiers, results maths, persistence and the speed matrix (120 checks).
 `TestFlow` drives the menu → battle → quit → results → menu route.
 
 Optional visual check (dev-only tool, excluded from export):

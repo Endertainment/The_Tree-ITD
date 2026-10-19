@@ -188,7 +188,7 @@ func apply_run_result(summary: RunSummary, gold: int, gems: int) -> Dictionary:
 	currencies["gems"] = maxi(0, int(currencies.get("gems", 0)) + gems)
 
 	var elf_after := get_elf_level()
-	_persist()
+	SaveManager.save_now(to_dict())
 	EventBus.gold_changed.emit(get_gold())
 	EventBus.gems_changed.emit(get_gems())
 

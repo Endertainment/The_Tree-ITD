@@ -6,11 +6,22 @@ extends Node
 ##   godot --headless --path <project> --fixed-fps 60 res://tests/TestProgression.tscn
 
 const BATTLE_SCENE := preload("res://scenes/battle/Battle.tscn")
+const RESULTS_SCENE := preload("res://scenes/battle/Results.tscn")
 
 var _checks := 0
 var _failures: Array[String] = []
 var _battle: Battle
 var _boss_deaths := 0
+
+
+## Ad provider that always fails, to exercise the no-reward path.
+class FailingAdsProvider extends AdsProvider:
+	func is_ready() -> bool:
+		return true
+
+	func show_rewarded(_placement: String, callback: Callable) -> void:
+		if callback.is_valid():
+			callback.call(false)
 
 
 func _ready() -> void:
@@ -207,6 +218,16 @@ func _run() -> void:
 		await get_tree().create_timer(0.5, true, false, true).timeout
 		_check(is_equal_approx(Engine.time_scale, 1.0), "boss slow-mo restores the chosen speed")
 
+	_section("quit rewards")
+	_battle.summary = RunSummary.new()
+	_battle.summary.reason = &"in_progress"
+	_battle.wave_manager.debug_begin_wave(5)
+	_battle.end_run(&"quit")
+	_check(_battle.summary.reason == &"quit", "a quit builds a quit summary")
+	_check(_battle.summary.waves_cleared == 4, "a quit at wave 5 counts 4 cleared waves")
+	_check(Results.compute_gold(_battle.summary) == 52, "4 cleared waves pay 52 Gold")
+	_check(Results.compute_gems(_battle.summary, false) == 0, "no boss means no boss Gems")
+
 	_section("results maths")
 	var run := RunSummary.new()
 	run.waves_cleared = 7
@@ -237,6 +258,9 @@ func _run() -> void:
 	_check(GameState.get_stat("total_waves_cleared") == 7, "cleared waves are persisted")
 	_check(GameState.get_gold() == 112 and GameState.get_gems() == 12, "currencies are granted")
 	_check(bool(applied.get("new_best", false)), "the first result is a new best")
+	var disk := SaveManager.load_game()
+	var disk_currencies: Dictionary = disk.get("currencies", {})
+	_check(int(disk_currencies.get("gold", 0)) == 112, "Gold persists to disk immediately")
 
 	GameState.from_dict(SaveDefaults.create())
 	GameState.add_stat("total_waves_cleared", 29)
@@ -252,6 +276,59 @@ func _run() -> void:
 	milestone_run.waves_cleared = 30
 	GameState.apply_run_result(milestone_run, 0, 0)
 	_check(GameState.has_flag("milestone_30"), "wave 30 sets the milestone flag")
+
+	_section("results screen payout")
+	GameState.from_dict(SaveDefaults.create())
+	var screen_run := RunSummary.new()
+	screen_run.waves_cleared = 7
+	screen_run.gold_mult = 1.0
+	screen_run.reason = &"quit"
+	SceneRouter.set("_payload", screen_run)
+	var screen := RESULTS_SCENE.instantiate() as Results
+	add_child(screen)
+	await get_tree().process_frame
+	_check(GameState.get_gold() == 112, "the results screen grants Gold on entry")
+	_check(GameState.get_gems() == 2, "the results screen grants Gems on entry")
+	var double_button := screen.find_child("DoubleGoldButton", true, false) as Button
+	_check(double_button != null, "the double-Gold button exists")
+	Monetization.set_fake_ad_delay(0.01)
+	if double_button != null:
+		double_button.pressed.emit()
+		await get_tree().create_timer(0.12, true, false, true).timeout
+		await get_tree().process_frame
+		_check(GameState.get_gold() == 224, "double Gold adds exactly the base reward")
+		_check(not double_button.visible, "the double-Gold button hides after use")
+		double_button.pressed.emit()
+		await get_tree().process_frame
+		_check(GameState.get_gold() == 224, "Gold cannot be doubled twice")
+	screen.queue_free()
+	await get_tree().process_frame
+
+	GameState.from_dict(SaveDefaults.create())
+	var fail_run := RunSummary.new()
+	fail_run.waves_cleared = 7
+	fail_run.gold_mult = 1.0
+	fail_run.reason = &"quit"
+	SceneRouter.set("_payload", fail_run)
+	var fail_screen := RESULTS_SCENE.instantiate() as Results
+	add_child(fail_screen)
+	await get_tree().process_frame
+	var fail_button := fail_screen.find_child("DoubleGoldButton", true, false) as Button
+	var old_provider := Monetization.ads_provider
+	Monetization.ads_provider = FailingAdsProvider.new()
+	if fail_button != null:
+		fail_button.pressed.emit()
+		await get_tree().create_timer(0.05, true, false, true).timeout
+		await get_tree().process_frame
+		_check(GameState.get_gold() == 112, "a failed ad keeps the base Gold")
+		_check(
+			fail_button.visible and not fail_button.disabled,
+			"the button can be retried after a failed ad"
+		)
+	Monetization.ads_provider = old_provider
+	Monetization.set_fake_ad_delay(0.0)
+	fail_screen.queue_free()
+	await get_tree().process_frame
 
 	_section("speed unlocks")
 	GameState.from_dict(SaveDefaults.create())

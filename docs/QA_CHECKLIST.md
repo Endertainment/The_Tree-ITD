@@ -215,12 +215,15 @@ $proj  = "C:\Users\VOVA\Documents\the-tree---idle-tower-defense"
 - [x] Speed cycles only through unlocked speeds; the lock badge and long-press
       reason work; the prep chip grants 1.5x for one run.
 - [x] Results shows correct waves, kills, bosses, time and Coins for defeat and
-      for a quit; `TestFlow` covers quit -> Results -> menu.
+      for a quit; `TestFlow` covers quit -> Results -> menu, and
+      `TestProgression` covers a quit at wave 5 (4 cleared waves -> 52 Gold,
+      0 boss Gems).
 - [x] Gold = `sum(8 + 2w) * gold_mult`; Gems = `2*floor(N/5) + 5*bosses` plus the
       one-time wave-30 milestone, all floored.
 - [x] Rewards are granted once, persist after restart and update best wave.
 - [x] DOUBLE GOLD doubles only Gold, once, and an ad failure keeps the base
-      reward.
+      reward (`TestProgression`: 112 -> 224, a second press changes nothing, a
+      failing provider leaves 112 and re-enables the button).
 - [x] Wave 30 sets `flags.milestone_30` and pays +10 Gems only once.
 - [x] Elf Level 3 unlocks 1.5x and shows the toast on the results screen.
 - [ ] Real Android device pass, 720x1280 layout, real rewarded-ad SDK. Deferred
