@@ -112,6 +112,55 @@ NVIDIA RTX 3050 Laptop, 540x960 window (1080x1920 reference).
       menu (`TestBattle` + `TestFlow`). The buttons were emitted
       programmatically, not tapped on a touchscreen.
 
+## Towers (stage 3)
+
+Verified with Godot `4.7.2.stable.official`, Windows 11, 540x960 window
+(1080x1920 reference). Headless suites plus the `CaptureTool` screenshots.
+
+- [x] Eight pads exist on a 300 px ring at `22.5° + i·45°`, none on the vertical
+      axis, tap radius 56 px (≥88 px target) (`TestTowers`).
+- [x] A tap on an empty pad opens the build sheet; a tap on a built pad opens the
+      tower sheet; the sheet pauses the tree (`TestTowers`, injected touch).
+- [x] Building deducts the exact cost (60 / 90 / 140), refuses when the Coins are
+      short and leaves the balance unchanged on refusal (`TestTowers`).
+- [x] Building registers a steering obstacle; selling removes it again
+      (`TestTowers`, obstacle radius includes the 18 px margin).
+- [x] Upgrade curve: Archer 60 → 95 → 155 (rounded to 5), level 3 shows 34 dmg /
+      0.8 s / 500 range, max level disables the button (`TestTowers`).
+- [x] Sell refunds 60% of build + upgrades (310 invested → 186), frees the pad
+      and removes the obstacle (`TestTowers`).
+- [x] Archer tower damages a target in range; Frost Spire applies a 0.65 slow
+      multiplier; Ballista deals its full 55 damage to a 3-armor Brute
+      (`TestTowers`, archers removed so only the tower can score the hit).
+- [x] Target modes NEAREST / STRONGEST / FIRST switch and expose label keys; the
+      sheet highlights the active mode (screenshot `battle_tower_sheet.png`).
+- [x] 8 towers + 24 enemies for 11 simulated seconds: no living enemy overlaps a
+      tower body, none stays wedged between towers, all keep flowing inward
+      (`TestTowers`, includes the 2 s stuck-nudge path).
+- [x] Disabled build cards dim to 40%, show `LOCKED` and print the exact
+      shortfall (`Need 50 more Coins`) — `screenshot_battle_build_sheet_locked.png`.
+- [x] HUD counter shows `TOWERS 8 / 8`; the `Tap a pad to build` hint hides once
+      a tower exists (`screenshot_battle_towers.png`).
+- [x] Open sheet + pause: the pause sheet draws on top, resuming keeps the game
+      paused while the sheet is open, closing the sheet resumes, and the back
+      button closes the sheet first (`TestTowers`,
+      `screenshot_battle_sheet_pause.png`).
+- [x] 50 open/close cycles of both sheets: node count unchanged (845 → 845) and
+      0 orphan nodes (`TestTowers`).
+- [x] UK sheet renders Cyrillic (`Вежа лучників`, `МАКС. РІВЕНЬ`, `ПРОДАТИ`) in a
+      540x960 screenshot; the EN/UK toggle retranslates an open sheet live.
+- [x] 8 towers + 69 enemies on the desktop GPU: F3 overlay reads 60 FPS
+      (`screenshot_battle_towers_stress.png`). Desktop only — not a phone.
+- [x] `TestSoak` after the steering changes: wave 21, 418 kills, 842 nodes before
+      and after, 0 orphans.
+- [ ] Android device: real touch targets, back button, app-background while a
+      sheet is open, notched safe area. Code paths exist; not exercised on hardware.
+- [ ] 720x1280 low-end layout and frame time. Not run.
+- [ ] Audio hooks (`AudioManager.play_ui` / `play_sfx`) are called but the project
+      still ships no audio assets, so nothing is audible yet.
+- [ ] Per-frame allocation proof for tower targeting. Each tower scans the active
+      enemy array every 0.15 s (no allocations), but no profiler run was made.
+
 ## Project hygiene
 
 - [x] `project.godot` has no `[dotnet]` section; no `.cs` / `.csproj` anywhere.
@@ -131,12 +180,15 @@ $proj  = "C:\Users\VOVA\Documents\the-tree---idle-tower-defense"
 & $godot --headless --path $proj res://tests/TestFlow.tscn
 & $godot --headless --path $proj --fixed-fps 60 res://tests/TestBattle.tscn
 & $godot --headless --path $proj --fixed-fps 60 res://tests/TestSoak.tscn
+& $godot --headless --path $proj --fixed-fps 60 res://tests/TestTowers.tscn
 & $godot --path $proj res://tools/CaptureTool.tscn        # menu + battle screenshots
 ```
 
 `CaptureTool` writes `user://screenshot_menu_en.png`, `menu_uk`, `battle_prep`,
-`battle_prep_uk`, `battle_wave`, `battle_stress`, `battle_pause` and
-`battle_defeat`.
+`battle_prep_uk`, `battle_wave`, `battle_stress`, `battle_towers`,
+`battle_towers_stress`, `battle_tower_sheet`, `battle_tower_sheet_uk`,
+`battle_tower_sheet_l1`, `battle_build_sheet`, `battle_build_sheet_locked`,
+`battle_sheet_pause`, `battle_pause`, `battle_defeat` and `battle_defeat_uk`.
 
 ## Known environment quirks
 

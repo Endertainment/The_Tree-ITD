@@ -1,4 +1,4 @@
-keys,en,uk
+﻿keys,en,uk
 BOOT_TITLE,The Tree,Дерево
 MENU_TITLE,The Tree,Дерево
 MENU_SUBTITLE,Idle Tower Defense,Захист Дерева
@@ -44,3 +44,30 @@ DEFEAT_COINS,Coins earned: {count},Зароблено монет: {count}
 DEFEAT_TIME,Run time: {time},Час бою: {time}
 DEFEAT_BACK,BACK TO MENU,ДО МЕНЮ
 DEFEAT_STUB,Results screen arrives in stage 4,Екран результатів з'явиться на етапі 4
+HUD_TOWERS,TOWERS {built} / {total},ВЕЖІ {built} / {total}
+HUD_TAP_PAD,Tap a pad to build,Торкніться майданчика, щоб збудувати
+TOWER_ARCHER_NAME,Archer Tower,Вежа лучників
+TOWER_ARCHER_ROLE,Cheap single target,"Дешева, одна ціль"
+TOWER_FROST_NAME,Frost Spire,Крижаний шпиль
+TOWER_FROST_ROLE,Slows groups,Сповільнює гурт
+TOWER_BALLISTA_NAME,Ballista,Баліста
+TOWER_BALLISTA_ROLE,"Heavy, ignores armor","Важка, крізь броню"
+SHEET_BUILD_TITLE,BUILD,БУДУВАТИ
+SHEET_BUILD_HINT,Tap a tower to build it,Торкніться вежі, щоб збудувати
+SHEET_CARD_DPS,DPS {value},DPS {value}
+SHEET_NEED_COINS,Need {cost} more Coins,Потрібно ще {cost} монет
+SHEET_LOCKED,LOCKED,ЗАЧИНЕНО
+SHEET_UPGRADE,UPGRADE - {cost},ПОКРАЩИТИ - {cost}
+SHEET_UPGRADE_MAX,MAX LEVEL,МАКС. РІВЕНЬ
+SHEET_SELL,SELL - {refund},ПРОДАТИ - {refund}
+SHEET_SELL_TITLE,Sell this tower?,Продати цю вежу?
+SHEET_SELL_BODY,Sell {name} L{level} for {refund} Coins?,Продати {name} ур.{level} за {refund} монет?
+SHEET_SELL_CONFIRM,SELL,ПРОДАТИ
+SHEET_CANCEL,CANCEL,СКАСУВАТИ
+TOWER_LEVEL_LABEL,Level {level} / {max},Рівень {level} / {max}
+TOWER_STATS_NOW,DMG {damage}   RATE {rate}s   RNG {range},DMG {damage}   ТЕМП {rate}s   ДАЛЬН. {range}
+TOWER_STATS_NEXT,NEXT  DMG {damage} ({damage_delta})   RATE {rate}s ({rate_delta})   RNG {range} ({range_delta}),ДАЛІ  DMG {damage} ({damage_delta})   ТЕМП {rate}s ({rate_delta})   ДАЛЬН. {range} ({range_delta})
+TOWER_TARGET,TARGET,ЦІЛЬ
+TOWER_TARGET_NEAREST,NEAREST,НАЙБЛИЖЧА
+TOWER_TARGET_STRONGEST,STRONGEST,НАЙМІЦНІША
+TOWER_TARGET_FIRST,FIRST,ПЕРША

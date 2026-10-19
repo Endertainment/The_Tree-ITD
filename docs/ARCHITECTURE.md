@@ -42,15 +42,21 @@ Autoloads never `get_node()` each other's children. They talk through
 ## Battle scene
 
 ```
-Battle (battle.gd: coins, kills, pause, RunSummary)
+Battle (battle.gd: coins, kills, pause, RunSummary, sheet ownership)
 ├── Arena            static _draw() backdrop, boundary, roots, stones
+├── TowerManager     pads, towers, obstacles, selection, range ring
+│   ├── Pads         8 x BuildPad (Area2D, layer pads)
+│   ├── Towers       built Tower nodes
+│   └── RangeIndicator  one shared dashed range ring
 ├── Core             Tree HP, flash, shake, HP bar, 5 archer anchors
 ├── EnemyPool        70 preallocated Enemy nodes + SpatialHash + neighbour query
 ├── ProjectilePool   48 preallocated Arrow nodes + shared hit spark
+├── TowerProjectilePool  72 pooled tower shots + 3 impact rings
 ├── WaveManager      PREPARE -> SPAWNING -> CLEARING -> PREPARE
 ├── FloatingTextLayer 40 pooled "+N" labels
 └── HUD (CanvasLayer, PROCESS_MODE_ALWAYS)
-    ├── TopSafe / BottomSafe (safe-area padded)
+    ├── TopSafe / BottomSafe (safe-area padded, tower counter + hint)
+    ├── SheetHost (BuildSheet + TowerSheet, below the pause sheet)
     ├── PauseMenu + QuitConfirm
     ├── DefeatPanel
     └── DebugLabel (F3)
@@ -67,52 +73,89 @@ Battle (battle.gd: coins, kills, pause, RunSummary)
 
 ## Run lifecycle
 
-`Battle.start_run()` resets Coins/kills/time, builds an empty `RunSummary`, sets
-Tree HP, spawns archers and starts `WaveManager`. `EventBus.run_started` fires
-after the state is ready.
+`Battle.start_run()` resets Coins/kills/time, clears towers and sheets, builds an
+empty `RunSummary`, sets Tree HP, spawns archers and starts `WaveManager`.
+`EventBus.run_started` fires after the state is ready.
 
-`Battle.end_run(reason)` is idempotent: it stops the wave manager, fills the
-summary (`waves_cleared`, `kills`, `coins_earned`, `time_seconds`, `reason`),
-emits `EventBus.run_ended(summary)`, then either routes to the menu (`quit`) or
-pauses and opens the defeat panel (`defeat`).
+`Battle.end_run(reason)` is idempotent: it closes an open sheet, stops the wave
+manager, fills the summary (`waves_cleared`, `kills`, `coins_earned`,
+`time_seconds`, `reason`), emits `EventBus.run_ended(summary)`, then either routes
+to the menu (`quit`) or pauses and opens the defeat panel (`defeat`).
 
 Pause and defeat use `get_tree().paused`; the HUD is `PROCESS_MODE_ALWAYS`.
 Defeat plays a 0.4 s real-time 0.35x slow-mo, restores time scale through
-`SpeedService`, then pauses. Arrows, enemies, waves and Coins are all reset per
-run and never persisted.
+`SpeedService`, then pauses. Arrows, tower shots, enemies, towers, waves and
+Coins are all reset per run and never persisted.
 
 ## Data flow
 
 ```
 data/enemies/*.tres ──┐
-data/waves/*.tres ────┤──▶ ConfigDB ──▶ EnemyData / WaveTable
-                      │                     │
-                      │                     ▼
-                      │              WaveManager builds spawn queue
-                      │                     │
-                      ▼                     ▼
-                  Enemy.setup(data, per-wave multipliers)
-                      │
-                      ▼
-          kill → Battle.add_coins → EventBus.coins_changed / enemy_died
-                      │
-                      ▼
-          Battle fills RunSummary → EventBus.run_ended → Results (stage 4)
+data/waves/*.tres ────┤──▶ ConfigDB ──▶ EnemyData / WaveTable / TowerData
+data/towers/*.tres ───┘                     │
+                                            ▼
+                              WaveManager builds spawn queue
+                                            │
+                                            ▼
+                              Enemy.setup(data, per-wave multipliers)
+                                            │
+              Battle.obstacles ──▶ EnemyPool ──▶ SteeringComponent
+                                            │
+                                            ▼
+                        kill → Battle.add_coins → EventBus.coins_changed
+                                            │
+                                            ▼
+              Battle fills RunSummary → EventBus.run_ended → Results (stage 4)
 ```
 
-`GameState` still owns the canonical save dict; stage 2 never saves mid-run.
+`GameState` still owns the canonical save dict; nothing in stage 3 is persisted.
+
+## Towers (stage 3)
+
+`TowerManager` is the single owner of tower world state:
+
+- `get_pads()` → the eight `BuildPad`s, placed once at `CENTER + 300 px` on
+  `22.5° + i·45°`.
+- `build(pad, tower_id)` → pays through `Battle.spend_coins()` (never negative),
+  instantiates `Tower.tscn`, applies the level-1 stats and emits
+  `EventBus.tower_built`.
+- `upgrade(tower)` / `sell(tower)` → pay or refund, emit `upgrade_purchased`, free
+  the pad and rebuild the obstacle array.
+- `obstacles` → `[{position, radius}]`, rebuilt **in place** on build/sell only.
+  `Battle.obstacles` is the same array and `EnemyPool` hands it to every enemy, so
+  `SteeringComponent` always reads fresh data without re-querying the scene.
+
+Tower combat:
+
+```
+Tower._physics_process (retarget 0.15 s) -> TowerProjectilePool.spawn()
+  -> swept raycast on the enemies layer -> Enemy.take_damage()
+  -> frost: splash slow in 70 px -> Enemy.apply_slow() -> StatusComponent
+  -> impact ring (and Core.shake() for the Ballista)
+```
+
+Targeting modes live on the tower (`NEAREST`, `STRONGEST`, `FIRST`); the scan is
+a plain loop over `EnemyPool.get_active()` with no allocations.
+
+Sheets are created once by `Battle._create_sheets()` and parented under
+`BattleHUD %SheetHost`, which sits *before* the pause menu so pause still draws
+on top. `Battle._sheet_open` is the single source of truth: opening pauses the
+tree, closing resumes unless the pause sheet is visible, and `start_run()` always
+clears the flag.
 
 ## Where to add content
 
 | Content | Steps |
 |---|---|
 | **Enemy** | Create `data/enemies/<id>.tres` with `EnemyData`; add it to a wave or the procedural weights. `ConfigDB` picks it up at startup. |
+| **Tower** | Create `data/towers/<id>.tres` with `TowerData` + `TowerLevel` entries (cost, silhouette, projectile, 3 levels). Add its strings to `strings.csv`. The build sheet builds its cards from `ConfigDB.all_towers()` sorted by cost, so no UI change is needed. |
 | **Authored wave** | Add `WaveEntry` groups to `data/waves/waves_01_10.tres` tagged with `wave`. Waves beyond the authored max are procedural. |
 | **String** | Add a row to `localization/strings.csv` (UTF-8 with BOM), then use `Loc.t_key("KEY")`. |
 | **Screen** | Scene in `scenes/<area>/`, controller in `scripts/ui/` or `scripts/battle/`, navigate with `SceneRouter.goto`. |
 
-## Stage 2 non-goals
+## Stage 3 non-goals
 
-No towers, build pads, bosses, wave modifiers, meta rewards, revive or ads.
-The UPGRADES button and SETTINGS button only show a placeholder toast; stage 3
-adds towers and stage 4 adds the real upgrade/results flow.
+No global tower upgrades, synergies, auras or set bonuses. No towers that take
+damage, no free placement, no boss waves or meta cards affecting towers — those
+arrive in stages 4–5.
+

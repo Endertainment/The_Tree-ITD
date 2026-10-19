@@ -13,7 +13,9 @@ open ground.
 1. Open the project folder in Godot 4.7.
 2. Press `F5`. Boot shows for ~0.8 s, then the main menu.
 3. Press `BATTLE` for a run: 10 s preparation, then orc waves with two elf
-   archers. `F3` toggles the debug overlay; `Esc` / Android back opens pause.
+   archers. Tap one of the eight stone pads to build an Archer Tower, Frost
+   Spire or Ballista; tap a built tower to upgrade, retarget or sell it.
+   `F3` toggles the debug overlay; `Esc` / Android back opens pause.
 
 On desktop the window opens at 540x960 (half-scale of the reference resolution).
 
@@ -32,12 +34,15 @@ godot --headless --path . res://tests/TestSave.tscn
 godot --headless --path . res://tests/TestFlow.tscn
 godot --headless --path . --fixed-fps 60 res://tests/TestBattle.tscn
 godot --headless --path . --fixed-fps 60 res://tests/TestSoak.tscn
+godot --headless --path . --fixed-fps 60 res://tests/TestTowers.tscn
 ```
 
 `TestBattle` exercises spawning, steering, arrows, armor, Coins, wave clear,
 contact damage, pause, quit confirmation and defeat (42 checks). `TestSoak`
-simulates ten minutes at fixed 60 FPS and checks orphan/node growth. `TestFlow`
-drives the menu → battle → quit → menu route.
+simulates ten minutes at fixed 60 FPS and checks orphan/node growth.
+`TestTowers` covers pads, build/upgrade/sell maths, tower combat, frost slow,
+ballista armor piercing, steering obstacles and sheet pause handling (74 checks).
+`TestFlow` drives the menu → battle → quit → menu route.
 
 Optional visual check (dev-only tool, excluded from export):
 
@@ -52,22 +57,24 @@ screenshots to `user://`.
 
 ```
 autoload/            ten singletons (EventBus, SaveManager, GameState, ...)
-resources/           typed data classes (EnemyData, WaveEntry, WaveTable)
+resources/           typed data classes (EnemyData, WaveEntry, WaveTable,
+                     TowerData, TowerLevel)
 scripts/core/        save migrations, defaults, spatial hash, ad/IAP providers
-scripts/battle/      battle, arena, core, enemy, pools, waves, archers, HUD
+scripts/battle/      battle, arena, core, enemy, pools, waves, archers, towers,
+                     tower_manager, build/tower sheets, range indicator, HUD
 scripts/ui/          screen controllers (Boot, MainMenu, Toast)
 scenes/              Boot.tscn, MainMenu.tscn, battle/*.tscn
-ui/                  theme.tres, Toast.tscn
-data/                .tres balance data (enemies, waves; more in later stages)
+ui/                  theme.tres, Toast.tscn, TowerCard.tscn, tower_icon.gd
+data/                .tres balance data (enemies, waves, towers; more later)
 localization/        strings.csv (EN + UK, UTF-8 with BOM)
-tests/               headless smoke and soak tests
+tests/               headless smoke, tower and soak tests
 tools/               dev-only helpers, excluded from export
 docs/                decisions, QA checklist, architecture
 ```
 
 ## Status
 
-Stage 2 complete: playable, losable battle loop with data-driven orc waves,
-steering and separation, elf archers and homing arrows, Coins, pause, defeat and
-a results stub. Towers and build pads start in stage 3
-(see `docs/ARCHITECTURE.md`).
+Stage 3 complete: eight build pads, three tower types with three levels each,
+targeting modes, frost slow, armor-piercing ballista bolts, selling, and towers
+as steering obstacles. Stage 4 adds the in-run upgrade panel, bosses, wave
+modifiers, results and rewards (see `docs/ARCHITECTURE.md`).

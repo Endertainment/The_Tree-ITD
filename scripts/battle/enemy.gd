@@ -9,6 +9,11 @@ extends Area2D
 const SPAWN_TELEGRAPH := 0.6
 const DEATH_EFFECT := 0.25
 const ARRIVAL_HIT_DELAY := 0.15
+const STUCK_SECONDS := 2.0
+const STUCK_PROGRESS_PX := 6.0
+const NUDGE_SECONDS := 0.45
+const NUDGE_WEIGHT := 0.9
+const SLOW_FLASH_SECONDS := 0.3
 
 var data: EnemyData
 var speed := 0.0
@@ -34,6 +39,11 @@ var _flash := 0.0
 var _lunge := 0.0
 var _neighbors: Array = []
 var _obstacles: Array = []
+var _best_distance := INF
+var _no_progress := 0.0
+var _nudge_time := 0.0
+var _nudge_sign := 1.0
+var _slow_flash := 0.0
 
 @onready var _health: HealthComponent = %Health
 @onready var _steering: SteeringComponent = %Steering
@@ -78,6 +88,11 @@ func setup(enemy_data: EnemyData, modifiers: Dictionary) -> void:
 	_phase = randf() * TAU
 	_flash = 0.0
 	_lunge = 0.0
+	_best_distance = INF
+	_no_progress = 0.0
+	_nudge_time = 0.0
+	_nudge_sign = 1.0 if randf() < 0.5 else -1.0
+	_slow_flash = 0.0
 	is_alive = true
 	is_dying = false
 	spawn_serial += 1
@@ -105,6 +120,27 @@ func is_targetable() -> bool:
 ## Identifies this incarnation of the pooled node.
 func get_spawn_serial() -> int:
 	return spawn_serial
+
+
+## Shares the live obstacle list maintained by `TowerManager`. The array is
+## rebuilt in place, so the reference stays valid for the whole run.
+func set_obstacles(list: Array) -> void:
+	_obstacles = list
+
+
+## Applies a slow from a Frost Spire and flashes the snowflake marker.
+## The strongest slow wins and reapplication only refreshes the duration.
+func apply_slow(strength: float, duration: float) -> void:
+	if not is_targetable() or strength <= 0.0 or duration <= 0.0:
+		return
+	_status.apply_slow(strength, duration)
+	_slow_flash = SLOW_FLASH_SECONDS
+	queue_redraw()
+
+
+## Current slow multiplier, used by tests and the frost visual.
+func get_slow_multiplier() -> float:
+	return _status.slow_multiplier
 
 
 ## Applies damage after armor. Ignore-armor is used by the Ballista later.
@@ -188,10 +224,12 @@ func _physics_process(delta: float) -> void:
 	if _pool != null:
 		_pool.query_neighbors(global_position, _neighbors)
 
+	_update_stuck(delta)
 	var next_velocity := _steering.compute_velocity(
 		global_position, _velocity, _neighbors, _obstacles, delta
 	)
 	next_velocity = _apply_weave(next_velocity)
+	next_velocity = _apply_nudge(next_velocity)
 
 	_velocity = next_velocity
 	global_position += _velocity * delta
@@ -199,6 +237,42 @@ func _physics_process(delta: float) -> void:
 		rotation = _velocity.angle()
 
 	_check_arrival()
+
+
+## Tracks progress toward the Tree and arms a short tangential nudge when an
+## enemy is wedged between towers for too long.
+func _update_stuck(delta: float) -> void:
+	var distance := global_position.distance_to(Battle.CENTER)
+	if distance < _best_distance - STUCK_PROGRESS_PX:
+		_best_distance = distance
+		_no_progress = 0.0
+	else:
+		_no_progress += delta
+
+	if _no_progress >= STUCK_SECONDS and _nudge_time <= 0.0:
+		_no_progress = 0.0
+		_nudge_time = NUDGE_SECONDS
+		_nudge_sign = -_nudge_sign
+		_best_distance = distance
+		if OS.is_debug_build() and data != null:
+			push_warning("[Enemy] %s stalled at %s, nudging" % [data.id, global_position])
+
+	if _nudge_time > 0.0:
+		_nudge_time = maxf(0.0, _nudge_time - delta)
+
+
+func _apply_nudge(next_velocity: Vector2) -> Vector2:
+	if _nudge_time <= 0.0:
+		return next_velocity
+	var to_center := Battle.CENTER - global_position
+	if to_center.length_squared() <= 0.0001:
+		return next_velocity
+	var tangent := Vector2(-to_center.y, to_center.x).normalized() * _nudge_sign
+	var limit := speed * _status.slow_multiplier
+	var nudged := next_velocity + tangent * limit * NUDGE_WEIGHT
+	if nudged.length_squared() > limit * limit:
+		nudged = nudged.normalized() * limit
+	return nudged
 
 
 func _apply_weave(next_velocity: Vector2) -> Vector2:
@@ -249,6 +323,9 @@ func _process(delta: float) -> void:
 	if _lunge > 0.0:
 		_lunge = maxf(0.0, _lunge - delta * 4.0)
 		queue_redraw()
+	if _slow_flash > 0.0:
+		_slow_flash = maxf(0.0, _slow_flash - delta)
+		queue_redraw()
 
 
 func _on_health_died() -> void:
@@ -265,6 +342,8 @@ func _draw() -> void:
 		return
 
 	var body := data.color.lerp(Color.WHITE, _flash * 0.65)
+	if _status.slow_multiplier < 0.999:
+		body = body.lerp(Color("#7fc8e8"), 0.45)
 	var accent := data.accent_color.darkened(0.35)
 	var offset := Vector2(radius * 0.3 * _lunge, 0.0)
 
@@ -296,6 +375,18 @@ func _draw() -> void:
 			offset + Vector2(radius * 0.55, -radius * 1.15),
 			eye.darkened(0.3), 5.0
 		)
+
+	if _slow_flash > 0.0:
+		_draw_snowflake(Vector2(0.0, -radius - 18.0))
+
+
+## Small frost marker shown for a moment whenever a slow is applied.
+func _draw_snowflake(at: Vector2) -> void:
+	var alpha := clampf(_slow_flash / SLOW_FLASH_SECONDS, 0.0, 1.0)
+	var color := Color(0.72, 0.92, 1.0, alpha)
+	for arm in 3:
+		var direction := Vector2.RIGHT.rotated(TAU * float(arm) / 3.0)
+		draw_line(at - direction * 8.0, at + direction * 8.0, color, 2.0)
 
 
 func _draw_telegraph() -> void:

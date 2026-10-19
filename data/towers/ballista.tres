@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="TowerData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://resources/tower_level.gd" id="1_level"]
+[ext_resource type="Script" path="res://resources/tower_data.gd" id="2_data"]
+
+[sub_resource type="Resource" id="Level_1"]
+script = ExtResource("1_level")
+damage = 55.0
+interval = 2.6
+range = 520.0
+projectile_speed = 480.0
+ignores_armor = true
+
+[sub_resource type="Resource" id="Level_2"]
+script = ExtResource("1_level")
+damage = 85.0
+interval = 2.4
+range = 550.0
+projectile_speed = 500.0
+ignores_armor = true
+
+[sub_resource type="Resource" id="Level_3"]
+script = ExtResource("1_level")
+damage = 130.0
+interval = 2.2
+range = 590.0
+projectile_speed = 520.0
+ignores_armor = true
+
+[resource]
+script = ExtResource("2_data")
+id = "ballista"
+display_name_key = "TOWER_BALLISTA_NAME"
+role_key = "TOWER_BALLISTA_ROLE"
+cost = 140
+body_radius = 36.0
+silhouette = "ballista"
+projectile = "ballista_bolt"
+base_color = Color(0.419608, 0.290196, 0.168627, 1)
+accent_color = Color(0.721569, 0.752941, 0.784314, 1)
+levels = Array[ExtResource("1_level")]([SubResource("Level_1"), SubResource("Level_2"), SubResource("Level_3")])

@@ -93,6 +93,59 @@ func _ready() -> void:
 	await _capture("battle_stress")
 	_battle.hud.toggle_debug()
 
+	# Stage 3: build every pad, then capture the ring and both bottom sheets.
+	_battle.add_coins(10000)
+	var pad_list := _battle.tower_manager.get_pads()
+	var tower_ids: Array[String] = ["archer_tower", "frost_spire", "ballista"]
+	for index in pad_list.size():
+		_battle.tower_manager.build(pad_list[index], tower_ids[index % 3])
+	_battle.tower_manager.upgrade(pad_list[0].tower)
+	_battle.tower_manager.upgrade(pad_list[0].tower)
+	await get_tree().create_timer(0.8, true, false, true).timeout
+	await _capture("battle_towers")
+
+	_battle.hud.toggle_debug()
+	await get_tree().create_timer(2.0, true, false, true).timeout
+	await _capture("battle_towers_stress")
+	_battle.hud.toggle_debug()
+
+	_battle.open_pad(pad_list[0])
+	await get_tree().create_timer(PAUSE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_tower_sheet")
+	Loc.set_locale("uk")
+	await get_tree().create_timer(LOCALE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_tower_sheet_uk")
+	Loc.set_locale("en")
+	await get_tree().create_timer(LOCALE_SETTLE_SECONDS, true, false, true).timeout
+	_battle.close_sheet()
+
+	_battle.open_pad(pad_list[1])
+	await get_tree().create_timer(PAUSE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_tower_sheet_l1")
+	_battle.close_sheet()
+
+	_battle.tower_manager.sell(pad_list[7].tower)
+	_battle.open_pad(pad_list[7])
+	await get_tree().create_timer(PAUSE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_build_sheet")
+	_battle.close_sheet()
+
+	# Disabled cards: leave just 10 Coins and reopen the empty pad.
+	_battle.spend_coins(_battle.coins - 10)
+	_battle.open_pad(pad_list[7])
+	await get_tree().create_timer(PAUSE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_build_sheet_locked")
+	_battle.close_sheet()
+
+	# Pause drawn on top of an open tower sheet (pause ownership check).
+	_battle.open_pad(pad_list[6])
+	await get_tree().create_timer(PAUSE_SETTLE_SECONDS, true, false, true).timeout
+	_battle.pause_run()
+	await get_tree().create_timer(PAUSE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_sheet_pause")
+	_battle.resume_run()
+	_battle.close_sheet()
+
 	_battle.pause_run()
 	await get_tree().create_timer(PAUSE_SETTLE_SECONDS, true, false, true).timeout
 	await _capture("battle_pause")

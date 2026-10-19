@@ -53,6 +53,8 @@ pointing/emulate_touch_from_mouse=true
 2d_physics/layer_1="enemies"
 2d_physics/layer_2="projectiles"
 2d_physics/layer_3="core"
+2d_physics/layer_4="pads"
+2d_physics/layer_5="towers"
 
 [physics]
 

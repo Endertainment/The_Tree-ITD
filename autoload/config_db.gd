@@ -1,8 +1,8 @@
 extends Node
 ## Loads every data resource into `id -> Resource` dictionaries at startup.
 ##
-## Enemy and wave lookups are typed (`EnemyData`, `WaveTable`); the remaining
-## kinds stay generic until their stage adds a class.
+## Enemy, wave and tower lookups are typed (`EnemyData`, `WaveTable`,
+## `TowerData`); the remaining kinds stay generic until their stage adds a class.
 
 const DATA_DIRS := {
 	"enemies": "res://data/enemies",
@@ -32,8 +32,8 @@ func get_enemy(id: String) -> EnemyData:
 	return _lookup("enemies", id) as EnemyData
 
 
-func get_tower(id: String) -> Resource:
-	return _lookup("towers", id)
+func get_tower(id: String) -> TowerData:
+	return _lookup("towers", id) as TowerData
 
 
 func get_wave_table(id := "main") -> WaveTable:

@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="TowerData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://resources/tower_level.gd" id="1_level"]
+[ext_resource type="Script" path="res://resources/tower_data.gd" id="2_data"]
+
+[sub_resource type="Resource" id="Level_1"]
+script = ExtResource("1_level")
+damage = 14.0
+interval = 1.0
+range = 430.0
+projectile_speed = 900.0
+
+[sub_resource type="Resource" id="Level_2"]
+script = ExtResource("1_level")
+damage = 22.0
+interval = 0.9
+range = 460.0
+projectile_speed = 900.0
+
+[sub_resource type="Resource" id="Level_3"]
+script = ExtResource("1_level")
+damage = 34.0
+interval = 0.8
+range = 500.0
+projectile_speed = 900.0
+
+[resource]
+script = ExtResource("2_data")
+id = "archer_tower"
+display_name_key = "TOWER_ARCHER_NAME"
+role_key = "TOWER_ARCHER_ROLE"
+cost = 60
+body_radius = 32.0
+silhouette = "archer"
+projectile = "arrow"
+base_color = Color(0.478431, 0.290196, 0.168627, 1)
+accent_color = Color(0.494118, 0.784314, 0.313726, 1)
+levels = Array[ExtResource("1_level")]([SubResource("Level_1"), SubResource("Level_2"), SubResource("Level_3")])

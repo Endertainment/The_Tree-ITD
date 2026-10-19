@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="TowerData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://resources/tower_level.gd" id="1_level"]
+[ext_resource type="Script" path="res://resources/tower_data.gd" id="2_data"]
+
+[sub_resource type="Resource" id="Level_1"]
+script = ExtResource("1_level")
+damage = 6.0
+interval = 1.4
+range = 380.0
+projectile_speed = 620.0
+splash_radius = 70.0
+slow_strength = 0.35
+slow_duration = 1.5
+
+[sub_resource type="Resource" id="Level_2"]
+script = ExtResource("1_level")
+damage = 10.0
+interval = 1.3
+range = 400.0
+projectile_speed = 620.0
+splash_radius = 70.0
+slow_strength = 0.4
+slow_duration = 1.8
+
+[sub_resource type="Resource" id="Level_3"]
+script = ExtResource("1_level")
+damage = 16.0
+interval = 1.2
+range = 430.0
+projectile_speed = 620.0
+splash_radius = 70.0
+slow_strength = 0.45
+slow_duration = 2.2
+
+[resource]
+script = ExtResource("2_data")
+id = "frost_spire"
+display_name_key = "TOWER_FROST_NAME"
+role_key = "TOWER_FROST_ROLE"
+cost = 90
+body_radius = 30.0
+silhouette = "frost"
+projectile = "frost_bolt"
+base_color = Color(0.352941, 0.419608, 0.478431, 1)
+accent_color = Color(0.435294, 0.847059, 0.909804, 1)
+levels = Array[ExtResource("1_level")]([SubResource("Level_1"), SubResource("Level_2"), SubResource("Level_3")])

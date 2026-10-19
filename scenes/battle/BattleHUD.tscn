@@ -109,7 +109,7 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -260.0
+offset_top = -300.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/margin_left = 32
@@ -120,6 +120,25 @@ theme_override_constants/margin_bottom = 18
 [node name="BottomBar" type="VBoxContainer" parent="BottomSafe"]
 layout_mode = 2
 theme_override_constants/separation = 12
+
+[node name="TowerRow" type="HBoxContainer" parent="BottomSafe/BottomBar"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TowerCount" type="Label" parent="BottomSafe/BottomBar/TowerRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HudSmall"
+text = "TOWERS 0 / 8"
+
+[node name="PadHint" type="Label" parent="BottomSafe/BottomBar/TowerRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HudSmall"
+text = "Tap a pad to build"
+horizontal_alignment = 2
 
 [node name="CallButton" type="Button" parent="BottomSafe/BottomBar"]
 unique_name_in_owner = true
@@ -173,6 +192,17 @@ mouse_filter = 2
 theme_type_variation = &"HudSmall"
 text = "FPS"
 visible = false
+
+[node name="SheetHost" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="PauseMenu" type="Control" parent="."]
 unique_name_in_owner = true

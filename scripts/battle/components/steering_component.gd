@@ -1,13 +1,17 @@
 class_name SteeringComponent
 extends Node
-## Allocation-free seek + separation + tangential obstacle avoidance.
+## Allocation-free seek + separation + obstacle avoidance.
 ##
 ## The owner sets `max_speed`, `separation_weight` and `target_position` before
-## each call. Neighbours come from `EnemyPool`'s spatial hash; obstacles stay
-## empty until towers arrive in stage 3.
+## each call. Neighbours come from `EnemyPool`'s spatial hash; obstacles are the
+## `{position, radius}` dictionaries owned by `TowerManager`.
+##
+## Avoidance has two parts: a tangential probe that steers an enemy around a
+## tower before it arrives, and a hard push-out that keeps the body from ever
+## overlapping the tower circle. Without the second part an enemy that spawns
+## inside the circle (or is pushed in by the crowd) would visibly clip.
 
 const SEPARATION_RADIUS := 44.0
-const AVOIDANCE_MARGIN := 18.0
 
 var target_position := Vector2.ZERO
 var max_speed := 55.0
@@ -67,7 +71,7 @@ func _avoidance_force(pos: Vector2, velocity: Vector2, obstacles: Array) -> Vect
 	if direction.length_squared() <= 0.0001:
 		direction = (target_position - pos).normalized()
 	if direction.length_squared() <= 0.0001:
-		return Vector2.ZERO
+		direction = Vector2.UP
 
 	var probe := pos + direction * lookahead
 	var force := Vector2.ZERO
@@ -76,16 +80,25 @@ func _avoidance_force(pos: Vector2, velocity: Vector2, obstacles: Array) -> Vect
 			continue
 		var obstacle: Dictionary = item
 		var center: Vector2 = obstacle.get("position", Vector2.ZERO)
-		var radius := float(obstacle.get("radius", 0.0)) + AVOIDANCE_MARGIN
-		if probe.distance_squared_to(center) >= radius * radius:
+		var radius := float(obstacle.get("radius", 0.0))
+		if radius <= 0.0:
 			continue
 
-		var away := probe - center
-		if away.length_squared() <= 0.0001:
-			away = Vector2.LEFT
-		# Tangential steering: pick the tangent that stays closest to the
-		# current heading, which prevents left/right oscillation in a crowd.
-		var tangent := Vector2(-away.y, away.x).normalized()
+		# Hard clearance: never let the body sit inside the tower radius.
+		var offset := pos - center
+		var distance_sq := offset.length_squared()
+		if distance_sq < radius * radius:
+			if distance_sq <= 0.0001:
+				offset = Vector2.LEFT
+			force += offset.normalized() * max_speed
+
+		# Lookahead steering: turn onto the tangent before touching the tower.
+		var probe_offset := probe - center
+		if probe_offset.length_squared() >= radius * radius:
+			continue
+		if probe_offset.length_squared() <= 0.0001:
+			probe_offset = Vector2.LEFT
+		var tangent := Vector2(-probe_offset.y, probe_offset.x).normalized()
 		if tangent.dot(velocity) < 0.0:
 			tangent = -tangent
 		force += tangent * max_speed

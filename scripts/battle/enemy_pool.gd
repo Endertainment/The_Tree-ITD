@@ -15,6 +15,7 @@ var battle: Battle
 var _free: Array[Enemy] = []
 var _active: Array[Enemy] = []
 var _hash := SpatialHash.new()
+var _obstacles: Array = []
 
 
 func _ready() -> void:
@@ -33,6 +34,13 @@ func setup(battle_ref: Battle) -> void:
 		enemy.configure(self, battle)
 
 
+## Shares `Battle.obstacles` with every enemy, including the active ones.
+func set_obstacles(list: Array) -> void:
+	_obstacles = list
+	for enemy: Enemy in _active:
+		enemy.set_obstacles(list)
+
+
 ## Activates a pooled enemy at `position`. Returns null when the pool is full.
 func spawn(enemy_data: EnemyData, position: Vector2, modifiers: Dictionary) -> Enemy:
 	if enemy_data == null or _free.is_empty() or _active.size() >= MAX_ALIVE:
@@ -41,6 +49,7 @@ func spawn(enemy_data: EnemyData, position: Vector2, modifiers: Dictionary) -> E
 	enemy.configure(self, battle)
 	enemy.global_position = position
 	enemy.rotation = 0.0
+	enemy.set_obstacles(_obstacles)
 	enemy.setup(enemy_data, modifiers)
 	enemy.activate()
 	_active.append(enemy)

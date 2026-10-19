@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/battle/battle.gd" id="1_battle"]
 [ext_resource type="Script" path="res://scripts/battle/arena.gd" id="2_arena"]
@@ -8,6 +8,9 @@
 [ext_resource type="Script" path="res://scripts/battle/wave_manager.gd" id="6_wave_manager"]
 [ext_resource type="Script" path="res://scripts/battle/floating_text_layer.gd" id="7_floating_text"]
 [ext_resource type="PackedScene" path="res://scenes/battle/BattleHUD.tscn" id="8_hud"]
+[ext_resource type="Script" path="res://scripts/battle/tower_manager.gd" id="9_tower_manager"]
+[ext_resource type="Script" path="res://scripts/battle/range_indicator.gd" id="10_range"]
+[ext_resource type="Script" path="res://scripts/battle/tower_projectile_pool.gd" id="11_tower_pool"]
 
 [sub_resource type="CircleShape2D" id="CircleShape_core"]
 radius = 90.0
@@ -40,6 +43,18 @@ script = ExtResource("1_battle")
 [node name="Arena" type="Node2D" parent="."]
 unique_name_in_owner = true
 script = ExtResource("2_arena")
+
+[node name="TowerManager" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("9_tower_manager")
+
+[node name="Pads" type="Node2D" parent="TowerManager"]
+
+[node name="Towers" type="Node2D" parent="TowerManager"]
+
+[node name="RangeIndicator" type="Node2D" parent="TowerManager"]
+unique_name_in_owner = true
+script = ExtResource("10_range")
 
 [node name="Core" type="Area2D" parent="."]
 unique_name_in_owner = true
@@ -118,6 +133,11 @@ scale_amount_min = 1.0
 scale_amount_max = 2.0
 color = Color(0.94902, 0.756863, 0.305882, 1)
 local_coords = false
+
+[node name="TowerProjectilePool" type="Node2D" parent="."]
+unique_name_in_owner = true
+z_index = 3
+script = ExtResource("11_tower_pool")
 
 [node name="WaveManager" type="Node" parent="."]
 unique_name_in_owner = true

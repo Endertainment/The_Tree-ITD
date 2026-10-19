@@ -75,6 +75,13 @@ func heal(amount: float) -> void:
 	queue_redraw()
 
 
+## Small camera shake, used by the Ballista impact. `strength` scales duration.
+func shake(strength: float = 1.0) -> void:
+	_shake_time = SHAKE_SECONDS * clampf(strength, 0.1, 3.0)
+	var angle := randf_range(0.0, TAU)
+	_shake_offset = Vector2(cos(angle), sin(angle)) * SHAKE_DISTANCE
+
+
 ## Current HP.
 func get_hp() -> float:
 	return hp

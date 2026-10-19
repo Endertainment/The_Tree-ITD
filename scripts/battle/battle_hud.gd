@@ -11,6 +11,9 @@ signal call_wave_requested
 signal upgrades_requested
 signal settings_requested
 
+## Android back / Escape. `Battle` decides whether to close a sheet or pause.
+signal back_requested
+
 const BASE_MARGIN_TOP := 18
 const BASE_MARGIN_BOTTOM := 18
 const SIDE_MARGIN := 32
@@ -51,6 +54,9 @@ const DEBUG_REFRESH_SECONDS := 0.25
 @onready var _defeat_time: Label = %DefeatTime
 @onready var _defeat_stub: Label = %DefeatStub
 @onready var _defeat_back: Button = %DefeatBack
+@onready var _tower_count: Label = %TowerCount
+@onready var _pad_hint: Label = %PadHint
+@onready var _sheet_host: Control = %SheetHost
 
 var _battle: Battle
 var _waves: WaveManager
@@ -60,6 +66,8 @@ var _last_prep_second := -1
 var _last_bonus := -1
 var _debug_accum := 0.0
 var _banner_tween: Tween
+var _coin_tween: Tween
+var _bottom_inset := 0
 
 
 func _ready() -> void:
@@ -67,6 +75,7 @@ func _ready() -> void:
 	_pause_menu.visible = false
 	_quit_confirm.visible = false
 	_defeat_panel.visible = false
+	_sheet_host.visible = false
 	_banner.modulate.a = 0.0
 	_debug_label.visible = false
 
@@ -104,9 +113,41 @@ func bind(battle: Battle, waves: WaveManager) -> void:
 	_refresh_wave_state()
 
 
-## Updates the Coins readout with thousands separators.
+## Updates the Coins readout with thousands separators and pulses on change.
 func set_coins(amount: int) -> void:
-	_coins_label.text = Loc.format_number(amount)
+	var text := Loc.format_number(amount)
+	if _coins_label.text == text:
+		return
+	_coins_label.text = text
+	if _coin_tween != null and _coin_tween.is_valid():
+		_coin_tween.kill()
+	_coins_label.pivot_offset = _coins_label.size * 0.5
+	_coins_label.scale = Vector2(1.12, 1.12)
+	_coin_tween = create_tween()
+	_coin_tween.tween_property(_coins_label, "scale", Vector2.ONE, 0.22)
+
+
+## Updates the built-tower counter and shows the first-run pad hint.
+func set_tower_count(built: int, total: int) -> void:
+	_tower_count.text = Loc.t_key("HUD_TOWERS", {"built": built, "total": total})
+	_pad_hint.text = Loc.t_key("HUD_TAP_PAD")
+	_pad_hint.visible = built == 0
+
+
+## Hides the bottom action bar while a build/tower sheet is open.
+func set_sheet_mode(active: bool) -> void:
+	_bottom_safe.visible = not active
+	_sheet_host.visible = active
+
+
+## Container that hosts the build and tower sheets, below the pause menu.
+func get_sheet_host() -> Control:
+	return _sheet_host
+
+
+## Safe-area inset at the bottom of the screen, in design pixels.
+func get_bottom_inset() -> int:
+	return _bottom_inset
 
 
 ## Updates the HP label and bar from the current Tree values.
@@ -267,6 +308,7 @@ func _refresh_texts() -> void:
 	_defeat_title.text = Loc.t_key("DEFEAT_TITLE")
 	_defeat_stub.text = Loc.t_key("DEFEAT_STUB")
 	_defeat_back.text = Loc.t_key("DEFEAT_BACK")
+	_pad_hint.text = Loc.t_key("HUD_TAP_PAD")
 
 	var version := str(ProjectSettings.get_setting("application/config/version", "0.1.0"))
 	_pause_version.text = Loc.t_key("VERSION_LABEL", {"version": version})
@@ -276,13 +318,14 @@ func _update_debug() -> void:
 	if _battle == null:
 		return
 	var run_total := maxi(0, int(_battle.run_time))
-	_debug_label.text = "FPS %d\nWAVE %d  %s\nALIVE %d  QUEUED %d\nARROWS %d  POPUPS %d  CELLS %d\nTIME x%.2f  RUN %d:%02d" % [
+	_debug_label.text = "FPS %d\nWAVE %d  %s\nALIVE %d  QUEUED %d\nARROWS %d  SHOTS %d  POPUPS %d  CELLS %d\nTIME x%.2f  RUN %d:%02d" % [
 		Engine.get_frames_per_second(),
 		_battle.wave_manager.get_wave(),
 		_battle.wave_manager.get_state_name(),
 		_battle.get_alive_enemy_count(),
 		_battle.get_queued_enemy_count(),
 		_battle.get_active_arrow_count(),
+		_battle.get_active_tower_shot_count(),
 		_battle.floating_layer.count_active(),
 		_battle.enemy_pool.get_spatial_cell_count(),
 		Engine.time_scale,
@@ -307,6 +350,7 @@ func _apply_safe_area() -> void:
 	_bottom_safe.add_theme_constant_override("margin_bottom", BASE_MARGIN_BOTTOM + bottom_inset)
 	_bottom_safe.add_theme_constant_override("margin_left", SIDE_MARGIN)
 	_bottom_safe.add_theme_constant_override("margin_right", SIDE_MARGIN)
+	_bottom_inset = bottom_inset
 
 
 func _on_coins_changed(amount: int) -> void:
@@ -333,7 +377,7 @@ func _on_language_changed(_locale: String) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		handle_back()
+		back_requested.emit()
 		get_viewport().set_input_as_handled()
 
 

@@ -1,0 +1,48 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/battle/tower.gd" id="1_tower"]
+
+[sub_resource type="CircleShape2D" id="CircleShape_body"]
+radius = 32.0
+
+[sub_resource type="Gradient" id="Gradient_snow"]
+colors = PackedColorArray(0.85098, 0.94902, 1, 1, 0.85098, 0.94902, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture_snow"]
+gradient = SubResource("Gradient_snow")
+width = 8
+height = 8
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0.0)
+
+[node name="Tower" type="Area2D"]
+z_index = 1
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+monitorable = false
+script = ExtResource("1_tower")
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+unique_name_in_owner = true
+shape = SubResource("CircleShape_body")
+
+[node name="Snow" type="CPUParticles2D" parent="."]
+unique_name_in_owner = true
+z_index = 2
+position = Vector2(0, -22)
+emitting = false
+amount = 10
+lifetime = 1.6
+randomness = 0.6
+texture = SubResource("GradientTexture_snow")
+direction = Vector2(0, 1)
+spread = 45.0
+gravity = Vector2(0, 50)
+initial_velocity_min = 8.0
+initial_velocity_max = 26.0
+scale_amount_min = 0.6
+scale_amount_max = 1.5
+color = Color(0.85098, 0.94902, 1, 0.9)
+local_coords = false
