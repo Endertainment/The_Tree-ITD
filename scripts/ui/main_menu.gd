@@ -1,10 +1,10 @@
 extends Control
-## Stage 1 placeholder menu: currency HUD, BATTLE stub, language toggle.
+## Stage 2 menu: currency HUD, BATTLE entry point, language toggle.
 ##
 ## Signal connections live in code because the labels they refresh do not exist
 ## in the scene as signal sources.
 
-const TOAST_SCENE := preload("res://ui/Toast.tscn")
+const BATTLE_SCENE := "res://scenes/battle/Battle.tscn"
 const VERSION_SETTING := "application/config/version"
 const BASE_MARGIN := 32
 const SIDE_MARGIN := 40
@@ -18,12 +18,8 @@ const SIDE_MARGIN := 40
 @onready var _lang_button: Button = %LangButton
 @onready var _version_label: Label = %VersionLabel
 
-var _toast: Toast
-
 
 func _ready() -> void:
-	_toast = TOAST_SCENE.instantiate()
-	add_child(_toast)
 	EventBus.gold_changed.connect(_on_gold_changed)
 	EventBus.gems_changed.connect(_on_gems_changed)
 	EventBus.language_changed.connect(_on_language_changed)
@@ -81,7 +77,7 @@ func _on_language_changed(_locale: String) -> void:
 
 func _on_battle_pressed() -> void:
 	AudioManager.play_ui("ui_click")
-	_toast.show_message(Loc.t_key("MENU_COMING_SOON"))
+	SceneRouter.goto(BATTLE_SCENE)
 
 
 func _on_lang_pressed() -> void:

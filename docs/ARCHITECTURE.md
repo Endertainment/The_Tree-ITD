@@ -3,7 +3,13 @@
 ## Scene flow
 
 ```
-Boot.tscn ──0.8 s──▶ MainMenu.tscn ──▶ (stage 2) Battle.tscn ──▶ Results.tscn ──▶ MainMenu.tscn
+Boot.tscn ──0.8 s──▶ MainMenu.tscn ──BATTLE──▶ Battle.tscn
+                                                  │
+                        quit / BACK TO MENU ◀─────┤
+                                                  │
+                          defeat panel (stage 2 stub)
+                                                  │
+                          Results.tscn (stage 4) ─┘
 ```
 
 `SceneRouter.goto(path)` fades out (0.2 s), calls `change_scene_to_file`, fades
@@ -12,7 +18,8 @@ survives the swap. Navigation is ignored while a transition is running and when
 the requested path is already the current scene.
 
 Boot is the only place that reads the save: load → `GameState.from_dict` →
-`Loc.set_locale` → `AudioManager.apply_settings` → wait → route.
+`Loc.set_locale` → `AudioManager.apply_settings` → wait → route. A debug build
+with `--debug-battle` routes straight to `Battle.tscn`.
 
 ## Autoloads (order matters)
 
@@ -32,38 +39,80 @@ Boot is the only place that reads the save: load → `GameState.from_dict` →
 Autoloads never `get_node()` each other's children. They talk through
 `EventBus` signals or direct singleton calls.
 
+## Battle scene
+
+```
+Battle (battle.gd: coins, kills, pause, RunSummary)
+├── Arena            static _draw() backdrop, boundary, roots, stones
+├── Core             Tree HP, flash, shake, HP bar, 5 archer anchors
+├── EnemyPool        70 preallocated Enemy nodes + SpatialHash + neighbour query
+├── ProjectilePool   48 preallocated Arrow nodes + shared hit spark
+├── WaveManager      PREPARE -> SPAWNING -> CLEARING -> PREPARE
+├── FloatingTextLayer 40 pooled "+N" labels
+└── HUD (CanvasLayer, PROCESS_MODE_ALWAYS)
+    ├── TopSafe / BottomSafe (safe-area padded)
+    ├── PauseMenu + QuitConfirm
+    ├── DefeatPanel
+    └── DebugLabel (F3)
+```
+
+- `Battle.CENTER = (540, 900)`, `ARENA_RADIUS = 500`, `SPAWN_RADIUS = 640`,
+  `CORE_RADIUS = 90`; everything uses the 1080x1920 design space.
+- `EnemyPool` rebuilds the spatial hash in its own `_physics_process`, which runs
+  before the pooled enemies (its children) move. Each enemy owns a reusable
+  neighbour array.
+- Arrows fly with a swept raycast against the `enemies` layer, so 900 px/s
+  projectiles cannot tunnel.
+- `Core` draws everything in `_draw()`: no sprite assets, no camera.
+
+## Run lifecycle
+
+`Battle.start_run()` resets Coins/kills/time, builds an empty `RunSummary`, sets
+Tree HP, spawns archers and starts `WaveManager`. `EventBus.run_started` fires
+after the state is ready.
+
+`Battle.end_run(reason)` is idempotent: it stops the wave manager, fills the
+summary (`waves_cleared`, `kills`, `coins_earned`, `time_seconds`, `reason`),
+emits `EventBus.run_ended(summary)`, then either routes to the menu (`quit`) or
+pauses and opens the defeat panel (`defeat`).
+
+Pause and defeat use `get_tree().paused`; the HUD is `PROCESS_MODE_ALWAYS`.
+Defeat plays a 0.4 s real-time 0.35x slow-mo, restores time scale through
+`SpeedService`, then pauses. Arrows, enemies, waves and Coins are all reset per
+run and never persisted.
+
 ## Data flow
 
 ```
-user://save.json ──load_game()──▶ SaveManager ──▶ SaveMigrations ──▶ GameState._data
-                                                                          │
-                                       accessors (add_gold, unlock, ...) ◀─┘
-                                                                          │
-                                                    EventBus signal ──▶ UI
-                                                                          │
-                                              SaveManager.save_game(to_dict())  (debounced 0.5 s)
+data/enemies/*.tres ──┐
+data/waves/*.tres ────┤──▶ ConfigDB ──▶ EnemyData / WaveTable
+                      │                     │
+                      │                     ▼
+                      │              WaveManager builds spawn queue
+                      │                     │
+                      ▼                     ▼
+                  Enemy.setup(data, per-wave multipliers)
+                      │
+                      ▼
+          kill → Battle.add_coins → EventBus.coins_changed / enemy_died
+                      │
+                      ▼
+          Battle fills RunSummary → EventBus.run_ended → Results (stage 4)
 ```
 
-- `GameState` holds the single canonical `Dictionary`; `SaveManager` only stores
-  and returns dictionaries, so autoload order cannot deadlock.
-- Every mutation emits its `EventBus` signal and queues a debounced write.
-  `save_now()` flushes immediately (pause, quit, purchases, tests).
-- Missing keys are merged from `SaveDefaults`; unknown keys are preserved.
-- On a parse error the corrupt file is copied to `save.corrupt`, then `save.bak`
-  is tried, then a fresh profile is created.
+`GameState` still owns the canonical save dict; stage 2 never saves mid-run.
 
 ## Where to add content
 
 | Content | Steps |
 |---|---|
-| **Enemy** | Add `scripts/core/data/enemy_data.gd` (stage 2), create `data/enemies/<id>.tres`, set `id`, `ConfigDB.get_enemy(id)` picks it up on start. |
-| **Tower** | Same pattern with `TowerData` + `data/towers/<id>.tres` (stage 3). |
-| **Wave** | A `WaveTable` `.tres` in `data/waves/`, referenced through `ConfigDB.get_wave_table()`. |
-| **Upgrade** | `UpgradeTrack` `.tres` in `data/upgrades/`; meta ids live in `GameState`'s `upgrades` dict, run upgrades stay in the battle scene. |
+| **Enemy** | Create `data/enemies/<id>.tres` with `EnemyData`; add it to a wave or the procedural weights. `ConfigDB` picks it up at startup. |
+| **Authored wave** | Add `WaveEntry` groups to `data/waves/waves_01_10.tres` tagged with `wave`. Waves beyond the authored max are procedural. |
 | **String** | Add a row to `localization/strings.csv` (UTF-8 with BOM), then use `Loc.t_key("KEY")`. |
-| **Screen** | Scene in `scenes/<area>/`, controller in `scripts/ui/`, navigate with `SceneRouter.goto`. |
+| **Screen** | Scene in `scenes/<area>/`, controller in `scripts/ui/` or `scripts/battle/`, navigate with `SceneRouter.goto`. |
 
-## Stage 1 non-goals
+## Stage 2 non-goals
 
-No enemies, towers, waves, battle scene, cards, missions, shop screens, real ads
-or billing. Those arrive stage 2–6 and must not be pre-implemented here.
+No towers, build pads, bosses, wave modifiers, meta rewards, revive or ads.
+The UPGRADES button and SETTINGS button only show a placeholder toast; stage 3
+adds towers and stage 4 adds the real upgrade/results flow.

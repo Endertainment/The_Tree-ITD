@@ -41,8 +41,9 @@ Verified with Godot `4.7.2.stable.official` (standard build, not .NET), Windows 
 
 - [x] CSV loads from `res://localization/strings.csv` (UTF-8 with BOM); the BOM is
       stripped from the header cell.
-- [x] UK renders Cyrillic correctly: `Дерево`, `Монети`, `БІЙ`, `Захист Дерева`
-      verified in a rendered 540x960 screenshot.
+- [x] UK renders Cyrillic correctly: `Дерево`, `Самоцвіти`, `БІЙ`, `Захист Дерева`
+      verified in a rendered 540x960 screenshot. `CURRENCY_GEMS` was corrected
+      from `Монети` (coins) to `Самоцвіти` in stage 2.
 - [x] EN ↔ UK toggle retranslates the visible screen immediately (title,
       subtitle, button, currency labels, language button) and persists across
       reload.
@@ -69,6 +70,47 @@ Verified with Godot `4.7.2.stable.official` (standard build, not .NET), Windows 
 - [ ] Real-device touch feel, thumb reach and safe area on a notched phone.
       Deferred to device testing.
 
+## Battle (stage 2)
+
+Verified with Godot `4.7.2.stable.official` (standard build), Windows 11,
+NVIDIA RTX 3050 Laptop, 540x960 window (1080x1920 reference).
+
+- [x] `MainMenu` → `Battle` → quit confirmation → `MainMenu` flow: `TestFlow`
+      prints `FLOW TEST PASSED: MainMenu -> Battle -> quit confirmation -> MainMenu`.
+- [x] Fresh run starts with 120 Coins, 1000 Tree HP, 2 archers and a ~10 s
+      `PREPARE` (`TestBattle`, 42 checks).
+- [x] `CALL WAVE` during prep grants 4-5 Coins at ~10 s left and starts wave 1.
+- [x] Enemies spawn outside the arena boundary, converge on the Tree, and
+      separation pushes two enemies sharing a spawn point apart (`TestBattle`).
+- [x] Archers acquire targets and fire; arrows kill wave 1 with archers only.
+- [x] Armor: 10 damage vs 3 armor → 7; vs 30 armor → 1; ignore-armor → 10
+      (`TestBattle`).
+- [x] Kills add Coins and `+N` popups; wave clear adds `10 + 2*wave`
+      (`TestBattle`, `screenshot_battle_popup.png`).
+- [x] An enemy at the Tree damages it; defeat panel shows waves/kills/Coins/time
+      and `TestBattle` matches them against `RunSummary`.
+- [x] Pause freezes enemies and timers; resume continues (`TestBattle`); pause
+      sheet rendered in `screenshot_battle_pause.png`.
+- [x] F3 toggles the debug overlay; it reports FPS, wave/state, alive, queued,
+      arrows, spatial cells, time scale and run time (`TestBattle` +
+      `screenshot_battle_stress.png`).
+- [x] 70 alive enemies + 5 archers held 60 FPS in the 540x960 window during the
+      stress screenshot; this is the desktop GPU, not a mid-range phone.
+- [x] 10 simulated minutes at fixed 60 FPS: wave 21, 418 kills, 701 nodes
+      before and after, **0 orphan nodes** (`TestSoak`).
+- [x] Headless runs report no project errors or warnings. `TestSave` still
+      prints the expected warnings from its deliberate corrupt-save cases.
+- [ ] 720x1280 low-end layout and frame time. Not run.
+- [ ] Android device: touch targets, back button, app-background auto-pause,
+      notched safe area. Code paths exist; not exercised on hardware.
+- [ ] Profiler / per-frame allocation proof. No allocation profiler run; the
+      pools and reusable query buffers are designed for it, but this is not
+      measured.
+- [ ] Wall-clock 10 minute session. The soak is simulated at fixed 60 FPS.
+- [x] Quit asks for confirmation; cancel keeps the run; confirm returns to the
+      menu (`TestBattle` + `TestFlow`). The buttons were emitted
+      programmatically, not tapped on a touchscreen.
+
 ## Project hygiene
 
 - [x] `project.godot` has no `[dotnet]` section; no `.cs` / `.csproj` anywhere.
@@ -85,8 +127,15 @@ $proj  = "C:\Users\VOVA\Documents\the-tree---idle-tower-defense"
 
 & $godot --headless --path $proj --import                # one-time import pass
 & $godot --headless --path $proj res://tests/TestSave.tscn
-& $godot --path $proj res://tools/CaptureTool.tscn        # EN / UK / HUD screenshots
+& $godot --headless --path $proj res://tests/TestFlow.tscn
+& $godot --headless --path $proj --fixed-fps 60 res://tests/TestBattle.tscn
+& $godot --headless --path $proj --fixed-fps 60 res://tests/TestSoak.tscn
+& $godot --path $proj res://tools/CaptureTool.tscn        # menu + battle screenshots
 ```
+
+`CaptureTool` writes `user://screenshot_menu_en.png`, `menu_uk`, `battle_prep`,
+`battle_prep_uk`, `battle_wave`, `battle_stress`, `battle_pause` and
+`battle_defeat`.
 
 ## Known environment quirks
 

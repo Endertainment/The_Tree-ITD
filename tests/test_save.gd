@@ -97,7 +97,15 @@ func _run() -> void:
 	Loc.set_locale("uk")
 	_check(Loc.get_locale() == "uk", "locale switches to uk")
 	_check(Loc.t_key("MENU_TITLE") == "Дерево", "uk MENU_TITLE is Дерево")
-	_check(Loc.t_key("CURRENCY_GEMS") == "Монети", "uk CURRENCY_GEMS is Монети")
+	_check(Loc.t_key("CURRENCY_GEMS") == "Самоцвіти", "uk CURRENCY_GEMS is Самоцвіти")
+	_check(
+		Loc.t_key("HUD_HP", {"current": 10, "max": 20}) == "ЖИТТЯ 10 / 20",
+		"uk HUD_HP substitutes both values"
+	)
+	_check(
+		Loc.t_key("HUD_CALL_WAVE_BONUS", {"bonus": 4}) == "ВИКЛИКАТИ ХВИЛЮ  +4",
+		"uk call-wave bonus renders"
+	)
 	Loc.set_locale("en")
 	_check(Loc.get_locale() == "en", "locale switches back to en")
 	_check(Loc.t_key("MENU_TITLE") == "The Tree", "en MENU_TITLE is The Tree")
@@ -106,8 +114,14 @@ func _run() -> void:
 	_check(Loc.format_number(0) == "0", "zero formats as 0")
 
 	_section("config db")
-	_check(ConfigDB.get_enemy("orc_grunt") == null, "unknown enemy returns null")
-	_check(ConfigDB.all_enemies().is_empty(), "empty data folder loads cleanly")
+	_check(ConfigDB.get_enemy("missing") == null, "unknown enemy returns null")
+	_check(ConfigDB.all_enemies().size() == 3, "three orc archetypes load")
+	var grunt := ConfigDB.get_enemy("orc_grunt")
+	_check(grunt != null and is_equal_approx(grunt.max_hp, 60.0), "orc_grunt has 60 base HP")
+	var table := ConfigDB.get_wave_table("main")
+	_check(table != null, "authored wave table loads")
+	_check(table != null and table.max_authored_wave() == 10, "waves 1-10 are authored")
+	_check(table != null and table.entries_for(1).size() == 1, "wave 1 has one spawn group")
 
 	_section("speed service")
 	_check(SpeedService.set_speed(1.5) == false, "1.5x is locked without the unlock")

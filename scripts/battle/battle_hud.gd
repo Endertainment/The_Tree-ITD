@@ -1,0 +1,373 @@
+class_name BattleHUD
+extends CanvasLayer
+## Battle HUD, pause sheet and defeat stub. Runs with `PROCESS_MODE_ALWAYS`
+## so it keeps working while the gameplay tree is paused.
+
+signal pause_requested
+signal resume_requested
+signal quit_requested
+signal back_to_menu_requested
+signal call_wave_requested
+signal upgrades_requested
+signal settings_requested
+
+const BASE_MARGIN_TOP := 18
+const BASE_MARGIN_BOTTOM := 18
+const SIDE_MARGIN := 32
+const DEBUG_REFRESH_SECONDS := 0.25
+
+@onready var _top_safe: MarginContainer = %TopSafe
+@onready var _bottom_safe: MarginContainer = %BottomSafe
+@onready var _hp_label: Label = %HpLabel
+@onready var _hp_bar: ProgressBar = %HpBar
+@onready var _wave_label: Label = %WaveLabel
+@onready var _timer_label: Label = %TimerLabel
+@onready var _coins_caption: Label = %CoinsCaption
+@onready var _coins_label: Label = %CoinsLabel
+@onready var _speed_button: Button = %SpeedButton
+@onready var _pause_button: Button = %PauseButton
+@onready var _call_button: Button = %CallButton
+@onready var _upgrades_button: Button = %UpgradesButton
+@onready var _banner: VBoxContainer = %Banner
+@onready var _banner_title: Label = %BannerTitle
+@onready var _banner_bonus: Label = %BannerBonus
+@onready var _debug_label: Label = %DebugLabel
+@onready var _pause_menu: Control = %PauseMenu
+@onready var _pause_title: Label = %PauseTitle
+@onready var _resume_button: Button = %ResumeButton
+@onready var _quit_button: Button = %QuitButton
+@onready var _settings_button: Button = %SettingsButton
+@onready var _pause_version: Label = %PauseVersion
+@onready var _quit_confirm: Control = %QuitConfirm
+@onready var _quit_title: Label = %QuitTitle
+@onready var _quit_body: Label = %QuitBody
+@onready var _quit_cancel: Button = %QuitCancel
+@onready var _quit_confirm_button: Button = %QuitConfirmButton
+@onready var _defeat_panel: Control = %DefeatPanel
+@onready var _defeat_title: Label = %DefeatTitle
+@onready var _defeat_wave: Label = %DefeatWave
+@onready var _defeat_kills: Label = %DefeatKills
+@onready var _defeat_coins: Label = %DefeatCoins
+@onready var _defeat_time: Label = %DefeatTime
+@onready var _defeat_stub: Label = %DefeatStub
+@onready var _defeat_back: Button = %DefeatBack
+
+var _battle: Battle
+var _waves: WaveManager
+var _last_summary: RunSummary
+var _last_state := -1
+var _last_prep_second := -1
+var _last_bonus := -1
+var _debug_accum := 0.0
+var _banner_tween: Tween
+
+
+func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_pause_menu.visible = false
+	_quit_confirm.visible = false
+	_defeat_panel.visible = false
+	_banner.modulate.a = 0.0
+	_debug_label.visible = false
+
+	_pause_button.pressed.connect(_on_pause_pressed)
+	_resume_button.pressed.connect(_on_resume_pressed)
+	_quit_button.pressed.connect(_on_quit_pressed)
+	_settings_button.pressed.connect(_on_settings_pressed)
+	_quit_cancel.pressed.connect(_on_quit_cancel)
+	_quit_confirm_button.pressed.connect(_on_quit_confirmed)
+	_defeat_back.pressed.connect(_on_back_pressed)
+	_call_button.pressed.connect(_on_call_pressed)
+	_upgrades_button.pressed.connect(_on_upgrades_pressed)
+
+	EventBus.coins_changed.connect(_on_coins_changed)
+	EventBus.core_damaged.connect(_on_core_damaged)
+	EventBus.wave_started.connect(_on_wave_started)
+	EventBus.language_changed.connect(_on_language_changed)
+	get_viewport().size_changed.connect(_apply_safe_area)
+
+	_refresh_texts()
+	_apply_safe_area()
+	_hp_bar.max_value = 1000.0
+	_hp_bar.value = 1000.0
+	_coins_label.text = "0"
+
+
+## Wires the HUD to the run that owns it and paints the initial state.
+func bind(battle: Battle, waves: WaveManager) -> void:
+	_battle = battle
+	_waves = waves
+	_refresh_texts()
+	set_coins(battle.coins)
+	set_hp(battle.core.get_hp(), battle.core.get_max_hp())
+	_last_state = -1
+	_refresh_wave_state()
+
+
+## Updates the Coins readout with thousands separators.
+func set_coins(amount: int) -> void:
+	_coins_label.text = Loc.format_number(amount)
+
+
+## Updates the HP label and bar from the current Tree values.
+func set_hp(current: float, maximum: float) -> void:
+	_hp_bar.max_value = maxf(1.0, maximum)
+	_hp_bar.value = clampf(current, 0.0, maximum)
+	_hp_label.text = Loc.t_key("HUD_HP", {
+		"current": int(ceil(maxf(0.0, current))),
+		"max": int(maximum),
+	})
+
+
+## Enables or disables the pause button (disabled during the defeat slow-mo).
+func set_pause_enabled(enabled: bool) -> void:
+	_pause_button.disabled = not enabled
+
+
+## Shows or hides the pause sheet and closes the quit confirmation with it.
+func show_pause(visible_now: bool) -> void:
+	_pause_menu.visible = visible_now
+	if visible_now:
+		_defeat_panel.visible = false
+	else:
+		_quit_confirm.visible = false
+
+
+## True while the pause sheet is visible.
+func is_pause_visible() -> bool:
+	return _pause_menu.visible
+
+
+## True while the quit confirmation is on top of the pause sheet.
+func is_quit_confirm_visible() -> bool:
+	return _quit_confirm.visible
+
+
+## True while the results stub panel is visible.
+func is_defeat_visible() -> bool:
+	return _defeat_panel.visible
+
+
+## Hides the results stub, used when a run starts.
+func hide_defeat() -> void:
+	_defeat_panel.visible = false
+
+
+## Fills and shows the stage-2 results stub panel.
+func show_defeat(summary: RunSummary) -> void:
+	_last_summary = summary
+	_pause_menu.visible = false
+	_quit_confirm.visible = false
+	_defeat_panel.visible = true
+	_defeat_wave.text = Loc.t_key("DEFEAT_WAVES", {"count": summary.waves_cleared})
+	_defeat_kills.text = Loc.t_key("DEFEAT_KILLS", {"count": summary.kills})
+	_defeat_coins.text = Loc.t_key("DEFEAT_COINS", {"count": summary.coins_earned})
+	_defeat_time.text = Loc.t_key("DEFEAT_TIME", {"time": summary.get_time_string()})
+
+
+## Shows the wave-cleared banner under the top bar.
+func show_wave_cleared(wave: int, bonus: int) -> void:
+	_banner_title.text = Loc.t_key("HUD_WAVE_CLEARED", {"wave": wave})
+	_banner_bonus.text = Loc.t_key("HUD_WAVE_BONUS", {"coins": bonus})
+	_banner.modulate.a = 1.0
+	if _banner_tween != null and _banner_tween.is_valid():
+		_banner_tween.kill()
+	_banner_tween = create_tween()
+	_banner_tween.tween_interval(1.2)
+	_banner_tween.tween_property(_banner, "modulate:a", 0.0, 0.45)
+
+
+## Toggles the F3 diagnostics overlay.
+func toggle_debug() -> void:
+	_debug_label.visible = not _debug_label.visible
+	if _debug_label.visible:
+		_update_debug()
+
+
+## True while the F3 overlay is visible.
+func is_debug_visible() -> bool:
+	return _debug_label.visible
+
+
+## Android back / Escape: close the top panel, else open pause.
+func handle_back() -> void:
+	if _defeat_panel.visible:
+		return
+	if _quit_confirm.visible:
+		_quit_confirm.visible = false
+		return
+	if _pause_menu.visible:
+		resume_requested.emit()
+		return
+	pause_requested.emit()
+
+
+func _process(delta: float) -> void:
+	if _waves == null:
+		return
+
+	if _debug_label.visible:
+		_debug_accum += delta
+		if _debug_accum >= DEBUG_REFRESH_SECONDS:
+			_debug_accum = 0.0
+			_update_debug()
+
+	var state := _waves.get_state()
+	if state != _last_state:
+		_refresh_wave_state()
+
+	if _waves.is_preparing():
+		var seconds := int(ceil(_waves.get_prep_remaining()))
+		if seconds != _last_prep_second:
+			_last_prep_second = seconds
+			_timer_label.text = Loc.t_key("HUD_NEXT_IN", {"seconds": seconds})
+		var bonus := _waves.get_call_bonus()
+		if bonus != _last_bonus:
+			_last_bonus = bonus
+			_call_button.text = Loc.t_key("HUD_CALL_WAVE_BONUS", {"bonus": bonus})
+
+
+func _refresh_wave_state() -> void:
+	if _waves == null:
+		return
+	_last_state = _waves.get_state()
+	var wave := _waves.get_wave()
+
+	match _last_state:
+		WaveManager.State.PREPARE:
+			_wave_label.text = Loc.t_key("HUD_PREPARE") if wave == 0 else Loc.t_key("HUD_WAVE", {"wave": wave})
+			_timer_label.visible = true
+			_call_button.disabled = false
+			_last_prep_second = -1
+			_last_bonus = -1
+		WaveManager.State.SPAWNING, WaveManager.State.CLEARING:
+			_wave_label.text = Loc.t_key("HUD_WAVE", {"wave": wave})
+			_timer_label.visible = true
+			_timer_label.text = Loc.t_key("HUD_IN_PROGRESS")
+			_call_button.disabled = true
+			_call_button.text = Loc.t_key("HUD_CALL_DISABLED")
+		_:
+			_timer_label.visible = false
+			_call_button.disabled = true
+			_call_button.text = Loc.t_key("HUD_CALL_WAVE")
+
+
+func _refresh_texts() -> void:
+	_coins_caption.text = Loc.t_key("HUD_COINS")
+	_upgrades_button.text = Loc.t_key("HUD_UPGRADES")
+	_speed_button.tooltip_text = Loc.t_key("HUD_SPEED_LOCKED")
+	_pause_title.text = Loc.t_key("PAUSE_TITLE")
+	_resume_button.text = Loc.t_key("PAUSE_RESUME")
+	_quit_button.text = Loc.t_key("PAUSE_QUIT")
+	_settings_button.text = Loc.t_key("PAUSE_SETTINGS")
+	_quit_title.text = Loc.t_key("QUIT_TITLE")
+	_quit_body.text = Loc.t_key("QUIT_BODY")
+	_quit_cancel.text = Loc.t_key("QUIT_CANCEL")
+	_quit_confirm_button.text = Loc.t_key("QUIT_CONFIRM")
+	_defeat_title.text = Loc.t_key("DEFEAT_TITLE")
+	_defeat_stub.text = Loc.t_key("DEFEAT_STUB")
+	_defeat_back.text = Loc.t_key("DEFEAT_BACK")
+
+	var version := str(ProjectSettings.get_setting("application/config/version", "0.1.0"))
+	_pause_version.text = Loc.t_key("VERSION_LABEL", {"version": version})
+
+
+func _update_debug() -> void:
+	if _battle == null:
+		return
+	var run_total := maxi(0, int(_battle.run_time))
+	_debug_label.text = "FPS %d\nWAVE %d  %s\nALIVE %d  QUEUED %d\nARROWS %d  POPUPS %d  CELLS %d\nTIME x%.2f  RUN %d:%02d" % [
+		Engine.get_frames_per_second(),
+		_battle.wave_manager.get_wave(),
+		_battle.wave_manager.get_state_name(),
+		_battle.get_alive_enemy_count(),
+		_battle.get_queued_enemy_count(),
+		_battle.get_active_arrow_count(),
+		_battle.floating_layer.count_active(),
+		_battle.enemy_pool.get_spatial_cell_count(),
+		Engine.time_scale,
+		run_total / 60,
+		run_total % 60,
+	]
+
+
+func _apply_safe_area() -> void:
+	var viewport_size := get_viewport().get_visible_rect().size
+	var window_size := DisplayServer.window_get_size()
+	var scale_y := 1.0
+	if window_size.y > 0:
+		scale_y = viewport_size.y / float(window_size.y)
+	var safe := DisplayServer.get_display_safe_area()
+	var top_inset := int(maxf(0.0, float(safe.position.y) * scale_y))
+	var bottom_inset := int(maxf(0.0, float(window_size.y - safe.end.y) * scale_y))
+
+	_top_safe.add_theme_constant_override("margin_top", BASE_MARGIN_TOP + top_inset)
+	_top_safe.add_theme_constant_override("margin_left", SIDE_MARGIN)
+	_top_safe.add_theme_constant_override("margin_right", SIDE_MARGIN)
+	_bottom_safe.add_theme_constant_override("margin_bottom", BASE_MARGIN_BOTTOM + bottom_inset)
+	_bottom_safe.add_theme_constant_override("margin_left", SIDE_MARGIN)
+	_bottom_safe.add_theme_constant_override("margin_right", SIDE_MARGIN)
+
+
+func _on_coins_changed(amount: int) -> void:
+	set_coins(amount)
+
+
+func _on_core_damaged(current: float, maximum: float) -> void:
+	set_hp(current, maximum)
+
+
+func _on_wave_started(wave: int) -> void:
+	_wave_label.text = Loc.t_key("HUD_WAVE", {"wave": wave})
+
+
+func _on_language_changed(_locale: String) -> void:
+	_refresh_texts()
+	_refresh_wave_state()
+	if _battle != null:
+		_coins_label.text = Loc.format_number(_battle.coins)
+		set_hp(_battle.core.get_hp(), _battle.core.get_max_hp())
+	if _defeat_panel.visible and _last_summary != null:
+		show_defeat(_last_summary)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		handle_back()
+		get_viewport().set_input_as_handled()
+
+
+func _on_pause_pressed() -> void:
+	pause_requested.emit()
+
+
+func _on_resume_pressed() -> void:
+	resume_requested.emit()
+
+
+func _on_quit_pressed() -> void:
+	_quit_confirm.visible = true
+
+
+func _on_quit_cancel() -> void:
+	_quit_confirm.visible = false
+
+
+func _on_quit_confirmed() -> void:
+	quit_requested.emit()
+
+
+func _on_back_pressed() -> void:
+	back_to_menu_requested.emit()
+
+
+func _on_call_pressed() -> void:
+	call_wave_requested.emit()
+
+
+func _on_upgrades_pressed() -> void:
+	upgrades_requested.emit()
+
+
+func _on_settings_pressed() -> void:
+	settings_requested.emit()

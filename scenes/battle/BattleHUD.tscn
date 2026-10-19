@@ -1,0 +1,406 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/battle/battle_hud.gd" id="1_hud"]
+
+[node name="BattleHUD" type="CanvasLayer"]
+process_mode = 3
+layer = 10
+script = ExtResource("1_hud")
+
+[node name="TopSafe" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 220.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 0
+
+[node name="TopBar" type="HBoxContainer" parent="TopSafe"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="HpBox" type="VBoxContainer" parent="TopSafe/TopBar"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="HpLabel" type="Label" parent="TopSafe/TopBar/HpBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "HP 1000 / 1000"
+
+[node name="HpBar" type="ProgressBar" parent="TopSafe/TopBar/HpBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 20)
+layout_mode = 2
+theme_type_variation = &"HpBar"
+value = 1000.0
+show_percentage = false
+
+[node name="CenterBox" type="VBoxContainer" parent="TopSafe/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="WaveLabel" type="Label" parent="TopSafe/TopBar/CenterBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudCenter"
+text = "PREPARE"
+horizontal_alignment = 1
+
+[node name="TimerLabel" type="Label" parent="TopSafe/TopBar/CenterBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "NEXT IN 10"
+horizontal_alignment = 1
+
+[node name="RightBox" type="HBoxContainer" parent="TopSafe/TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 2
+
+[node name="CoinsBox" type="VBoxContainer" parent="TopSafe/TopBar/RightBox"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="CoinsCaption" type="Label" parent="TopSafe/TopBar/RightBox/CoinsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "COINS"
+horizontal_alignment = 1
+
+[node name="CoinsLabel" type="Label" parent="TopSafe/TopBar/RightBox/CoinsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudValue"
+text = "120"
+horizontal_alignment = 1
+
+[node name="SpeedButton" type="Button" parent="TopSafe/TopBar/RightBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+size_flags_vertical = 4
+disabled = true
+theme_type_variation = &"SecondaryButton"
+text = "1x"
+
+[node name="PauseButton" type="Button" parent="TopSafe/TopBar/RightBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SecondaryButton"
+text = "II"
+
+[node name="BottomSafe" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -260.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 18
+
+[node name="BottomBar" type="VBoxContainer" parent="BottomSafe"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CallButton" type="Button" parent="BottomSafe/BottomBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 124)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "CALL WAVE"
+
+[node name="UpgradesButton" type="Button" parent="BottomSafe/BottomBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 92)
+layout_mode = 2
+theme_type_variation = &"SecondaryButton"
+text = "UPGRADES"
+
+[node name="Banner" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -420.0
+offset_top = 290.0
+offset_right = 420.0
+offset_bottom = 420.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="BannerTitle" type="Label" parent="Banner"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"BannerTitle"
+text = "WAVE 3 CLEARED"
+horizontal_alignment = 1
+
+[node name="BannerBonus" type="Label" parent="Banner"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudCenter"
+text = "+16"
+horizontal_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 32.0
+offset_top = 210.0
+offset_right = 760.0
+offset_bottom = 390.0
+mouse_filter = 2
+theme_type_variation = &"HudSmall"
+text = "FPS"
+visible = false
+
+[node name="PauseMenu" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.027451, 0.039216, 0.027451, 0.8)
+
+[node name="Center" type="CenterContainer" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PausePanel" type="PanelContainer" parent="PauseMenu/Center"]
+custom_minimum_size = Vector2(640, 0)
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="PauseColumn" type="VBoxContainer" parent="PauseMenu/Center/PausePanel"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="PauseTitle" type="Label" parent="PauseMenu/Center/PausePanel/PauseColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PanelTitle"
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="PauseMenu/Center/PausePanel/PauseColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "RESUME"
+
+[node name="QuitButton" type="Button" parent="PauseMenu/Center/PausePanel/PauseColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 92)
+layout_mode = 2
+theme_type_variation = &"SecondaryButton"
+text = "QUIT RUN"
+
+[node name="SettingsButton" type="Button" parent="PauseMenu/Center/PausePanel/PauseColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 92)
+layout_mode = 2
+theme_type_variation = &"SecondaryButton"
+text = "SETTINGS"
+
+[node name="PauseVersion" type="Label" parent="PauseMenu/Center/PausePanel/PauseColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "v0.1.0"
+horizontal_alignment = 1
+
+[node name="QuitConfirm" type="Control" parent="PauseMenu"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim2" type="ColorRect" parent="PauseMenu/QuitConfirm"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.019608, 0.027451, 0.019608, 0.72)
+
+[node name="Center" type="CenterContainer" parent="PauseMenu/QuitConfirm"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="QuitPanel" type="PanelContainer" parent="PauseMenu/QuitConfirm/Center"]
+custom_minimum_size = Vector2(640, 0)
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="QuitColumn" type="VBoxContainer" parent="PauseMenu/QuitConfirm/Center/QuitPanel"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="QuitTitle" type="Label" parent="PauseMenu/QuitConfirm/Center/QuitPanel/QuitColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PanelTitle"
+text = "Quit this run?"
+horizontal_alignment = 1
+
+[node name="QuitBody" type="Label" parent="PauseMenu/QuitConfirm/Center/QuitPanel/QuitColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(540, 0)
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "Cleared waves count as a finished run."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="QuitButtons" type="HBoxContainer" parent="PauseMenu/QuitConfirm/Center/QuitPanel/QuitColumn"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="QuitCancel" type="Button" parent="PauseMenu/QuitConfirm/Center/QuitPanel/QuitColumn/QuitButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 92)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SecondaryButton"
+text = "KEEP PLAYING"
+
+[node name="QuitConfirmButton" type="Button" parent="PauseMenu/QuitConfirm/Center/QuitPanel/QuitColumn/QuitButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 92)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"PrimaryButton"
+text = "QUIT"
+
+[node name="DefeatPanel" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="DefeatPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.027451, 0.039216, 0.027451, 0.84)
+
+[node name="Center" type="CenterContainer" parent="DefeatPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DefeatCard" type="PanelContainer" parent="DefeatPanel/Center"]
+custom_minimum_size = Vector2(680, 0)
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="DefeatColumn" type="VBoxContainer" parent="DefeatPanel/Center/DefeatCard"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="DefeatTitle" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PanelTitle"
+text = "The Tree has fallen"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="DefeatWave" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "Waves survived: 0"
+horizontal_alignment = 1
+
+[node name="DefeatKills" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "Orcs slain: 0"
+horizontal_alignment = 1
+
+[node name="DefeatCoins" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "Coins earned: 0"
+horizontal_alignment = 1
+
+[node name="DefeatTime" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "Run time: 0:00"
+horizontal_alignment = 1
+
+[node name="DefeatStub" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "Results screen arrives in stage 4"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="DefeatBack" type="Button" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "BACK TO MENU"

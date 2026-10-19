@@ -5,6 +5,8 @@ extends Control
 ## guards the sequence so it cannot run twice on the same instance.
 
 const MAIN_MENU_SCENE := "res://scenes/menu/MainMenu.tscn"
+const BATTLE_SCENE := "res://scenes/battle/Battle.tscn"
+const DEBUG_BATTLE_FLAG := "--debug-battle"
 const BOOT_SECONDS := 0.8
 const VERSION_SETTING := "application/config/version"
 
@@ -29,7 +31,20 @@ func _start() -> void:
 	AudioManager.apply_settings()
 	_refresh_texts()
 	await get_tree().create_timer(BOOT_SECONDS, true, false, true).timeout
-	SceneRouter.goto(MAIN_MENU_SCENE)
+	var next_scene := MAIN_MENU_SCENE
+	if _starts_in_battle():
+		next_scene = BATTLE_SCENE
+	SceneRouter.goto(next_scene)
+
+
+## True when the dev-only `--debug-battle` flag was passed to a debug build.
+func _starts_in_battle() -> bool:
+	if not OS.is_debug_build():
+		return false
+	return (
+		OS.get_cmdline_args().has(DEBUG_BATTLE_FLAG)
+		or OS.get_cmdline_user_args().has(DEBUG_BATTLE_FLAG)
+	)
 
 
 func _refresh_texts() -> void:

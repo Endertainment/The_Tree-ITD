@@ -1,41 +1,110 @@
 extends Node
 ## Dev-only screenshot helper (excluded from export).
 ##
-## Renders the MainMenu in EN, in UK, and with a live HUD update plus toast:
+## Renders the menu in EN/UK and a battle in prep, mid-wave, paused and defeated:
 ##   godot --path <project> res://tools/CaptureTool.tscn
-## It exists so layout, Cyrillic rendering and the currency signal wiring can be
-## checked without a device.
+## It exists so layout, Cyrillic rendering and the battle HUD can be checked
+## without a device.
 
 const MAIN_MENU_SCENE := "res://scenes/menu/MainMenu.tscn"
+const BATTLE_SCENE := "res://scenes/battle/Battle.tscn"
 const SETTLE_SECONDS := 0.8
 const LOCALE_SETTLE_SECONDS := 0.3
-const TOAST_SETTLE_SECONDS := 0.3
-const DEMO_GOLD := 1250
+const BATTLE_SETTLE_SECONDS := 1.0
+const WAVE_SETTLE_SECONDS := 3.0
+const PAUSE_SETTLE_SECONDS := 0.3
+const DEFEAT_SETTLE_SECONDS := 1.0
+
+var _menu: Node
+var _battle: Battle
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	var data := SaveManager.load_game()
 	GameState.from_dict(data)
 	Loc.set_locale("en")
 	AudioManager.apply_settings()
 
-	var menu: Node = load(MAIN_MENU_SCENE).instantiate()
-	add_child(menu)
+	_menu = load(MAIN_MENU_SCENE).instantiate()
+	add_child(_menu)
 	await get_tree().create_timer(SETTLE_SECONDS, true, false, true).timeout
-	await _capture("en")
+	await _capture("menu_en")
 
 	Loc.set_locale("uk")
 	await get_tree().create_timer(LOCALE_SETTLE_SECONDS, true, false, true).timeout
-	await _capture("uk")
+	await _capture("menu_uk")
 
 	Loc.set_locale("en")
 	await get_tree().create_timer(LOCALE_SETTLE_SECONDS, true, false, true).timeout
-	GameState.add_gold(DEMO_GOLD)
-	var battle_button := menu.find_child("BattleButton", true, false) as Button
-	if battle_button != null:
-		battle_button.pressed.emit()
-	await get_tree().create_timer(TOAST_SETTLE_SECONDS, true, false, true).timeout
-	await _capture("en_hud")
+	_menu.queue_free()
+	await get_tree().process_frame
+
+	_battle = load(BATTLE_SCENE).instantiate() as Battle
+	add_child(_battle)
+	_battle.process_mode = Node.PROCESS_MODE_PAUSABLE
+	await get_tree().create_timer(BATTLE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_prep")
+
+	Loc.set_locale("uk")
+	await get_tree().create_timer(LOCALE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_prep_uk")
+
+	Loc.set_locale("en")
+	_battle.wave_manager.call_wave_early()
+	await get_tree().create_timer(WAVE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_wave")
+
+	# Show the pooled "+N" popups by killing a few enemies.
+	var killed := 0
+	for enemy: Enemy in _battle.enemy_pool.get_active():
+		if killed >= 3:
+			break
+		if enemy.is_targetable():
+			enemy.take_damage(99999.0)
+			killed += 1
+	await get_tree().create_timer(0.2, true, false, true).timeout
+	await _capture("battle_popup")
+
+	# Stage 2 spawns only the two base archers; fill the three upgrade slots so
+	# the stress shot matches the acceptance budget (70 enemies + 5 archers).
+	var archer_scene := preload("res://scenes/battle/Archer.tscn")
+	for index in range(_count_archers(), 5):
+		var archer: Archer = archer_scene.instantiate()
+		_battle.archers_root.add_child(archer)
+		archer.global_position = _battle.core.get_archer_anchor(index)
+		archer.setup(
+			_battle.enemy_pool,
+			_battle.projectile_pool,
+			Battle.ARCHER_DAMAGE,
+			Battle.ARCHER_INTERVAL,
+			Battle.ARCHER_RANGE,
+			Battle.ARCHER_PROJECTILE_SPEED
+		)
+
+	# Stress the pool and show the F3 overlay for a readable performance shot.
+	var grunt := ConfigDB.get_enemy("orc_grunt")
+	for index in EnemyPool.MAX_ALIVE:
+		var angle := TAU * float(index) / float(EnemyPool.MAX_ALIVE)
+		var position := Battle.CENTER + Vector2(cos(angle), sin(angle)) * Battle.SPAWN_RADIUS
+		_battle.enemy_pool.spawn(grunt, position, {"spawn_delay": 0.0, "hp_mult": 20.0})
+	_battle.hud.toggle_debug()
+	await get_tree().create_timer(2.5, true, false, true).timeout
+	await _capture("battle_stress")
+	_battle.hud.toggle_debug()
+
+	_battle.pause_run()
+	await get_tree().create_timer(PAUSE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_pause")
+	_battle.resume_run()
+
+	_battle.core.take_damage(999999.0)
+	await get_tree().create_timer(DEFEAT_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_defeat")
+
+	Loc.set_locale("uk")
+	await get_tree().create_timer(LOCALE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_defeat_uk")
 
 	get_tree().quit(0)
 
@@ -43,6 +112,14 @@ func _ready() -> void:
 func _capture(label: String) -> void:
 	await RenderingServer.frame_post_draw
 	var image := get_viewport().get_texture().get_image()
-	var path := "user://screenshot_menu_%s.png" % label
+	var path := "user://screenshot_%s.png" % label
 	var err := image.save_png(path)
 	print("[capture] %s -> %s (error %d)" % [path, ProjectSettings.globalize_path(path), err])
+
+
+func _count_archers() -> int:
+	var count := 0
+	for child in _battle.archers_root.get_children():
+		if child is Archer:
+			count += 1
+	return count

@@ -1,0 +1,201 @@
+[gd_resource type="Resource" script_class="WaveTable" load_steps=27 format=3]
+
+[ext_resource type="Script" path="res://resources/wave_table.gd" id="1_table"]
+[ext_resource type="Script" path="res://resources/wave_entry.gd" id="2_entry"]
+
+[sub_resource type="Resource" id="Resource_w1g1"]
+script = ExtResource("2_entry")
+wave = 1
+enemy_id = "orc_grunt"
+count = 5
+interval = 1.2
+start_delay = 0.0
+
+[sub_resource type="Resource" id="Resource_w2g1"]
+script = ExtResource("2_entry")
+wave = 2
+enemy_id = "orc_grunt"
+count = 6
+interval = 1.1
+start_delay = 0.0
+
+[sub_resource type="Resource" id="Resource_w2g2"]
+script = ExtResource("2_entry")
+wave = 2
+enemy_id = "orc_runner"
+count = 2
+interval = 1.5
+start_delay = 2.0
+
+[sub_resource type="Resource" id="Resource_w3g1"]
+script = ExtResource("2_entry")
+wave = 3
+enemy_id = "orc_grunt"
+count = 7
+interval = 1.0
+start_delay = 0.0
+
+[sub_resource type="Resource" id="Resource_w3g2"]
+script = ExtResource("2_entry")
+wave = 3
+enemy_id = "orc_runner"
+count = 3
+interval = 1.2
+start_delay = 1.5
+
+[sub_resource type="Resource" id="Resource_w4g1"]
+script = ExtResource("2_entry")
+wave = 4
+enemy_id = "orc_grunt"
+count = 6
+interval = 1.0
+start_delay = 0.0
+
+[sub_resource type="Resource" id="Resource_w4g2"]
+script = ExtResource("2_entry")
+wave = 4
+enemy_id = "orc_brute"
+count = 2
+interval = 3.0
+start_delay = 2.0
+
+[sub_resource type="Resource" id="Resource_w5g1"]
+script = ExtResource("2_entry")
+wave = 5
+enemy_id = "orc_grunt"
+count = 8
+interval = 0.9
+start_delay = 0.0
+
+[sub_resource type="Resource" id="Resource_w5g2"]
+script = ExtResource("2_entry")
+wave = 5
+enemy_id = "orc_runner"
+count = 4
+interval = 1.1
+start_delay = 1.5
+
+[sub_resource type="Resource" id="Resource_w6g1"]
+script = ExtResource("2_entry")
+wave = 6
+enemy_id = "orc_grunt"
+count = 8
+interval = 0.9
+start_delay = 0.0
+
+[sub_resource type="Resource" id="Resource_w6g2"]
+script = ExtResource("2_entry")
+wave = 6
+enemy_id = "orc_runner"
+count = 3
+interval = 1.2
+start_delay = 1.0
+
+[sub_resource type="Resource" id="Resource_w6g3"]
+script = ExtResource("2_entry")
+wave = 6
+enemy_id = "orc_brute"
+count = 2
+interval = 2.8
+start_delay = 3.0
+
+[sub_resource type="Resource" id="Resource_w7g1"]
+script = ExtResource("2_entry")
+wave = 7
+enemy_id = "orc_grunt"
+count = 10
+interval = 0.8
+start_delay = 0.0
+
+[sub_resource type="Resource" id="Resource_w7g2"]
+script = ExtResource("2_entry")
+wave = 7
+enemy_id = "orc_runner"
+count = 5
+interval = 1.0
+start_delay = 1.0
+
+[sub_resource type="Resource" id="Resource_w7g3"]
+script = ExtResource("2_entry")
+wave = 7
+enemy_id = "orc_brute"
+count = 2
+interval = 2.6
+start_delay = 2.5
+
+[sub_resource type="Resource" id="Resource_w8g1"]
+script = ExtResource("2_entry")
+wave = 8
+enemy_id = "orc_grunt"
+count = 10
+interval = 0.8
+start_delay = 0.0
+
+[sub_resource type="Resource" id="Resource_w8g2"]
+script = ExtResource("2_entry")
+wave = 8
+enemy_id = "orc_runner"
+count = 6
+interval = 0.9
+start_delay = 1.0
+
+[sub_resource type="Resource" id="Resource_w8g3"]
+script = ExtResource("2_entry")
+wave = 8
+enemy_id = "orc_brute"
+count = 3
+interval = 2.6
+start_delay = 2.0
+
+[sub_resource type="Resource" id="Resource_w9g1"]
+script = ExtResource("2_entry")
+wave = 9
+enemy_id = "orc_grunt"
+count = 12
+interval = 0.7
+start_delay = 0.0
+
+[sub_resource type="Resource" id="Resource_w9g2"]
+script = ExtResource("2_entry")
+wave = 9
+enemy_id = "orc_runner"
+count = 8
+interval = 0.8
+start_delay = 1.0
+
+[sub_resource type="Resource" id="Resource_w9g3"]
+script = ExtResource("2_entry")
+wave = 9
+enemy_id = "orc_brute"
+count = 3
+interval = 2.4
+start_delay = 2.0
+
+[sub_resource type="Resource" id="Resource_w10g1"]
+script = ExtResource("2_entry")
+wave = 10
+enemy_id = "orc_grunt"
+count = 14
+interval = 0.7
+start_delay = 0.0
+
+[sub_resource type="Resource" id="Resource_w10g2"]
+script = ExtResource("2_entry")
+wave = 10
+enemy_id = "orc_runner"
+count = 8
+interval = 0.8
+start_delay = 1.5
+
+[sub_resource type="Resource" id="Resource_w10g3"]
+script = ExtResource("2_entry")
+wave = 10
+enemy_id = "orc_brute"
+count = 4
+interval = 2.2
+start_delay = 2.0
+
+[resource]
+script = ExtResource("1_table")
+id = "main"
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_w1g1"), SubResource("Resource_w2g1"), SubResource("Resource_w2g2"), SubResource("Resource_w3g1"), SubResource("Resource_w3g2"), SubResource("Resource_w4g1"), SubResource("Resource_w4g2"), SubResource("Resource_w5g1"), SubResource("Resource_w5g2"), SubResource("Resource_w6g1"), SubResource("Resource_w6g2"), SubResource("Resource_w6g3"), SubResource("Resource_w7g1"), SubResource("Resource_w7g2"), SubResource("Resource_w7g3"), SubResource("Resource_w8g1"), SubResource("Resource_w8g2"), SubResource("Resource_w8g3"), SubResource("Resource_w9g1"), SubResource("Resource_w9g2"), SubResource("Resource_w9g3"), SubResource("Resource_w10g1"), SubResource("Resource_w10g2"), SubResource("Resource_w10g3")])

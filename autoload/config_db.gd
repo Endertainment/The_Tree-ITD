@@ -1,8 +1,8 @@
 extends Node
 ## Loads every data resource into `id -> Resource` dictionaries at startup.
 ##
-## Stage 1 defines the API with untyped `Resource` values; stage 2 replaces the
-## generic check with the typed `EnemyData`, `TowerData`, ... subclasses.
+## Enemy and wave lookups are typed (`EnemyData`, `WaveTable`); the remaining
+## kinds stay generic until their stage adds a class.
 
 const DATA_DIRS := {
 	"enemies": "res://data/enemies",
@@ -28,16 +28,16 @@ func reload_all() -> void:
 		_by_kind[kind] = _load_directory(DATA_DIRS[kind])
 
 
-func get_enemy(id: String) -> Resource:
-	return _lookup("enemies", id)
+func get_enemy(id: String) -> EnemyData:
+	return _lookup("enemies", id) as EnemyData
 
 
 func get_tower(id: String) -> Resource:
 	return _lookup("towers", id)
 
 
-func get_wave_table(id := "main") -> Resource:
-	return _lookup("waves", id)
+func get_wave_table(id := "main") -> WaveTable:
+	return _lookup("waves", id) as WaveTable
 
 
 func get_upgrade(id: String) -> Resource:

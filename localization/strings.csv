@@ -1,4 +1,4 @@
-﻿keys,en,uk
+keys,en,uk
 BOOT_TITLE,The Tree,Дерево
 MENU_TITLE,The Tree,Дерево
 MENU_SUBTITLE,Idle Tower Defense,Захист Дерева
@@ -6,8 +6,41 @@ MENU_BATTLE,BATTLE,БІЙ
 MENU_COMING_SOON,Coming in stage 2,З'явиться на етапі 2
 MENU_LANGUAGE,Language,Мова
 CURRENCY_GOLD,Gold,Золото
-CURRENCY_GEMS,Gems,Монети
+CURRENCY_GEMS,Gems,Самоцвіти
 VERSION_LABEL,v{version},v{version}
 COMMON_OK,OK,Гаразд
 COMMON_CANCEL,Cancel,Скасувати
 COMMON_BACK,Back,Назад
+ENEMY_ORC_GRUNT,Orc Grunt,Орк-піхотинець
+ENEMY_ORC_RUNNER,Orc Runner,Орк-бігун
+ENEMY_ORC_BRUTE,Orc Brute,Орк-громило
+HUD_HP,HP {current} / {max},ЖИТТЯ {current} / {max}
+HUD_WAVE,WAVE {wave},ХВИЛЯ {wave}
+HUD_PREPARE,PREPARE,ПІДГОТОВКА
+HUD_NEXT_IN,NEXT IN {seconds},НАСТУПНА ЗА {seconds}
+HUD_IN_PROGRESS,IN PROGRESS,У ПРОЦЕСІ
+HUD_COINS,COINS,МОНЕТИ
+HUD_SPEED_LOCKED,Speed unlocks arrive in stage 4,Швидкість з'явиться на етапі 4
+HUD_CALL_WAVE,CALL WAVE,ВИКЛИКАТИ ХВИЛЮ
+HUD_CALL_WAVE_BONUS,CALL WAVE  +{bonus},ВИКЛИКАТИ ХВИЛЮ  +{bonus}
+HUD_CALL_DISABLED,IN PROGRESS,У ПРОЦЕСІ
+HUD_UPGRADES,UPGRADES,ПОКРАЩЕННЯ
+HUD_UPGRADES_SOON,In-run upgrades arrive in stage 4,Покращення в бою з'являться на етапі 4
+HUD_WAVE_CLEARED,WAVE {wave} CLEARED,ХВИЛЮ {wave} ВІДБИТО
+HUD_WAVE_BONUS,+{coins},+{coins}
+PAUSE_TITLE,PAUSED,ПАУЗА
+PAUSE_RESUME,RESUME,ПРОДОВЖИТИ
+PAUSE_QUIT,QUIT RUN,ВИЙТИ З БОЮ
+PAUSE_SETTINGS,SETTINGS,НАЛАШТУВАННЯ
+PAUSE_SETTINGS_SOON,Settings arrive in stage 5,Налаштування з'являться на етапі 5
+QUIT_TITLE,Quit this run?,Вийти з бою?
+QUIT_BODY,Cleared waves count as a finished run. This cannot be undone.,Пройдені хвилі зарахуються як завершений бій. Цю дію не можна скасувати.
+QUIT_CANCEL,KEEP PLAYING,ГРАТИ ДАЛІ
+QUIT_CONFIRM,QUIT,ВИЙТИ
+DEFEAT_TITLE,The Tree has fallen,Дерево загинуло
+DEFEAT_WAVES,Waves survived: {count},Пережито хвиль: {count}
+DEFEAT_KILLS,Orcs slain: {count},Знищено орків: {count}
+DEFEAT_COINS,Coins earned: {count},Зароблено монет: {count}
+DEFEAT_TIME,Run time: {time},Час бою: {time}
+DEFEAT_BACK,BACK TO MENU,ДО МЕНЮ
+DEFEAT_STUB,Results screen arrives in stage 4,Екран результатів з'явиться на етапі 4

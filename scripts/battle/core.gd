@@ -1,0 +1,170 @@
+class_name Core
+extends Area2D
+## The Life Tree. Owns its HP, damage flash, shake, HP bar and archer anchors.
+##
+## The Tree draws itself in `_draw()`; there is no sprite, so placeholder art
+## needs no import step. The HP bar lerps toward the real value; the numeric
+## readout lives in the HUD.
+
+signal died
+
+const BODY_RADIUS := 90.0
+const HP_BAR_WIDTH := 240.0
+const HP_BAR_HEIGHT := 20.0
+const HP_BAR_TOP := Vector2(-120.0, -232.0)
+const SHAKE_SECONDS := 0.12
+const SHAKE_DISTANCE := 4.0
+
+var max_hp := 1000.0
+var hp := 1000.0
+
+@onready var _archers: Node2D = %Archers
+@onready var _leaf_puff: CPUParticles2D = %LeafPuff
+
+var _display_hp := 1000.0
+var _flash := 0.0
+var _shake_time := 0.0
+var _shake_offset := Vector2.ZERO
+var _base_position := Vector2.ZERO
+var _dead := false
+
+
+func _ready() -> void:
+	_base_position = position
+	_display_hp = hp
+	queue_redraw()
+
+
+## Resets HP for a new run. `new_max_hp` already includes meta modifiers.
+func setup(new_max_hp: float) -> void:
+	max_hp = maxf(1.0, new_max_hp)
+	hp = max_hp
+	_display_hp = hp
+	_flash = 0.0
+	_shake_time = 0.0
+	position = _base_position
+	_dead = false
+	queue_redraw()
+
+
+## Applies contact damage. Ignore-armor does not apply to the Tree.
+func take_damage(amount: float) -> void:
+	if _dead or amount <= 0.0:
+		return
+	hp = maxf(0.0, hp - amount)
+	_flash = 1.0
+	_shake_time = SHAKE_SECONDS
+	var angle := randf_range(0.0, TAU)
+	_shake_offset = Vector2(cos(angle), sin(angle)) * SHAKE_DISTANCE
+	_leaf_puff.restart()
+	_leaf_puff.emitting = true
+	EventBus.core_damaged.emit(hp, max_hp)
+	queue_redraw()
+	if hp <= 0.0:
+		_dead = true
+		died.emit()
+		EventBus.core_died.emit()
+
+
+## Restores HP. The revive flow in stage 4 uses this.
+func heal(amount: float) -> void:
+	if _dead or amount <= 0.0:
+		return
+	hp = minf(max_hp, hp + amount)
+	EventBus.core_damaged.emit(hp, max_hp)
+	queue_redraw()
+
+
+## Current HP.
+func get_hp() -> float:
+	return hp
+
+
+## Maximum HP for this run.
+func get_max_hp() -> float:
+	return max_hp
+
+
+## True once HP reached 0.
+func is_dead() -> bool:
+	return _dead
+
+
+## Global position of archer anchor `index` (0-based, up to 5).
+func get_archer_anchor(index: int) -> Vector2:
+	var marker := _archers.get_node_or_null("Anchor%d" % (index + 1)) as Node2D
+	if marker == null:
+		return global_position
+	return marker.global_position
+
+
+func _process(delta: float) -> void:
+	var needs_redraw := false
+
+	if not is_equal_approx(_display_hp, hp):
+		var speed := maxf(1.0, max_hp * 0.9)
+		_display_hp = move_toward(_display_hp, hp, speed * delta)
+		needs_redraw = true
+
+	if _flash > 0.0:
+		_flash = maxf(0.0, _flash - delta * 7.0)
+		needs_redraw = true
+
+	if _shake_time > 0.0:
+		_shake_time = maxf(0.0, _shake_time - delta)
+		position = _base_position + _shake_offset * (_shake_time / SHAKE_SECONDS)
+		if _shake_time <= 0.0:
+			position = _base_position
+
+	if needs_redraw:
+		queue_redraw()
+
+
+func _draw() -> void:
+	var leaf := Color("#3f7d3a").lerp(Color("#c0503a"), _flash * 0.6)
+	var leaf_light := leaf.lightened(0.12)
+	var leaf_dark := leaf.darkened(0.22)
+
+	draw_circle(Vector2(0.0, 72.0), 108.0, Color(0.03, 0.05, 0.03, 0.4))
+
+	# Trunk and roots.
+	draw_rect(Rect2(-26.0, -16.0, 52.0, 148.0), Color("#5a3a22"))
+	draw_line(Vector2(-18.0, 118.0), Vector2(-74.0, 150.0), Color("#4a2f1b"), 10.0)
+	draw_line(Vector2(18.0, 118.0), Vector2(74.0, 150.0), Color("#4a2f1b"), 10.0)
+	draw_line(Vector2(-20.0, 96.0), Vector2(-58.0, 126.0), Color("#4a2f1b"), 7.0)
+	draw_line(Vector2(20.0, 96.0), Vector2(58.0, 126.0), Color("#4a2f1b"), 7.0)
+
+	# Canopy.
+	draw_circle(Vector2(0.0, -46.0), 96.0, leaf_dark)
+	draw_circle(Vector2(-58.0, -92.0), 62.0, leaf)
+	draw_circle(Vector2(58.0, -96.0), 64.0, leaf)
+	draw_circle(Vector2(0.0, -132.0), 58.0, leaf_light)
+	draw_circle(Vector2(-30.0, -60.0), 54.0, leaf_light)
+	draw_circle(Vector2(34.0, -58.0), 52.0, leaf)
+
+	# Light dapples.
+	draw_circle(Vector2(-38.0, -112.0), 16.0, leaf_light.lightened(0.18))
+	draw_circle(Vector2(44.0, -128.0), 13.0, leaf_light.lightened(0.14))
+	draw_circle(Vector2(6.0, -78.0), 11.0, leaf_light.lightened(0.2))
+
+	_draw_health_bar()
+
+
+func _draw_health_bar() -> void:
+	var ratio := 0.0
+	if max_hp > 0.0:
+		ratio = clampf(_display_hp / max_hp, 0.0, 1.0)
+
+	draw_rect(Rect2(HP_BAR_TOP, Vector2(HP_BAR_WIDTH, HP_BAR_HEIGHT)), Color(0.04, 0.06, 0.04, 0.85))
+	if ratio > 0.0:
+		var fill_color := Color("#7ec850").lerp(Color("#d95c4a"), 1.0 - ratio)
+		draw_rect(
+			Rect2(HP_BAR_TOP + Vector2(3.0, 3.0), Vector2((HP_BAR_WIDTH - 6.0) * ratio, HP_BAR_HEIGHT - 6.0)),
+			fill_color
+		)
+	draw_rect(
+		Rect2(HP_BAR_TOP, Vector2(HP_BAR_WIDTH, HP_BAR_HEIGHT)),
+		Color("#e8d9a8"),
+		false,
+		2.0
+	)
