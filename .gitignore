@@ -7,6 +7,9 @@
 Thumbs.db
 *.tmp
 
+# Godot git plugin leaves "~"-prefixed temp copies of its native library
+addons/godot-git-plugin/**/~*.dll
+
 # Build outputs
 export/
 build/
