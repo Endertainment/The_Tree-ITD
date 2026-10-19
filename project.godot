@@ -11,23 +11,49 @@ config_version=5
 [application]
 
 config/name="The Tree - IDLE TOWER DEFENSE"
+config/description="Wave-based tower defense. Defend the Life Tree against the orc horde."
+config/version="0.1.0"
+run/main_scene="res://scenes/boot/Boot.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
 
+[autoload]
+
+EventBus="*res://autoload/event_bus.gd"
+SaveManager="*res://autoload/save_manager.gd"
+GameState="*res://autoload/game_state.gd"
+ConfigDB="*res://autoload/config_db.gd"
+AudioManager="*res://autoload/audio_manager.gd"
+Loc="*res://autoload/loc.gd"
+SceneRouter="*res://autoload/scene_router.gd"
+SpeedService="*res://autoload/speed_service.gd"
+Monetization="*res://autoload/monetization.gd"
+Analytics="*res://autoload/analytics.gd"
+
 [display]
 
+window/size/viewport_width=1080
+window/size/viewport_height=1920
+window/size/window_width_override=540
+window/size/window_height_override=960
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+window/handheld/orientation=1
 
-[dotnet]
+[gui]
 
-project/assembly_name="The Tree - IDLE TOWER DEFENSE"
+theme/custom="res://ui/theme.tres"
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
 
 [physics]
 
-3d/physics_engine="Jolt Physics"
+common/physics_ticks_per_second=60
 
 [rendering]
 
-rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true
+rendering_device/driver.windows="d3d12"

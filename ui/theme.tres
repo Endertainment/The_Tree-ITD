@@ -1,0 +1,14 @@
+[gd_resource type="Theme" load_steps=2 format=3]
+
+[sub_resource type="SystemFont" id="SystemFont_base"]
+font_names = PackedStringArray("Roboto", "Noto Sans", "Segoe UI", "DejaVu Sans")
+
+[resource]
+default_font = SubResource("SystemFont_base")
+default_font_size = 32
+Title/base_type = &"Label"
+Title/font_sizes/font_size = 96
+Subtitle/base_type = &"Label"
+Subtitle/font_sizes/font_size = 36
+PrimaryButton/base_type = &"Button"
+PrimaryButton/font_sizes/font_size = 56
