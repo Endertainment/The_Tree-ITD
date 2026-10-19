@@ -236,3 +236,47 @@ restores `export_presets.cfg` — even when the export fails.
 | `Debug keystore not configured` | Create the keystore (§2) and set the three `debug_keystore*` settings. |
 | `Exporting to Android when using C#/.NET is experimental` | You are running the mono editor. Harmless for a GDScript project; a non-mono editor removes the message. |
 | `GDExtension ... git_plugin ... no arm64 library` | The git editor plugin is excluded via `exclude_filter`; if you see it, the export cache is stale — re-run the export. |
+
+---
+
+## 9. Release AAB (stage 8)
+
+The `Android AAB` preset (second block in `export_presets.cfg`) turns on Gradle,
+sets `export_format=1` (AAB), `minSdk 26` and `targetSdk 35`. Gradle builds need
+the Android build template inside the project:
+
+```powershell
+godot --headless --path . --install-android-build-template
+```
+
+That writes `res://android/build` (gitignored, `.gitignore` has `/android/`).
+Without it the exporter fails with `Trying to build from a gradle built
+template, but no version info for it exists`.
+
+Sign without touching the preset by exporting the three CI variables and running
+the export directly:
+
+```powershell
+$env:GODOT_ANDROID_KEYSTORE_RELEASE_PATH = 'C:\Users\VOVA\.the-tree\release.keystore'
+$env:GODOT_ANDROID_KEYSTORE_RELEASE_USER = 'thetree'
+$env:GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD = '<password>'
+$env:JAVA_HOME = 'C:\Program Files\Eclipse Adoptium\jdk-21.0.4.7-hotspot'
+godot --headless --path . --export-release 'Android AAB' build/the-tree-release.aab
+```
+
+`tools/export_android.ps1 -Preset "Android AAB"` does the same by temporarily
+injecting the keystore into the preset; prefer the env vars in CI so the secret
+never reaches a file.
+
+Verify without uploading:
+
+```powershell
+java -jar bundletool.jar dump manifest --bundle build/the-tree-release.aab
+java -jar bundletool.jar build-apks --bundle build/the-tree-release.aab `
+  --output build/the-tree-release.apks --mode=universal `
+  --ks release.keystore --ks-key-alias thetree --ks-pass pass:<pw> --key-pass pass:<pw>
+```
+
+Installing the resulting universal APK over USB can be refused by MIUI with
+`INSTALL_FAILED_USER_RESTRICTED`; that is the phone's "Install via USB" policy,
+not a build problem. Test through the Play closed track instead.

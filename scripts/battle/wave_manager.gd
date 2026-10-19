@@ -235,7 +235,7 @@ func _build_authored(wave: int) -> void:
 
 
 func _build_procedural(wave: int) -> void:
-	var scaling := WaveRules.scaling_for_wave(wave)
+	var scaling := WaveRules.scaling_for_wave(wave, _authored_max)
 	var count := maxi(1, roundi((6.0 + float(wave) * 1.4) * _count_multiplier()))
 	var interval := maxf(0.25, 1.1 - 0.02 * float(wave))
 	for index in count:
@@ -252,7 +252,7 @@ func _build_boss_wave(wave: int) -> void:
 	_spawn_queue.clear()
 	_spawn_cursor = 0
 	_boss_index = WaveRules.boss_index_for_wave(wave)
-	var scaling := WaveRules.scaling_for_wave(wave)
+	var scaling := WaveRules.scaling_for_wave(wave, _authored_max)
 	for entry: Dictionary in WaveRules.boss_wave_entries():
 		var is_boss := bool(entry.get("is_boss", false))
 		_spawn_queue.append({

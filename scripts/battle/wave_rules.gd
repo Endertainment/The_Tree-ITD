@@ -104,9 +104,16 @@ static func boss_wave_entries() -> Array[Dictionary]:
 
 
 ## Master scaling for a wave, applied on top of authored/procedural stats.
-static func scaling_for_wave(wave: int) -> Dictionary:
+##
+## Waves 1-`authored_max` are authored and already carry their difficulty, so
+## they get no multiplier. The `1.16`/`1.02`/`1.06` curves then start from the
+## authored strength at wave `authored_max + 1` instead of from wave 1. Without
+## that offset wave 11 jumped straight to `1.16^10` (~4.4x) over wave 9 while
+## player power had grown by a few percent - see `docs/BALANCE_REPORT.md`.
+static func scaling_for_wave(wave: int, authored_max: int = 10) -> Dictionary:
+	var step := maxi(0, wave - authored_max - 1)
 	return {
-		"hp_mult": pow(1.16, float(wave - 1)),
-		"speed_mult": minf(1.4, pow(1.02, float(wave - 1))),
-		"coin_mult": pow(1.06, float(wave - 1)),
+		"hp_mult": pow(1.16, float(step)),
+		"speed_mult": minf(1.4, pow(1.02, float(step))),
+		"coin_mult": pow(1.06, float(step)),
 	}

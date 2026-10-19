@@ -435,3 +435,54 @@ $proj  = "C:\Users\VOVA\Documents\the-tree---idle-tower-defense"
   The project contains no C#; a standard editor removes the message.
 
 
+
+## Stage 8 — QA, balance and release (2026-10-20)
+
+Verified with Godot `4.7.2.stable.mono` on Windows 11, one physical phone
+(Xiaomi 23090RA98G, 1220×2712, Android 15) and headless suites. Details and
+per-row evidence: `docs/QA_REPORT.md`.
+
+### Automated
+
+- [x] 12 suites + the flow test pass headless: Save 46, Migrations 25, Battle 42,
+      Towers 74, Progression 120, Menu 112, Monetization 136, Polish 54,
+      Glyphs 26, Soak 5, Corruption 28 (new), Release 43 (new) — 711 checks.
+- [x] `TestCorruption`: truncated JSON recovers from `save.bak` and keeps
+      `save.corrupt`; wrong types, missing keys, unknown keys, nulls and a v99
+      save all load without losing data; 100 commits survive a torn `save.tmp`.
+- [x] `TestRelease`: rewarded success/close/fail/timeout, double-tap grant once,
+      purchase cancel/fail/busy, one-time bundle not duplicated, claim
+      idempotency, exact/over/zero Gold spends, failed save write, EN↔UK switch.
+- [x] `tools/simulate_balance.gd` runs waves 1–50 for two spending profiles and
+      writes `docs/BALANCE_REPORT.md`; no `.tres` values were tuned.
+- [x] `WaveRules.scaling_for_wave()` offset fix has no test regressions.
+
+### Device (Xiaomi 23090RA98G)
+
+- [x] Debug APK installs over adb and launches through the launcher activity.
+- [x] Activity launch time 891 ms, Vulkan renderer, no Godot error in logcat.
+- [x] Menu renders correctly on 1220×2712 with a 122 px cutout and rounded
+      corners; the top bar and bottom tabs stay inside the safe area.
+- [x] Background 30 s via HOME: same PID, `OnPause`/`OnResume`, menu intact.
+- [x] Save files written on pause (`files/save.json`, `files/save.bak`).
+- [x] `force-stop` then relaunch restores the profile (Gold/Gems/Elf Level).
+- [x] 120 Hz panel reports ~119 FPS for the menu, 1.12 % janky frames.
+- [ ] Tap-driven checks (battle, towers, back spam, call interruption) — MIUI
+      rejects injected input (`INJECT_EVENTS` denial); reported BLOCKED.
+
+### Release
+
+- [x] Release AAB built with Gradle (`Android AAB` preset), signed with the
+      release keystore via `GODOT_ANDROID_KEYSTORE_RELEASE_*` env vars.
+- [x] AAB signature verifies; manifest is `com.endertainment.thetree`,
+      `versionCode 1`, `versionName 0.1.0`.
+- [ ] AAB install on a clean device (no Play track, no bundletool in this
+      environment at the time of the run) — see the QA report.
+- [ ] Call interruption, 720×1280 / 1080×2400 / tablet, 70-enemy device FPS,
+      audio by ear, real ad/billing sandboxes.
+
+### Known issues recorded
+
+- [x] Rendering budget still missed (964 draws / 971 nodes) — `docs/BACKLOG.md`.
+- [x] Balance findings (wave-8 wall, flat band after wave 10, winner-take-all
+      Gold, strategy spread) — `docs/BALANCE_REPORT.md` + `docs/BACKLOG.md`.
