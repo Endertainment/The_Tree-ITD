@@ -1,0 +1,205 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/menu/settings_screen.gd" id="1_settings"]
+
+[node name="SettingsScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_settings")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Content" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="Label" parent="Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionTitle"
+text = "SETTINGS"
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="List" type="VBoxContainer" parent="Margin/Content/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="AudioCard" type="PanelContainer" parent="Margin/Content/Scroll/List"]
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="Values" type="VBoxContainer" parent="Margin/Content/Scroll/List/AudioCard"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MusicLabel" type="Label" parent="Margin/Content/Scroll/List/AudioCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "Music"
+
+[node name="MusicRow" type="HBoxContainer" parent="Margin/Content/Scroll/List/AudioCard/Values"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="MusicSlider" type="HSlider" parent="Margin/Content/Scroll/List/AudioCard/Values/MusicRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 100.0
+value = 80.0
+
+[node name="MusicValue" type="Label" parent="Margin/Content/Scroll/List/AudioCard/Values/MusicRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "80%"
+horizontal_alignment = 2
+
+[node name="SfxLabel" type="Label" parent="Margin/Content/Scroll/List/AudioCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "SFX"
+
+[node name="SfxRow" type="HBoxContainer" parent="Margin/Content/Scroll/List/AudioCard/Values"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="SfxSlider" type="HSlider" parent="Margin/Content/Scroll/List/AudioCard/Values/SfxRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 100.0
+value = 100.0
+
+[node name="SfxValue" type="Label" parent="Margin/Content/Scroll/List/AudioCard/Values/SfxRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "100%"
+horizontal_alignment = 2
+
+[node name="HapticsRow" type="HBoxContainer" parent="Margin/Content/Scroll/List/AudioCard/Values"]
+layout_mode = 2
+
+[node name="HapticsLabel" type="Label" parent="Margin/Content/Scroll/List/AudioCard/Values/HapticsRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HudLabel"
+text = "Haptics"
+
+[node name="HapticsToggle" type="CheckButton" parent="Margin/Content/Scroll/List/AudioCard/Values/HapticsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+
+[node name="LanguageCard" type="PanelContainer" parent="Margin/Content/Scroll/List"]
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="Values" type="VBoxContainer" parent="Margin/Content/Scroll/List/LanguageCard"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LanguageLabel" type="Label" parent="Margin/Content/Scroll/List/LanguageCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "Language"
+
+[node name="LanguageOption" type="OptionButton" parent="Margin/Content/Scroll/List/LanguageCard/Values"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+
+[node name="QualityCard" type="PanelContainer" parent="Margin/Content/Scroll/List"]
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="Values" type="VBoxContainer" parent="Margin/Content/Scroll/List/QualityCard"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="QualityLabel" type="Label" parent="Margin/Content/Scroll/List/QualityCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "Quality"
+
+[node name="QualityOption" type="OptionButton" parent="Margin/Content/Scroll/List/QualityCard/Values"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+
+[node name="QualityHint" type="Label" parent="Margin/Content/Scroll/List/QualityCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "Low disables particles and camera shake."
+autowrap_mode = 3
+
+[node name="ProgressCard" type="PanelContainer" parent="Margin/Content/Scroll/List"]
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="ResetButton" type="Button" parent="Margin/Content/Scroll/List/ProgressCard"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_type_variation = &"DangerButton"
+text = "RESET PROGRESS"
+
+[node name="AboutCard" type="PanelContainer" parent="Margin/Content/Scroll/List"]
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="Values" type="VBoxContainer" parent="Margin/Content/Scroll/List/AboutCard"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PrivacyButton" type="Button" parent="Margin/Content/Scroll/List/AboutCard/Values"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"RowButton"
+text = "Privacy policy"
+
+[node name="Version" type="Label" parent="Margin/Content/Scroll/List/AboutCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"Caption"
+text = "Version 0.1.0"
+
+[node name="Credits" type="Label" parent="Margin/Content/Scroll/List/AboutCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"Caption"
+text = "Made with Godot 4"
+autowrap_mode = 3

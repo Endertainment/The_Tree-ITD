@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MetaUpgradeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/meta_upgrade.gd" id="1_meta"]
+
+[resource]
+script = ExtResource("1_meta")
+id = "tower_discount"
+name_key = "META_TOWER_DISCOUNT_NAME"
+description_key = "META_TOWER_DISCOUNT_DESC"
+stat = "tower_cost_mult"
+op = "mult"
+value_per_level = -0.02
+unit = "percent"
+max_level = 8
+base_cost = 220
+cost_growth = 1.55
+order = 6

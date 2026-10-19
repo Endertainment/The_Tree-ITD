@@ -197,8 +197,9 @@ func die() -> void:
 		_battle.add_coins(reward)
 	EventBus.enemy_died.emit(data.id, reward, global_position)
 
-	_puff.restart()
-	_puff.emitting = true
+	if not GameState.is_low_quality():
+		_puff.restart()
+		_puff.emitting = true
 	queue_redraw()
 
 

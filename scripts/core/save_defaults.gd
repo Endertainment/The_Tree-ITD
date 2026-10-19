@@ -46,6 +46,7 @@ static func create() -> Dictionary:
 			"total_gold_earned": 0,
 			"total_waves_cleared": 0,
 			"towers_built": 0,
+			"ads_watched": 0,
 		},
 		"missions": {
 			"daily": {

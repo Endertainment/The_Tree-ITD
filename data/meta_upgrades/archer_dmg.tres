@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MetaUpgradeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/meta_upgrade.gd" id="1_meta"]
+
+[resource]
+script = ExtResource("1_meta")
+id = "archer_dmg"
+name_key = "META_ARCHER_DMG_NAME"
+description_key = "META_ARCHER_DMG_DESC"
+stat = "archer_dmg_mult"
+op = "mult"
+value_per_level = 0.04
+unit = "percent"
+max_level = 10
+base_cost = 200
+cost_growth = 1.55
+order = 3

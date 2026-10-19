@@ -10,5 +10,8 @@ func purchase(product_id: String, callback: Callable) -> void:
 
 
 func restore(callback: Callable = Callable()) -> void:
+	var owned: Array = []
+	if GameState != null:
+		owned.assign(GameState.get_owned_products())
 	if callback.is_valid():
-		callback.call([])
+		callback.call(owned)

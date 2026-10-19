@@ -50,7 +50,6 @@ func _ready() -> void:
 	_gems = compute_gems(summary, _milestone)
 	var applied := GameState.apply_run_result(summary, _gold, _gems)
 	_rewards_applied = true
-	MissionHooks.report_run(summary, _gold)
 
 	_double_button.pressed.connect(_on_double_gold_pressed)
 	_play_button.pressed.connect(_on_play_again_pressed)

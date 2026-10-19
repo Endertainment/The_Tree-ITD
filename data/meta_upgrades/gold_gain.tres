@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MetaUpgradeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/meta_upgrade.gd" id="1_meta"]
+
+[resource]
+script = ExtResource("1_meta")
+id = "gold_gain"
+name_key = "META_GOLD_GAIN_NAME"
+description_key = "META_GOLD_GAIN_DESC"
+stat = "gold_mult"
+op = "mult"
+value_per_level = 0.04
+unit = "percent"
+max_level = 10
+base_cost = 260
+cost_growth = 1.55
+order = 8

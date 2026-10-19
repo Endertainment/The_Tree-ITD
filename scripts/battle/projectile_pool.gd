@@ -43,6 +43,8 @@ func release(arrow: Arrow) -> void:
 ## Plays the shared hit spark at a world position.
 func on_hit(position: Vector2) -> void:
 	_spark.global_position = position
+	if GameState.is_low_quality():
+		return
 	_spark.restart()
 	_spark.emitting = true
 

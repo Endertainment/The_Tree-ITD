@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://resources/card_data.gd" id="1_card"]
+[ext_resource type="Script" path="res://resources/stat_modifier.gd" id="2_mod"]
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = "coin_mult"
+op = "mult"
+value = 0.2
+
+[sub_resource type="Resource" id="Mod_2"]
+script = ExtResource("2_mod")
+stat = "tree_hp_mult"
+op = "mult"
+value = -0.1
+
+[resource]
+script = ExtResource("1_card")
+id = "midas_bark"
+name_key = "CARD_MIDAS_BARK_NAME"
+description_key = "CARD_MIDAS_BARK_DESC"
+lore_key = "CARD_MIDAS_BARK_LORE"
+unlock_cost = 200
+tint = Color(0.94902, 0.756863, 0.305882, 1)
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2")])

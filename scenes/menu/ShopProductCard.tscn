@@ -1,0 +1,49 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/menu/shop_product_card.gd" id="1_shop"]
+
+[node name="ShopProductCard" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 330)
+offset_right = 1000.0
+offset_bottom = 330.0
+size_flags_horizontal = 3
+theme_type_variation = &"PanelCard"
+script = ExtResource("1_shop")
+
+[node name="Card" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Badge" type="Label" parent="Card"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CardTitle"
+text = "BEST VALUE"
+visible = false
+
+[node name="Title" type="Label" parent="Card"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "100 Gems"
+
+[node name="Contents" type="Label" parent="Card"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"HudSmall"
+text = "100 Gems"
+autowrap_mode = 3
+
+[node name="Price" type="Label" parent="Card"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudValue"
+text = "$1.99"
+
+[node name="BuyButton" type="Button" parent="Card"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "BUY"

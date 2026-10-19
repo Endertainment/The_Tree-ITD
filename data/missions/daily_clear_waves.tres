@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MissionData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/mission_data.gd" id="1_mission"]
+
+[resource]
+script = ExtResource("1_mission")
+id = "daily_clear_waves"
+title_key = "MISSION_DAILY_CLEAR_WAVES_TITLE"
+description_key = "MISSION_DAILY_CLEAR_WAVES_DESC"
+metric = "clear_waves"
+mode = "sum"
+target = 10
+reward_gold = 180
+reward_gems = 10
+daily = true

@@ -76,12 +76,13 @@ func take_damage(amount: float) -> void:
 		return
 	hp = maxf(0.0, hp - amount)
 	_flash = 1.0
-	_shake_time = SHAKE_SECONDS
 	_regen_tick = 0.0
-	var angle := randf_range(0.0, TAU)
-	_shake_offset = Vector2(cos(angle), sin(angle)) * SHAKE_DISTANCE
-	_leaf_puff.restart()
-	_leaf_puff.emitting = true
+	if not GameState.is_low_quality():
+		_shake_time = SHAKE_SECONDS
+		var angle := randf_range(0.0, TAU)
+		_shake_offset = Vector2(cos(angle), sin(angle)) * SHAKE_DISTANCE
+		_leaf_puff.restart()
+		_leaf_puff.emitting = true
 	EventBus.core_damaged.emit(hp, max_hp)
 	queue_redraw()
 	if hp <= 0.0:
@@ -101,6 +102,8 @@ func heal(amount: float) -> void:
 
 ## Small camera shake, used by the Ballista impact. `strength` scales duration.
 func shake(strength: float = 1.0) -> void:
+	if GameState.is_low_quality():
+		return
 	_shake_time = SHAKE_SECONDS * clampf(strength, 0.1, 3.0)
 	var angle := randf_range(0.0, TAU)
 	_shake_offset = Vector2(cos(angle), sin(angle)) * SHAKE_DISTANCE

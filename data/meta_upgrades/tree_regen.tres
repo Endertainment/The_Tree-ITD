@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MetaUpgradeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/meta_upgrade.gd" id="1_meta"]
+
+[resource]
+script = ExtResource("1_meta")
+id = "tree_regen"
+name_key = "META_TREE_REGEN_NAME"
+description_key = "META_TREE_REGEN_DESC"
+stat = "tree_regen_add"
+op = "add"
+value_per_level = 0.5
+unit = "flat"
+max_level = 10
+base_cost = 180
+cost_growth = 1.55
+order = 2

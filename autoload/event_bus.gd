@@ -59,5 +59,14 @@ signal purchase_completed(product_id: String, success: bool)
 ## Mission or achievement progress changed.
 signal mission_progress(mission_id: String, current: int, target: int)
 
+## A mission or achievement was claimed (rewards already granted).
+signal missions_changed()
+
+## Card ownership or the equipped pair changed.
+signal cards_changed()
+
+## A shop product was granted or marked as owned.
+signal products_changed()
+
 ## The active locale changed.
 signal language_changed(locale: String)

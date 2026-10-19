@@ -27,7 +27,7 @@ with `--debug-battle` routes straight to `Battle.tscn`.
 |---|---|---|---|
 | 1 | `EventBus` | Signals only | Hold state or logic |
 | 2 | `SaveManager` | JSON I/O, migration call, atomic write, backup, corruption recovery | Touch `GameState` |
-| 3 | `GameState` | Canonical save dict + typed accessors, emits change signals | Hold run state (Coins, waves) |
+| 3 | `GameState` | Canonical save dict + typed accessors, cards/missions/shop APIs, owns `MissionTracker` | Hold run state (Coins, waves) |
 | 4 | `ConfigDB` | `id -> Resource` maps for all data folders | Own balance numbers |
 | 5 | `AudioManager` | Music/SFX/UI buses, pooling, volume persistence | Know about gameplay |
 | 6 | `Loc` | Runtime `Translation` objects, locale switch, number formatting | Format currency rules |
@@ -122,6 +122,75 @@ waves and Coins are all reset per run and never persisted.
   (flag / best wave 25 / trial with 1.5x). `SpeedButton` cycles only unlocked
   speeds and shows the lock reason on a long press.
 
+## Stage 5 meta layer
+
+```
+MainMenu (shell: top bar, ScreenHost, TabBar, Modal, Toast)
+├── TopBar        Gold / Gems / Elf Level / best wave + BATTLE shortcut
+├── ScreenHost    cached screen instances, one visible at a time
+│   ├── HomeScreen        BATTLE, daily summary, equipped cards, music, version
+│   ├── UpgradesScreen    8 x UpgradeTrackRow (data/meta_upgrades)
+│   ├── CardsScreen       6 x CardWidget (data/cards) + detail/replace modal
+│   ├── MissionsScreen    3 daily or 8 achievements, MissionRow list
+│   ├── ShopScreen        8 x ShopProductCard (data/shop) + restore
+│   └── SettingsScreen    audio, haptics, language, quality, reset, credits
+├── TabBar        six stacked icon+label buttons, 112 px tall
+├── ModalSheet    one shared bottom sheet for confirmations and card details
+└── Toast         non-blocking messages
+```
+
+- Screens are loaded on first visit and cached in `MainMenu._screens`; switching
+  tabs toggles visibility, fades alpha over 0.15 s and calls `refresh()`. Every
+  screen re-reads `GameState` in `refresh()` and writes every localized label
+  there, so `Loc.set_locale()` retranslates the visible tab live.
+- The shell owns the single `ModalSheet` and `Toast`; screens ask the shell to
+  show them. `go_back()` implements the Android contract: close the sheet, else
+  go Home, else confirm exit.
+- The tab buttons keep their icon and label in a child VBox (not `Button.text`),
+  which lets both locales fit six tabs at 1080 px without clipping.
+
+Meta state flow:
+
+```
+EventBus (enemy_died, wave_started/cleared, boss_died, tower_built,
+          ad_watched, run_ended)
+        │
+        ▼
+MissionTracker (child of GameState)
+  daily counters in memory ──flush──▶ GameState.missions.daily.progress
+  achievements derived from stats ──▶ GameState.missions.achievements.progress
+        │
+        ▼
+MissionsScreen.refresh() / claim() ──▶ GameState.claim_mission()
+                                         (mark + grant + save_now)
+```
+
+Cards and permanent upgrades are resolved once per run:
+
+```
+data/meta_upgrades/*.tres ─┐
+data/cards/*.tres ──────────┤──▶ ConfigDB ──▶ RunModifiers.build(save, equipped)
+                            │                        │
+save.upgrades / save.cards ─┘                        ▼
+                                                   RunStats ──▶ battle
+```
+
+- `GameState.from_dict()` validates the incoming profile: unknown card/product
+  ids are dropped, equipped cards are capped at two, upgrade levels are clamped
+  to their data maximum, and mission claimed/progress maps are pruned.
+- Daily missions are `hash(local date)` + Fisher-Yates over the eight-mission
+  pool, three per day. `MissionTracker.refresh_daily()` rolls over on boot, menu
+  show, run end and ad completion; progress is never written mid-run.
+- Claims and purchases are one atomic operation: append to `claimed`/owned, grant
+  currency or the unlock flag, then `SaveManager.save_now()`. The shop sets its
+  busy flag before calling `Monetization`, because the fake provider resolves
+  synchronously.
+- Restore reports the save's owned products (the fake provider has no server
+  state) and only re-applies permanent unlock flags; it never pays currency.
+- Settings are persisted through `GameState.set_setting()` (debounced save).
+  Quality is read live by the VFX guards; the locale switch is immediate and the
+  audio sliders write straight to the buses.
+
 ## Data flow
 
 ```
@@ -188,14 +257,18 @@ purchases) and delegates only the sheet lifecycle.
 |---|---|
 | **Enemy** | Create `data/enemies/<id>.tres` with `EnemyData`; add it to a wave or the procedural weights. `ConfigDB` picks it up at startup. |
 | **In-run upgrade** | Create `data/upgrades/<id>.tres` with `UpgradeTrack` (effect, per-level value, cost growth); add its id to `UpgradePanel.TRACK_ORDER` and its name/description keys to `strings.csv`. |
+| **Permanent upgrade** | Create `data/meta_upgrades/<id>.tres` with `MetaUpgradeData` (`stat`, `op`, per-level value, `unit`, cost, growth, `order`); add name/description keys. Both the Upgrades screen and `RunModifiers` read it, so no code change is needed. |
+| **Card** | Create `data/cards/<id>.tres` with `CardData` and `StatModifier` sub-resources; add name/description/lore keys. The grid sorts by unlock cost, so it appears automatically. |
+| **Mission** | Create `data/missions/<id>.tres` with `MissionData` (`metric`, `mode`, target, rewards, `daily`). Daily missions join the 8-mission rotation; achievements appear in the achievements tab. |
+| **Shop product** | Create `data/shop/<id>.tres` with `ShopProduct` (amounts, price text, badge, unlock flag, order); the shop grid and restore handle it. |
 | **Tower** | Create `data/towers/<id>.tres` with `TowerData` + `TowerLevel` entries (cost, silhouette, projectile, 3 levels). Add its strings to `strings.csv`. The build sheet builds its cards from `ConfigDB.all_towers()` sorted by cost, so no UI change is needed. |
 | **Authored wave** | Add `WaveEntry` groups to `data/waves/waves_01_10.tres` tagged with `wave` (wave 10 is replaced by the boss wave). Waves beyond the authored max are procedural. |
 | **String** | Add a row to `localization/strings.csv` (UTF-8 with BOM), then use `Loc.t_key("KEY")`. |
-| **Screen** | Scene in `scenes/<area>/`, controller in `scripts/ui/` or `scripts/battle/`, navigate with `SceneRouter.goto`. |
+| **Screen** | Scene in `scenes/menu/`, controller in `scripts/ui/menu/`, add it to `MainMenu.MENU_SCREENS` and the tab bar. |
 
-## Stage 4 non-goals
+## Stage 5 non-goals
 
-No menu tabs, permanent-upgrade UI, cards UI, missions UI or shop (stage 5). No
-real ad or billing SDKs: the existing fake providers are enough. No global
-tower upgrades, synergies or hero abilities.
+No real billing, ad SDKs, consent flow, cloud saves, accounts or leaderboards (stages
+6-7). Cards are unlocked directly with Gems; no card packs or duplicates. Scores are
+not submitted anywhere; the shop prices are display strings.
 

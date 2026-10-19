@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MissionData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/mission_data.gd" id="1_mission"]
+
+[resource]
+script = ExtResource("1_mission")
+id = "daily_kill_bosses"
+title_key = "MISSION_DAILY_KILL_BOSSES_TITLE"
+description_key = "MISSION_DAILY_KILL_BOSSES_DESC"
+metric = "kill_bosses"
+mode = "sum"
+target = 2
+reward_gold = 240
+reward_gems = 15
+daily = true

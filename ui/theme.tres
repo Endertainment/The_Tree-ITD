@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=13 format=3]
+[gd_resource type="Theme" load_steps=19 format=3]
 
 [sub_resource type="SystemFont" id="SystemFont_base"]
 font_names = PackedStringArray("Roboto", "Noto Sans", "Segoe UI", "DejaVu Sans")
@@ -139,6 +139,93 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBoxFlat" id="StyleBox_tab_normal"]
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+bg_color = Color(0.086275, 0.117647, 0.090196, 0.55)
+border_width_top = 4
+border_color = Color(0.94902, 0.756863, 0.305882, 0)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_tab_hover"]
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+bg_color = Color(0.160784, 0.219608, 0.160784, 0.85)
+border_width_top = 4
+border_color = Color(0.94902, 0.756863, 0.305882, 0.35)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_tab_pressed"]
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+bg_color = Color(0.94902, 0.756863, 0.305882, 0.16)
+border_width_top = 4
+border_color = Color(0.94902, 0.756863, 0.305882, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_danger_normal"]
+content_margin_left = 32.0
+content_margin_top = 18.0
+content_margin_right = 32.0
+content_margin_bottom = 18.0
+bg_color = Color(0.403922, 0.145098, 0.129412, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.803922, 0.313726, 0.270588, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_danger_hover"]
+content_margin_left = 32.0
+content_margin_top = 18.0
+content_margin_right = 32.0
+content_margin_bottom = 18.0
+bg_color = Color(0.529412, 0.203922, 0.176471, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.933333, 0.423529, 0.364706, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_danger_pressed"]
+content_margin_left = 32.0
+content_margin_top = 18.0
+content_margin_right = 32.0
+content_margin_bottom = 18.0
+bg_color = Color(0.278431, 0.094118, 0.086275, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.933333, 0.423529, 0.364706, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
 [sub_resource type="StyleBoxFlat" id="StyleBox_hp_fill"]
 bg_color = Color(0.494118, 0.784314, 0.313726, 1)
 corner_radius_top_left = 8
@@ -208,3 +295,56 @@ FloatingText/constants/outline_size = 6
 HpBar/base_type = &"ProgressBar"
 HpBar/styles/background = SubResource("StyleBox_hp_background")
 HpBar/styles/fill = SubResource("StyleBox_hp_fill")
+TabButton/base_type = &"Button"
+TabButton/font_sizes/font_size = 18
+TabButton/colors/font_color = Color(0.72549, 0.768627, 0.658824, 1)
+TabButton/colors/font_hover_color = Color(1, 0.92549, 0.752941, 1)
+TabButton/colors/font_pressed_color = Color(0.94902, 0.756863, 0.305882, 1)
+TabButton/colors/font_disabled_color = Color(0.529412, 0.560784, 0.482353, 1)
+TabButton/colors/icon_normal_color = Color(0.72549, 0.768627, 0.658824, 1)
+TabButton/colors/icon_hover_color = Color(1, 0.92549, 0.752941, 1)
+TabButton/colors/icon_pressed_color = Color(0.94902, 0.756863, 0.305882, 1)
+TabButton/styles/normal = SubResource("StyleBox_tab_normal")
+TabButton/styles/hover = SubResource("StyleBox_tab_hover")
+TabButton/styles/pressed = SubResource("StyleBox_tab_pressed")
+TabButton/styles/disabled = SubResource("StyleBox_secondary_disabled")
+TabLabel/base_type = &"Label"
+TabLabel/font_sizes/font_size = 20
+TabLabel/colors/font_color = Color(0.72549, 0.768627, 0.658824, 1)
+SegmentButton/base_type = &"Button"
+SegmentButton/font_sizes/font_size = 30
+SegmentButton/colors/font_color = Color(0.72549, 0.768627, 0.658824, 1)
+SegmentButton/colors/font_hover_color = Color(1, 0.92549, 0.752941, 1)
+SegmentButton/colors/font_pressed_color = Color(0.94902, 0.756863, 0.305882, 1)
+SegmentButton/styles/normal = SubResource("StyleBox_tab_normal")
+SegmentButton/styles/hover = SubResource("StyleBox_tab_hover")
+SegmentButton/styles/pressed = SubResource("StyleBox_tab_pressed")
+RowButton/base_type = &"Button"
+RowButton/font_sizes/font_size = 30
+RowButton/colors/font_color = Color(0.909804, 0.85098, 0.658824, 1)
+RowButton/colors/font_hover_color = Color(1, 0.92549, 0.752941, 1)
+RowButton/colors/font_pressed_color = Color(0.94902, 0.756863, 0.305882, 1)
+RowButton/colors/font_disabled_color = Color(0.647059, 0.686275, 0.596078, 0.7)
+RowButton/styles/normal = SubResource("StyleBox_secondary_normal")
+RowButton/styles/hover = SubResource("StyleBox_secondary_hover")
+RowButton/styles/pressed = SubResource("StyleBox_secondary_pressed")
+RowButton/styles/disabled = SubResource("StyleBox_secondary_disabled")
+DangerButton/base_type = &"Button"
+DangerButton/font_sizes/font_size = 38
+DangerButton/colors/font_color = Color(1, 0.878431, 0.843137, 1)
+DangerButton/colors/font_hover_color = Color(1, 0.941176, 0.921569, 1)
+DangerButton/colors/font_pressed_color = Color(1, 0.878431, 0.843137, 1)
+DangerButton/colors/font_disabled_color = Color(0.647059, 0.560784, 0.529412, 0.8)
+DangerButton/styles/normal = SubResource("StyleBox_danger_normal")
+DangerButton/styles/hover = SubResource("StyleBox_danger_hover")
+DangerButton/styles/pressed = SubResource("StyleBox_danger_pressed")
+DangerButton/styles/disabled = SubResource("StyleBox_secondary_disabled")
+SectionTitle/base_type = &"Label"
+SectionTitle/font_sizes/font_size = 44
+SectionTitle/colors/font_color = Color(0.94902, 0.756863, 0.305882, 1)
+Caption/base_type = &"Label"
+Caption/font_sizes/font_size = 24
+Caption/colors/font_color = Color(0.560784, 0.603922, 0.521569, 1)
+BodyText/base_type = &"Label"
+BodyText/font_sizes/font_size = 30
+BodyText/colors/font_color = Color(0.909804, 0.85098, 0.658824, 1)

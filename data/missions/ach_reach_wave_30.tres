@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MissionData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/mission_data.gd" id="1_mission"]
+
+[resource]
+script = ExtResource("1_mission")
+id = "ach_reach_wave_30"
+title_key = "MISSION_ACH_WAVE_30_TITLE"
+description_key = "MISSION_ACH_WAVE_30_DESC"
+metric = "reach_wave"
+mode = "max"
+target = 30
+reward_gold = 800
+reward_gems = 40
+daily = false

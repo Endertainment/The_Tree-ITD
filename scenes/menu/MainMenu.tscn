@@ -1,6 +1,14 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
+[ext_resource type="PackedScene" path="res://ui/Toast.tscn" id="2_toast"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ModalSheet.tscn" id="3_modal"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/tab_home.svg" id="4_home"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/tab_upgrades.svg" id="5_upgrades"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/tab_cards.svg" id="6_cards"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/tab_missions.svg" id="7_missions"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/tab_shop.svg" id="8_shop"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/tab_settings.svg" id="9_settings"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -19,7 +27,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.113725, 0.164706, 0.121569, 1)
+color = Color(0.086275, 0.117647, 0.090196, 1)
 
 [node name="SafeArea" type="MarginContainer" parent="."]
 unique_name_in_owner = true
@@ -29,72 +37,273 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 40
-theme_override_constants/margin_top = 48
-theme_override_constants/margin_right = 40
-theme_override_constants/margin_bottom = 48
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 12
 
 [node name="Column" type="VBoxContainer" parent="SafeArea"]
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 8
 
 [node name="TopBar" type="HBoxContainer" parent="SafeArea/Column"]
 layout_mode = 2
-theme_override_constants/separation = 32
+custom_minimum_size = Vector2(0, 96)
+theme_override_constants/separation = 16
 
 [node name="GoldLabel" type="Label" parent="SafeArea/Column/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Gold"
+theme_type_variation = &"HudSmall"
+text = "Gold 0"
+vertical_alignment = 1
 
 [node name="GemsLabel" type="Label" parent="SafeArea/Column/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Gems"
+theme_type_variation = &"HudSmall"
+text = "Gems 0"
+vertical_alignment = 1
 
-[node name="TopBarSpacer" type="Control" parent="SafeArea/Column/TopBar"]
+[node name="ElfLabel" type="Label" parent="SafeArea/Column/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "ELF LV 1"
+vertical_alignment = 1
+
+[node name="BestLabel" type="Label" parent="SafeArea/Column/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "BEST 0"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="SafeArea/Column/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="LangButton" type="Button" parent="SafeArea/Column/TopBar"]
+[node name="BattleShortcut" type="Button" parent="SafeArea/Column/TopBar"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 88)
 layout_mode = 2
-custom_minimum_size = Vector2(140, 88)
-text = "EN"
-
-[node name="TopSpacer" type="Control" parent="SafeArea/Column"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Title" type="Label" parent="SafeArea/Column"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"Title"
-text = "The Tree"
-horizontal_alignment = 1
-
-[node name="Subtitle" type="Label" parent="SafeArea/Column"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"Subtitle"
-text = "Idle Tower Defense"
-horizontal_alignment = 1
-
-[node name="BottomSpacer" type="Control" parent="SafeArea/Column"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="BattleButton" type="Button" parent="SafeArea/Column"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(0, 160)
-theme_type_variation = &"PrimaryButton"
+size_flags_vertical = 4
+theme_type_variation = &"RowButton"
 text = "BATTLE"
 
-[node name="BottomBar" type="HBoxContainer" parent="SafeArea/Column"]
-layout_mode = 2
-
-[node name="VersionLabel" type="Label" parent="SafeArea/Column/BottomBar"]
+[node name="ScreenHost" type="Control" parent="SafeArea/Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "v0.1.0"
+size_flags_vertical = 3
+clip_contents = true
+
+[node name="TabBar" type="HBoxContainer" parent="SafeArea/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TabHome" type="Button" parent="SafeArea/Column/TabBar"]
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_pressed = true
+
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabHome"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabHome/Stack"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("4_home")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabHome/Stack"]
+layout_mode = 2
+theme_type_variation = &"TabLabel"
+text = "HOME"
+horizontal_alignment = 1
+
+[node name="TabUpgrades" type="Button" parent="SafeArea/Column/TabBar"]
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"TabButton"
+toggle_mode = true
+
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabUpgrades"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabUpgrades/Stack"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("5_upgrades")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabUpgrades/Stack"]
+layout_mode = 2
+theme_type_variation = &"TabLabel"
+text = "UPGRADES"
+horizontal_alignment = 1
+
+[node name="TabCards" type="Button" parent="SafeArea/Column/TabBar"]
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"TabButton"
+toggle_mode = true
+
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabCards"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabCards/Stack"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("6_cards")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabCards/Stack"]
+layout_mode = 2
+theme_type_variation = &"TabLabel"
+text = "CARDS"
+horizontal_alignment = 1
+
+[node name="TabMissions" type="Button" parent="SafeArea/Column/TabBar"]
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"TabButton"
+toggle_mode = true
+
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabMissions"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabMissions/Stack"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("7_missions")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabMissions/Stack"]
+layout_mode = 2
+theme_type_variation = &"TabLabel"
+text = "MISSIONS"
+horizontal_alignment = 1
+
+[node name="TabShop" type="Button" parent="SafeArea/Column/TabBar"]
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"TabButton"
+toggle_mode = true
+
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabShop"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabShop/Stack"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("8_shop")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabShop/Stack"]
+layout_mode = 2
+theme_type_variation = &"TabLabel"
+text = "SHOP"
+horizontal_alignment = 1
+
+[node name="TabSettings" type="Button" parent="SafeArea/Column/TabBar"]
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"TabButton"
+toggle_mode = true
+
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabSettings"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabSettings/Stack"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("9_settings")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabSettings/Stack"]
+layout_mode = 2
+theme_type_variation = &"TabLabel"
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="Modal" parent="." instance=ExtResource("3_modal")]
+unique_name_in_owner = true
+
+[node name="Toast" parent="." instance=ExtResource("2_toast")]
+unique_name_in_owner = true

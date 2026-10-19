@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ShopProduct" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/shop_product.gd" id="1_shop"]
+
+[resource]
+script = ExtResource("1_shop")
+id = "gold_5000"
+title_key = "SHOP_TITLE_GOLD_5000"
+description_key = "SHOP_DESC_GOLD"
+price_text = "$1.99"
+gold_amount = 5000
+gems_amount = 0
+consumable = true
+badge_key = ""
+unlock_flag = ""
+order = 5

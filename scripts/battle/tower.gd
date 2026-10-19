@@ -124,7 +124,7 @@ func upgrade(paid_cost: int) -> void:
 	level += 1
 	invested += maxi(0, paid_cost)
 	if _snow != null:
-		_snow.emitting = level >= 3 and data.silhouette == "frost"
+		_snow.emitting = level >= 3 and data.silhouette == "frost" and not GameState.is_low_quality()
 	queue_redraw()
 	play_pop()
 

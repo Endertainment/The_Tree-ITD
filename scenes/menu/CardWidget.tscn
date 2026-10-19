@@ -1,0 +1,50 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/menu/card_widget.gd" id="1_card"]
+
+[node name="CardWidget" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 470)
+offset_right = 500.0
+offset_bottom = 470.0
+size_flags_horizontal = 3
+theme_type_variation = &"PanelCard"
+script = ExtResource("1_card")
+
+[node name="Card" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Tint" type="ColorRect" parent="Card"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.494118, 0.784314, 0.313726, 1)
+
+[node name="Name" type="Label" parent="Card"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CardTitle"
+text = "Card"
+autowrap_mode = 3
+
+[node name="State" type="Label" parent="Card"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "LOCKED"
+
+[node name="Modifiers" type="Label" parent="Card"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"HudSmall"
+text = "+20%"
+autowrap_mode = 3
+
+[node name="ActionButton" type="Button" parent="Card"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"RowButton"
+text = "UNLOCK"

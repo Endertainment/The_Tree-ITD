@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://resources/card_data.gd" id="1_card"]
+[ext_resource type="Script" path="res://resources/stat_modifier.gd" id="2_mod"]
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = "archer_dmg_mult"
+op = "mult"
+value = 0.1
+
+[sub_resource type="Resource" id="Mod_2"]
+script = ExtResource("2_mod")
+stat = "projectile_speed_mult"
+op = "mult"
+value = 0.15
+
+[sub_resource type="Resource" id="Mod_3"]
+script = ExtResource("2_mod")
+stat = "tree_hp_mult"
+op = "mult"
+value = -0.05
+
+[resource]
+script = ExtResource("1_card")
+id = "elven_precision"
+name_key = "CARD_ELVEN_PRECISION_NAME"
+description_key = "CARD_ELVEN_PRECISION_DESC"
+lore_key = "CARD_ELVEN_PRECISION_LORE"
+unlock_cost = 300
+tint = Color(0.85098, 0.909804, 0.658824, 1)
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3")])

@@ -180,11 +180,13 @@ $proj  = "C:\Users\VOVA\Documents\the-tree---idle-tower-defense"
 & $godot --headless --path $proj --import                # one-time import pass
 & $godot --headless --path $proj res://tests/TestSave.tscn
 & $godot --headless --path $proj res://tests/TestFlow.tscn
+& $godot --headless --path $proj res://tests/TestMenu.tscn
 & $godot --headless --path $proj --fixed-fps 60 res://tests/TestBattle.tscn
 & $godot --headless --path $proj --fixed-fps 60 res://tests/TestSoak.tscn
 & $godot --headless --path $proj --fixed-fps 60 res://tests/TestTowers.tscn
 & $godot --headless --path $proj --fixed-fps 60 res://tests/TestProgression.tscn
 & $godot --path $proj res://tools/CaptureTool.tscn        # menu, battle, results shots
+& $godot --path $proj res://tools/MenuCapture.tscn        # six menu tabs, EN + UK
 ```
 
 `CaptureTool` writes `user://screenshot_menu_en.png`, `menu_uk`, `battle_prep`,
@@ -228,6 +230,50 @@ $proj  = "C:\Users\VOVA\Documents\the-tree---idle-tower-defense"
 - [x] Elf Level 3 unlocks 1.5x and shows the toast on the results screen.
 - [ ] Real Android device pass, 720x1280 layout, real rewarded-ad SDK. Deferred
       to stages 6-7.
+
+## Stage 5 — meta menu, upgrades, cards, missions, shop, settings
+
+- [x] Data loads: six cards, eight daily missions, eight achievements, eight shop
+      products, eight permanent tracks (`TestMenu`, `ConfigDB` counts).
+- [x] Permanent upgrades: `tree_hp` costs 150 then 235; buying three levels
+      deducts 1 145 Gold, persists, and `RunStats` starts the next run at
+      1 150 Tree HP (`TestMenu`).
+- [x] Cards: unlock with Gems, equip, replace, persist across reload; Heartwood
+      gives +20% Tree HP and −10% archer damage through `RunModifiers`; a third
+      equip is refused; unknown ids are dropped and the pair is capped at two.
+- [x] Daily missions: three deterministic ids for the current date
+      (`select_daily(date)` is stable), all eight metric types advance through
+      `EventBus`, a claim pays once and survives a reload, and a stale stored
+      date resets progress and claims.
+- [x] Achievements: derived from persistent stats (1 000 kills, best wave 20,
+      10 000 Gold earned), claimed once, and stay claimed after a reload.
+- [x] Shop: all eight products grant; the starter bundle and remove-ads cannot
+      be granted twice; a gem pack can be bought again; remove-ads sets
+      `unlocks.remove_ads`; `MetaShop.restore_owned()` re-applies the flag and is
+      idempotent.
+- [x] Settings: quality `low` persists and is read by the four VFX guards; the
+      locale switches live (tab labels retranslate); music volume reaches the
+      Music bus immediately; haptics and locale persist.
+- [x] Menu shell: all six tabs open, are cached (six screens after a tour), keep
+      their scroll containers, close a modal on back, return to Home from another
+      tab, and leave zero orphan nodes (`TestMenu`).
+- [x] Localization: 305 CSV keys, no empty EN/UK cells; `TestMenu` checks EN and
+      UK strings resolve. All 12 menu captures have full labels, including
+      `ПОКРАЩЕННЯ`, `КРАМНИЦЯ` and `НАЛАШТУВАННЯ`.
+- [x] Windowed menu holds 60 FPS (vsync-limited) on this desktop; no layout
+      warnings or repeated errors in the capture log.
+- [x] Screenshots `user://screenshot_menu_{home,upgrades,cards,missions,shop,settings}_{en,uk}.png`
+      reviewed at 540x960. `MenuCapture` backs up and restores the real save.
+- [ ] Android device pass: back button, notched safe areas, 720x1280 layout,
+      touch feel. Deferred to stages 6-7 (no device available).
+- [ ] Force-close during a purchase, device clock moved backwards, and a real
+      billing sandbox. The fake provider and the date guard were tested headless
+      only.
+- [ ] Reset-progress end-to-end (two dialogs -> wipe -> Boot) and the reward-fly
+      animation. Code-reviewed; not executed automatically because the reset
+      swaps the running test scene.
+- [ ] Real 60 FPS on mid-range Android and 22 ms on 720x1280. Desktop 60 FPS is
+      not evidence for either.
 
 ## Known environment quirks
 - **Cold headless import exit code.** After deleting `.godot/`, the first

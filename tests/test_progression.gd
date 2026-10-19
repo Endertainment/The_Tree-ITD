@@ -98,10 +98,15 @@ func _run() -> void:
 	_check(is_equal_approx(meta_stats.archer_damage, 14.4), "meta damage applies")
 
 	var card := CardData.new()
-	card.modifiers = [
-		{"stat": "tree_hp_mult", "op": "mult", "value": 0.2},
-		{"stat": "archer_dmg_mult", "op": "mult", "value": -0.1},
-	]
+	var hp_modifier := StatModifier.new()
+	hp_modifier.stat = "tree_hp_mult"
+	hp_modifier.op = "mult"
+	hp_modifier.value = 0.2
+	var damage_modifier := StatModifier.new()
+	damage_modifier.stat = "archer_dmg_mult"
+	damage_modifier.op = "mult"
+	damage_modifier.value = -0.1
+	card.modifiers = [hp_modifier, damage_modifier]
 	var cards: Array[CardData] = [card]
 	var card_mods := RunModifiers.build({}, cards)
 	_check(is_equal_approx(card_mods.tree_hp_mult, 1.2), "a card adds its multiplier")

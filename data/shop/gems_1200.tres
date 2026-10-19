@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ShopProduct" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/shop_product.gd" id="1_shop"]
+
+[resource]
+script = ExtResource("1_shop")
+id = "gems_1200"
+title_key = "SHOP_TITLE_GEMS_1200"
+description_key = "SHOP_DESC_GEMS"
+price_text = "$9.99"
+gold_amount = 0
+gems_amount = 1200
+consumable = true
+badge_key = "SHOP_BADGE_BEST"
+unlock_flag = ""
+order = 3

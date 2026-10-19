@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MetaUpgradeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/meta_upgrade.gd" id="1_meta"]
+
+[resource]
+script = ExtResource("1_meta")
+id = "start_coins"
+name_key = "META_START_COINS_NAME"
+description_key = "META_START_COINS_DESC"
+stat = "start_coins_add"
+op = "add"
+value_per_level = 20.0
+unit = "flat"
+max_level = 10
+base_cost = 120
+cost_growth = 1.5
+order = 5

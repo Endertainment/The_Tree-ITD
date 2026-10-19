@@ -1,0 +1,160 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/menu/home_screen.gd" id="1_home"]
+
+[node name="HomeScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_home")
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+
+[node name="Margin" type="MarginContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Content" type="VBoxContainer" parent="Scroll/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Scroll/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"Title"
+text = "The Tree"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Scroll/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"Subtitle"
+text = "Idle Tower Defense"
+horizontal_alignment = 1
+
+[node name="BestCard" type="PanelContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="Values" type="VBoxContainer" parent="Scroll/Margin/Content/BestCard"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BestWaveLabel" type="Label" parent="Scroll/Margin/Content/BestCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "BEST WAVE 0"
+
+[node name="ElfLabel" type="Label" parent="Scroll/Margin/Content/BestCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "ELF LV 1"
+
+[node name="ElfProgress" type="Label" parent="Scroll/Margin/Content/BestCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "0 / 15"
+
+[node name="ElfBar" type="ProgressBar" parent="Scroll/Margin/Content/BestCard/Values"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+theme_type_variation = &"HpBar"
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="BattleButton" type="Button" parent="Scroll/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "BATTLE"
+
+[node name="DailyCard" type="PanelContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="Values" type="VBoxContainer" parent="Scroll/Margin/Content/DailyCard"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="DailyTitle" type="Label" parent="Scroll/Margin/Content/DailyCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CardTitle"
+text = "DAILY MISSIONS"
+
+[node name="DailyProgress" type="Label" parent="Scroll/Margin/Content/DailyCard/Values"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "0 / 3 complete"
+
+[node name="DailyView" type="Button" parent="Scroll/Margin/Content/DailyCard/Values"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"RowButton"
+text = "VIEW"
+
+[node name="EquippedTitle" type="Label" parent="Scroll/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "EQUIPPED CARDS"
+
+[node name="EquippedEmpty" type="Label" parent="Scroll/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "No cards equipped"
+
+[node name="EquippedRow" type="HBoxContainer" parent="Scroll/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="SpeedChip" type="Button" parent="Scroll/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+disabled = true
+theme_type_variation = &"RowButton"
+text = "SPEED TRIAL"
+
+[node name="Footer" type="HBoxContainer" parent="Scroll/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="VersionLabel" type="Label" parent="Scroll/Margin/Content/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"Caption"
+text = "v0.1.0"
+vertical_alignment = 1
+
+[node name="MusicButton" type="Button" parent="Scroll/Margin/Content/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 88)
+layout_mode = 2
+theme_type_variation = &"RowButton"
+text = "MUSIC ON"

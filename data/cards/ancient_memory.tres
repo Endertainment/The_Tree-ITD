@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://resources/card_data.gd" id="1_card"]
+[ext_resource type="Script" path="res://resources/stat_modifier.gd" id="2_mod"]
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = "start_archers_add"
+op = "add"
+value = 1.0
+
+[sub_resource type="Resource" id="Mod_2"]
+script = ExtResource("2_mod")
+stat = "start_coins_add"
+op = "add"
+value = -20.0
+
+[resource]
+script = ExtResource("1_card")
+id = "ancient_memory"
+name_key = "CARD_ANCIENT_MEMORY_NAME"
+description_key = "CARD_ANCIENT_MEMORY_DESC"
+lore_key = "CARD_ANCIENT_MEMORY_LORE"
+unlock_cost = 400
+tint = Color(0.611765, 0.529412, 0.85098, 1)
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2")])

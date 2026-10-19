@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MissionData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/mission_data.gd" id="1_mission"]
+
+[resource]
+script = ExtResource("1_mission")
+id = "daily_build_towers"
+title_key = "MISSION_DAILY_BUILD_TOWERS_TITLE"
+description_key = "MISSION_DAILY_BUILD_TOWERS_DESC"
+metric = "build_towers"
+mode = "sum"
+target = 8
+reward_gold = 160
+reward_gems = 8
+daily = true

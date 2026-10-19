@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MissionData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/mission_data.gd" id="1_mission"]
+
+[resource]
+script = ExtResource("1_mission")
+id = "ach_earn_10000_gold"
+title_key = "MISSION_ACH_GOLD_TITLE"
+description_key = "MISSION_ACH_GOLD_DESC"
+metric = "earn_gold"
+mode = "sum"
+target = 10000
+reward_gold = 1000
+reward_gems = 50
+daily = false

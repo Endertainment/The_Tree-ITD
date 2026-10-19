@@ -1,14 +1,15 @@
 extends Node
 ## Loads every data resource into `id -> Resource` dictionaries at startup.
 ##
-## Enemy, wave and tower lookups are typed (`EnemyData`, `WaveTable`,
-## `TowerData`); the remaining kinds stay generic until their stage adds a class.
+## Enemy, wave, tower, upgrade, card, mission, shop and meta-upgrade lookups are
+## typed; data directories may be empty without breaking the boot.
 
 const DATA_DIRS := {
 	"enemies": "res://data/enemies",
 	"towers": "res://data/towers",
 	"waves": "res://data/waves",
 	"upgrades": "res://data/upgrades",
+	"meta_upgrades": "res://data/meta_upgrades",
 	"cards": "res://data/cards",
 	"missions": "res://data/missions",
 	"shop": "res://data/shop",
@@ -44,16 +45,23 @@ func get_upgrade(id: String) -> UpgradeTrack:
 	return _lookup("upgrades", id) as UpgradeTrack
 
 
+## Permanent Gold upgrade track, or null.
+func get_meta_upgrade(id: String) -> MetaUpgradeData:
+	return _lookup("meta_upgrades", id) as MetaUpgradeData
+
+
 func get_card(id: String) -> CardData:
 	return _lookup("cards", id) as CardData
 
 
-func get_mission(id: String) -> Resource:
-	return _lookup("missions", id)
+## Daily mission or achievement, or null.
+func get_mission(id: String) -> MissionData:
+	return _lookup("missions", id) as MissionData
 
 
-func get_product(id: String) -> Resource:
-	return _lookup("shop", id)
+## Shop product, or null.
+func get_product(id: String) -> ShopProduct:
+	return _lookup("shop", id) as ShopProduct
 
 
 func all_enemies() -> Array:
@@ -72,12 +80,50 @@ func all_upgrades() -> Array:
 	return _all("upgrades")
 
 
+## Every permanent upgrade, ordered by `order` for the Upgrades screen.
+func all_meta_upgrades() -> Array[MetaUpgradeData]:
+	var result: Array[MetaUpgradeData] = []
+	for entry: Variant in _all("meta_upgrades"):
+		var track := entry as MetaUpgradeData
+		if track != null:
+			result.append(track)
+	result.sort_custom(func(a: MetaUpgradeData, b: MetaUpgradeData) -> bool: return a.order < b.order)
+	return result
+
+
 func all_missions() -> Array:
 	return _all("missions")
 
 
-func all_products() -> Array:
-	return _all("shop")
+## Only the rotating daily mission pool.
+func all_daily_missions() -> Array[MissionData]:
+	var result: Array[MissionData] = []
+	for entry: Variant in _all("missions"):
+		var mission := entry as MissionData
+		if mission != null and mission.daily:
+			result.append(mission)
+	return result
+
+
+## Only the persistent achievements.
+func all_achievements() -> Array[MissionData]:
+	var result: Array[MissionData] = []
+	for entry: Variant in _all("missions"):
+		var mission := entry as MissionData
+		if mission != null and not mission.daily:
+			result.append(mission)
+	return result
+
+
+## Every shop product, ordered by `order`.
+func all_products() -> Array[ShopProduct]:
+	var result: Array[ShopProduct] = []
+	for entry: Variant in _all("shop"):
+		var product := entry as ShopProduct
+		if product != null:
+			result.append(product)
+	result.sort_custom(func(a: ShopProduct, b: ShopProduct) -> bool: return a.order < b.order)
+	return result
 
 
 func _lookup(kind: String, id: String) -> Resource:

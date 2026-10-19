@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MissionData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/mission_data.gd" id="1_mission"]
+
+[resource]
+script = ExtResource("1_mission")
+id = "daily_complete_runs"
+title_key = "MISSION_DAILY_COMPLETE_RUNS_TITLE"
+description_key = "MISSION_DAILY_COMPLETE_RUNS_DESC"
+metric = "complete_runs"
+mode = "sum"
+target = 2
+reward_gold = 120
+reward_gems = 5
+daily = true

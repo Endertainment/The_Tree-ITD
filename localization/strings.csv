@@ -1,4 +1,4 @@
-﻿keys,en,uk
+keys,en,uk
 BOOT_TITLE,The Tree,Дерево
 MENU_TITLE,The Tree,Дерево
 MENU_SUBTITLE,Idle Tower Defense,Захист Дерева
@@ -114,3 +114,193 @@ RESULTS_DOUBLE_DONE,Gold doubled,Золото подвоєно
 RESULTS_AD_FAILED,No ad available. Your reward is safe.,Реклама недоступна. Нагороду збережено.
 RESULTS_PLAY_AGAIN,PLAY AGAIN,ГРАТИ ЩЕ
 RESULTS_MENU,MAIN MENU,ГОЛОВНЕ МЕНЮ
+TAB_HOME,HOME,ГОЛОВНА
+TAB_UPGRADES,UPGRADES,ПОКРАЩЕННЯ
+TAB_CARDS,CARDS,КАРТИ
+TAB_MISSIONS,MISSIONS,МІСІЇ
+TAB_SHOP,SHOP,КРАМНИЦЯ
+TAB_SETTINGS,SETTINGS,НАЛАШТУВАННЯ
+TOP_ELF,ELF LV {level},ЕЛЬФ РІВ. {level}
+TOP_BEST,BEST {wave},РЕКОРД {wave}
+HOME_BEST,BEST WAVE {wave},РЕКОРД: ХВИЛЯ {wave}
+HOME_ELF,ELF LV {level},ЕЛЬФ РІВ. {level}
+HOME_ELF_PROGRESS,{current} / {needed} waves to next level,{current} / {needed} хвиль до наступного рівня
+HOME_ELF_MAX,Max Elf Level,Максимальний рівень ельфа
+HOME_DAILY,DAILY MISSIONS,ЩОДЕННІ МІСІЇ
+HOME_DAILY_PROGRESS,{done} / {total} complete,{done} / {total} виконано
+HOME_DAILY_VIEW,VIEW,ПЕРЕГЛЯНУТИ
+HOME_EQUIPPED,EQUIPPED CARDS,ЕКІПОВАНІ КАРТИ
+HOME_NO_CARDS,No cards equipped,Карти не екіповано
+HOME_SPEED_TRIAL,SPEED TRIAL — STAGE 6,ПРОБНА ШВИДКІСТЬ — ЕТАП 6
+HOME_MUSIC_ON,MUSIC ON,МУЗИКА УВІМК.
+HOME_MUSIC_OFF,MUSIC OFF,МУЗИКА ВИКЛ.
+MENU_EXIT_TITLE,Leave the game?,Вийти з гри?
+MENU_EXIT_BODY,Your progress is saved.,Ваш прогрес збережено.
+MENU_EXIT_CONFIRM,EXIT,ВИЙТИ
+COMMON_CLOSE,CLOSE,ЗАКРИТИ
+META_HEADER,PERMANENT UPGRADES,ПОСТІЙНІ ПОКРАЩЕННЯ
+META_HINT,Spend Gold on permanent power. Every level applies to the next run.,Витрачайте золото на постійну силу. Кожен рівень діє у наступних боях.
+META_LEVEL,Level {level} / {max},Рівень {level} / {max}
+META_NOW,NOW {value},ЗАРАЗ {value}
+META_NEXT,NEXT {value},ДАЛІ {value}
+META_BUY,{cost} Gold,{cost} золота
+META_MAX,MAX,МАКС
+META_NEED,NEED {cost} MORE,ПОТРІБНО ЩЕ {cost}
+META_PURCHASED,{name} — level {level},{name} — рівень {level}
+META_NOT_ENOUGH,Need {cost} more Gold,Потрібно ще {cost} золота
+META_TREE_HP_NAME,Tree Vitality,Життєвість дерева
+META_TREE_HP_DESC,+5% Tree max HP,+5% макс. життя дерева
+META_TREE_REGEN_NAME,Tree Regeneration,Регенерація дерева
+META_TREE_REGEN_DESC,+0.5 HP per second,+0.5 життя за секунду
+META_ARCHER_DMG_NAME,Archer Training,Тренування лучників
+META_ARCHER_DMG_DESC,+4% archer damage,+4% урону лучників
+META_ARCHER_SPEED_NAME,Elven Discipline,Ельфійська дисципліна
+META_ARCHER_SPEED_DESC,+3% attack speed,+3% швидкості атаки
+META_START_COINS_NAME,Grove Treasury,Скарбниця гаю
+META_START_COINS_DESC,+20 starting Coins,+20 стартових монет
+META_TOWER_DISCOUNT_NAME,Tower Masonry,Вежова кладка
+META_TOWER_DISCOUNT_DESC,−2% tower cost,−2% вартості веж
+META_COIN_GAIN_NAME,Scavenger's Blessing,Благословення збирача
+META_COIN_GAIN_DESC,+3% Coins from kills,+3% монет за вбивства
+META_GOLD_GAIN_NAME,Golden Roots,Золоте коріння
+META_GOLD_GAIN_DESC,+4% Gold from runs,+4% золота за бій
+CARD_HEARTWOOD_NAME,Heartwood,Серцевина
+CARD_HEARTWOOD_DESC,Trade archer damage for a tougher Tree.,Обміняйте урон лучників на міцніше дерево.
+CARD_HEARTWOOD_LORE,The oldest rings remember every winter.,Найстаріші кільця пам'ятають кожну зиму.
+CARD_SWIFT_LEAVES_NAME,Swift Leaves,Швидке листя
+CARD_SWIFT_LEAVES_DESC,"Faster bows, shorter reach.","Швидші луки, менша дальність."
+CARD_SWIFT_LEAVES_LORE,Wind teaches the canopy to move before it thinks.,"Вітер вчить крону рухатися раніше, ніж вона подумає."
+CARD_MIDAS_BARK_NAME,Midas Bark,Кора Мідаса
+CARD_MIDAS_BARK_DESC,"More Coins, less life.","Більше монет, менше життя."
+CARD_MIDAS_BARK_LORE,Gold seeps through the bark like sap.,"Золото сочиться крізь кору, наче сік."
+CARD_FROST_ROOTS_NAME,Frost Roots,Морозне коріння
+CARD_FROST_ROOTS_DESC,"Stronger slows, pricier towers.","Сильніше сповільнення, дорожчі вежі."
+CARD_FROST_ROOTS_LORE,"Winter sleeps beneath the grove, waiting.",Зима спить під гаєм і чекає.
+CARD_ELVEN_PRECISION_NAME,Elven Precision,Ельфійська точність
+CARD_ELVEN_PRECISION_DESC,"Harder hits and faster arrows, at a cost.",Сильніші удари й швидші стріли — але за ціну.
+CARD_ELVEN_PRECISION_LORE,"Three breaths, one shot.",Три подихи — один постріл.
+CARD_ANCIENT_MEMORY_NAME,Ancient Memory,Давня пам'ять
+CARD_ANCIENT_MEMORY_DESC,"One more archer, fewer starting Coins.","Ще один лучник, менше стартових монет."
+CARD_ANCIENT_MEMORY_LORE,The Tree remembers archers it has not yet grown.,"Дерево пам'ятає лучників, яких ще не виростило."
+CARDS_HEADER,CARDS,КАРТИ
+CARDS_HINT,Owned forever. Equip up to two — every card has a trade-off.,Володієте назавжди. Екіпуйте до двох — кожна карта має компроміс.
+CARDS_LOCKED,LOCKED,ЗАЧИНЕНО
+CARDS_OWNED,OWNED,У ВОЛОДІННІ
+CARDS_EQUIPPED,EQUIPPED,ЕКІПОВАНО
+CARDS_REPLACE,REPLACE,ЗАМІНИТИ
+CARDS_EQUIP,EQUIP,ЕКІПУВАТИ
+CARDS_UNEQUIP,UNEQUIP,ЗНЯТИ
+CARDS_UNLOCK,UNLOCK {cost},ВІДКРИТИ {cost}
+CARDS_NEED_GEMS,NEED {cost} MORE,ПОТРІБНО ЩЕ {cost}
+CARDS_UNLOCK_TITLE,Unlock card,Відкрити карту
+CARDS_UNLOCK_BODY,Unlock {name} for {cost} Gems?,Відкрити {name} за {cost} самоцвітів?
+CARDS_UNLOCKED,{name} unlocked,{name} відкрито
+CARDS_EQUIPPED_TOAST,{name} equipped,{name} екіповано
+CARDS_UNEQUIPPED_TOAST,{name} removed,{name} знято
+CARDS_REPLACE_TITLE,Replace a card,Замінити карту
+CARDS_REPLACE_BODY,Both slots are full. Replace one with {name}.,Обидва слоти зайняті. Замініть одну на {name}.
+MISSIONS_HEADER,MISSIONS,МІСІЇ
+MISSIONS_DAILY,DAILY,ЩОДЕННІ
+MISSIONS_ACHIEVEMENTS,ACHIEVEMENTS,ДОСЯГНЕННЯ
+MISSIONS_RESETS,Resets in {time},Скидання через {time}
+MISSIONS_CLAIM,CLAIM,ЗАБРАТИ
+MISSIONS_CLAIMED,CLAIMED,ОТРИМАНО
+MISSIONS_PROGRESS,{current} / {target},{current} / {target}
+MISSIONS_REWARD,{gold} Gold · {gems} Gems,{gold} золота · {gems} самоцвітів
+MISSIONS_CLAIM_TOAST,+{gold} Gold  +{gems} Gems,+{gold} золота  +{gems} самоцвітів
+MISSION_DAILY_KILL_ORCS_TITLE,Thin the Horde,Прорідити орду
+MISSION_DAILY_KILL_ORCS_DESC,Slay 150 orcs.,Знищте 150 орків.
+MISSION_DAILY_CLEAR_WAVES_TITLE,Hold the Line,Тримати стрій
+MISSION_DAILY_CLEAR_WAVES_DESC,Clear 10 waves.,Відбийте 10 хвиль.
+MISSION_DAILY_REACH_WAVE_TITLE,Into the Depths,У глибину
+MISSION_DAILY_REACH_WAVE_DESC,Reach wave 12.,Дійдіть до 12 хвилі.
+MISSION_DAILY_BUILD_TOWERS_TITLE,Raise the Watch,Підняти варту
+MISSION_DAILY_BUILD_TOWERS_DESC,Build 8 towers.,Збудуйте 8 веж.
+MISSION_DAILY_EARN_COINS_TITLE,Deep Pockets,Повні кишені
+MISSION_DAILY_EARN_COINS_DESC,Earn 600 Coins in one run.,Заробіть 600 монет за один бій.
+MISSION_DAILY_KILL_BOSSES_TITLE,Warlord's End,Кінець воєводи
+MISSION_DAILY_KILL_BOSSES_DESC,Slay 2 bosses.,Знищте 2 воєвод.
+MISSION_DAILY_COMPLETE_RUNS_TITLE,Another Night,Ще одна ніч
+MISSION_DAILY_COMPLETE_RUNS_DESC,Complete 2 runs.,Завершіть 2 бої.
+MISSION_DAILY_WATCH_ADS_TITLE,Support the Grove,Підтримати гай
+MISSION_DAILY_WATCH_ADS_DESC,Watch 2 ads.,Подивіться 2 реклами.
+MISSION_ACH_WAVE_20_TITLE,Wave 20,Хвиля 20
+MISSION_ACH_WAVE_20_DESC,Reach wave 20 in a single run.,Дійдіть до 20 хвилі за один бій.
+MISSION_ACH_WAVE_30_TITLE,Wave 30,Хвиля 30
+MISSION_ACH_WAVE_30_DESC,Reach wave 30 in a single run.,Дійдіть до 30 хвилі за один бій.
+MISSION_ACH_SLAY_1000_TITLE,Thousand Cuts,Тисяча порізів
+MISSION_ACH_SLAY_1000_DESC,Slay 1 000 orcs.,Знищте 1 000 орків.
+MISSION_ACH_BOSSES_TITLE,Warlord Hunter,Мисливець на воєвод
+MISSION_ACH_BOSSES_DESC,Slay 10 bosses.,Знищте 10 воєвод.
+MISSION_ACH_TOWERS_TITLE,Architect,Архітектор
+MISSION_ACH_TOWERS_DESC,Build 50 towers.,Збудуйте 50 веж.
+MISSION_ACH_GOLD_TITLE,Golden Grove,Золотий гай
+MISSION_ACH_GOLD_DESC,Earn 10 000 Gold in total.,Заробіть 10 000 золота загалом.
+MISSION_ACH_RUNS_TITLE,Veteran,Ветеран
+MISSION_ACH_RUNS_DESC,Complete 10 runs.,Завершіть 10 боїв.
+MISSION_ACH_ADS_TITLE,Patron,Покровитель
+MISSION_ACH_ADS_DESC,Watch 5 ads.,Подивіться 5 реклам.
+SHOP_HEADER,SHOP,КРАМНИЦЯ
+SHOP_BANNER,Purchases are disabled in this build,Покупки вимкнено в цій збірці
+SHOP_BUY,BUY,КУПИТИ
+SHOP_OWNED,OWNED,У ВОЛОДІННІ
+SHOP_BADGE_BEST,BEST VALUE,НАЙВИГІДНІШЕ
+SHOP_BADGE_ONE_TIME,ONE TIME,ОДНОРАЗОВО
+SHOP_RESTORE,RESTORE PURCHASES,ВІДНОВИТИ ПОКУПКИ
+SHOP_CONFIRM_TITLE,Confirm purchase,Підтвердити покупку
+SHOP_CONFIRM_BODY,Buy {product} for {price}?,Купити {product} за {price}?
+SHOP_SUCCESS,Purchase complete,Покупку завершено
+SHOP_FAILED,Purchase failed. Nothing was charged.,Покупка не вдалася. Кошти не списано.
+SHOP_RESTORED,Purchases restored,Покупки відновлено
+SHOP_NOTHING,Nothing to restore,Немає що відновлювати
+SHOP_ALREADY,Already owned,Уже у володінні
+SHOP_GEMS_CONTENTS,{amount} Gems,{amount} самоцвітів
+SHOP_GOLD_CONTENTS,{amount} Gold,{amount} золота
+SHOP_BUNDLE_CONTENTS,{gems} Gems + {gold} Gold,{gems} самоцвітів + {gold} золота
+SHOP_DESC_GEMS,Premium currency,Преміум-валюта
+SHOP_DESC_GOLD,Meta currency,Мета-валюта
+SHOP_DESC_STARTER,A head start for a new grove.,Стартовий поштовх для нового гаю.
+SHOP_DESC_REMOVE_ADS,"No interstitials, forever.",Без міжсторінкової реклами назавжди.
+SHOP_TITLE_GEMS_100,Handful of Gems,Жменя самоцвітів
+SHOP_TITLE_GEMS_550,Pouch of Gems,Мішечок самоцвітів
+SHOP_TITLE_GEMS_1200,Chest of Gems,Скриня самоцвітів
+SHOP_TITLE_GEMS_2500,Hoard of Gems,Скарб самоцвітів
+SHOP_TITLE_GOLD_5000,Pile of Gold,Купа золота
+SHOP_TITLE_GOLD_25000,Vault of Gold,Сховище золота
+SHOP_TITLE_STARTER,Starter Bundle,Стартовий набір
+SHOP_TITLE_REMOVE_ADS,Remove Ads,Без реклами
+SETTINGS_HEADER,SETTINGS,НАЛАШТУВАННЯ
+SET_MUSIC,Music,Музика
+SET_SFX,SFX,Звуки
+SET_HAPTICS,Haptics,Вібрація
+SET_LANGUAGE,Language,Мова
+SET_LANGUAGE_SYSTEM,System,Системна
+SET_LANGUAGE_EN,English,English
+SET_LANGUAGE_UK,Українська,Українська
+SET_QUALITY,Quality,Якість
+SET_QUALITY_HIGH,High,Висока
+SET_QUALITY_LOW,Low,Низька
+SET_QUALITY_HINT,Low disables particles and camera shake.,Низька вимикає частинки й тремтіння камери.
+SET_RESET,RESET PROGRESS,СКИНУТИ ПРОГРЕС
+SET_RESET_TITLE,Reset progress?,Скинути прогрес?
+SET_RESET_BODY,"All Gold, Gems, upgrades, cards, missions and settings will be erased.","Усе золото, самоцвіти, покращення, карти, місії та налаштування буде стерто."
+SET_RESET_CONFIRM,I UNDERSTAND,Я РОЗУМІЮ
+SET_RESET_FINAL_TITLE,Last chance,Останній шанс
+SET_RESET_FINAL_BODY,This cannot be undone. Reset the whole profile?,Це неможливо скасувати. Скинути весь профіль?
+SET_RESET_FINAL_CONFIRM,RESET EVERYTHING,СКИНУТИ ВСЕ
+SET_PRIVACY,Privacy policy,Політика конфіденційності
+SET_PRIVACY_FAILED,Could not open the browser,Не вдалося відкрити браузер
+SET_VERSION,Version {version},Версія {version}
+SET_CREDITS,Made with Godot 4 · Placeholder art,Створено на Godot 4 · Тимчасова графіка
+STAT_TREE_HP,Tree HP,Життя дерева
+STAT_TREE_REGEN,Tree regen,Регенерація
+STAT_ARCHER_DMG,Archer damage,Урон лучників
+STAT_ARCHER_SPEED,Attack speed,Швидкість атаки
+STAT_ARCHER_RANGE,Archer range,Дальність лучників
+STAT_PROJECTILE_SPEED,Projectile speed,Швидкість снарядів
+STAT_COIN_GAIN,Coins from kills,Монети за вбивства
+STAT_GOLD_GAIN,Gold earned,Заробіток золота
+STAT_TOWER_COST,Tower cost,Вартість веж
+STAT_SLOW,Slow strength,Сила сповільнення
+STAT_START_COINS,Starting Coins,Стартові монети
+STAT_START_ARCHERS,Starting archers,Стартові лучники
