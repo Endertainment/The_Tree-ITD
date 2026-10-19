@@ -41,26 +41,26 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"HudLabel"
-text = "Roots"
+text = "UPG_ROOTS_NAME"
 text_overrun_behavior = 3
 
 [node name="LevelLabel" type="Label" parent="Content/Info/TopRow"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "0 / 5"
+text = ""
 
 [node name="ValueLabel" type="Label" parent="Content/Info"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudCenter"
-text = "HP 1000 → 1150"
+text = ""
 
 [node name="DescriptionLabel" type="Label" parent="Content/Info"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "+150 max HP, heals by the same amount"
+text = ""
 autowrap_mode = 3
 
 [node name="ReasonLabel" type="Label" parent="Content/Info"]
@@ -75,4 +75,4 @@ custom_minimum_size = Vector2(210, 96)
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"PrimaryButton"
-text = "70"
+text = ""

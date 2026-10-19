@@ -46,7 +46,7 @@ func _process(delta: float) -> void:
 		return
 	var ratio := _boss.get_hp_ratio()
 	_bar.value = clampf(ratio * 100.0, 0.0, 100.0)
-	_percent.text = "%d%%" % int(round(ratio * 100.0))
+	_percent.text = Loc.format_percent(ratio * 100.0)
 	if _boss.is_enraged():
 		_pulse += delta * 6.0
 		_name.modulate = Color(1.0, 0.55, 0.45).lerp(Color(1.0, 0.8, 0.7), 0.5 + 0.5 * sin(_pulse))

@@ -304,3 +304,49 @@ No real billing, ad SDKs, consent flow, cloud saves, accounts or leaderboards (s
 6-7). Cards are unlocked directly with Gems; no card packs or duplicates. Scores are
 not submitted anywhere; the shop prices are display strings.
 
+## Stage 7 — presentation layer
+
+New nodes hang off `Battle.tscn`; none of them own run state.
+
+| Node | Script | Responsibility |
+|---|---|---|
+| `ScreenShake` (`Camera2D` at 540,960) | `scripts/battle/screen_shake.gd` | Trauma-decay camera offset. `Battle.request_shake(px)` converts a pixel displacement into trauma. Disabled on low quality. |
+| `VfxLayer` (`Node2D`) | `scripts/battle/vfx_layer.gd` | Eight pooled `CPUParticles2D` bursts (hit spark, death puff, coin sparkle, arrow dust, leaf burst, summon ring) with a hard 120-particle cap and a low-quality half-rate path. |
+| `TutorialOverlay` (`CanvasLayer`, layer 9) | `scripts/ui/tutorial_controller.gd` | Three non-blocking steps, 20 s fallbacks, SKIP, boss-wave suppression, `flags.tutorial_done` persistence and Settings replay. |
+| `DevConsole` (`CanvasLayer`, layer 100) | `scripts/ui/debug/dev_console.gd` | `F2` console: `LOCALE en\|uk`, `BENCHMARK`, `HELP`. Frees itself in release builds. |
+| `%DamageVignette` (inside `BattleHUD`) | `battle_hud.gd:pulse_damage()` | Red full-screen pulse on Tree damage. |
+| `SafeArea` (`MarginContainer` script) | `scripts/ui/safe_area.gd` | Adds device insets on top of scene-authored margins on `MainMenu`, `Results`; `BattleHUD` uses the same static `insets_for()` maths for its two bars. |
+
+**Damage → feedback path.** `Enemy.take_damage()` calls
+`Battle.show_damage(enemy, dealt)`, which spawns the hit spark, requests a shake for
+hits ≥ 48, and adds a floating number when `show_damage_numbers` is on and quality is
+high. `Core.take_damage()` emits `damage_taken`, which triggers the vignette, a leaf
+burst and a 4 px shake. Boss bolts go through
+`TowerProjectilePool.on_impact()` → `Battle.request_shake(6.0)`.
+
+**Audio.** `default_bus_layout.tres` ships Master → Music / SFX / UI.
+`AudioManager` scans `assets/audio/{sfx,music}` at startup, keys streams by basename,
+maps legacy ids through `ALIASES` (`ui_click`, `tower_fire`, `boss_summon`), ducks the
+Music bus by `DUCK_DB` whenever `get_tree().paused` flips, and `SceneRouter.goto()`
+calls `stop_all_sfx()` before every scene change so no voice outlives its scene.
+
+**Localization.** `Loc` parses `localization/strings.csv` into runtime `Translation`
+objects (no import step), exposes `t_key`, `format_number`, `format_percent`,
+`format_time`, `plural`/`plural_key`, and switches locales live. Scene labels carry
+translation **keys**, so Godot re-translates them on
+`NOTIFICATION_TRANSLATION_CHANGED`; scripts overwrite dynamic labels with
+`Loc.t_key(...)` on refresh. `TestGlyphs` proves the theme font covers every glyph the
+CSV uses.
+
+**Adding a sound.** Drop `id.wav` (or `.ogg`) into `assets/audio/sfx/`, call
+`AudioManager.play_sfx("id")`; UI sounds call `play_ui("id")`. No registration needed.
+
+## Stage 7 known gaps
+
+- Master §8.5 draw-call (<120) and node (<400) budgets are missed at 70 enemies:
+  964 / 971 measured high, 469 / 971 low. Needs a `MultiMeshInstance2D` orc pass and
+  lazy sheet construction — scheduled for stage 8.
+- `battle.gd` (~840 lines) and `battle_hud.gd` (~500) remain over the 300-line
+  guideline; stage 7 added only thin wiring to them.
+- No device build was installed or launched; see `docs/QA_CHECKLIST.md`.
+

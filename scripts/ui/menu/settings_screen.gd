@@ -14,6 +14,11 @@ const VERSION_SETTING := "application/config/version"
 @onready var _sfx_value: Label = %SfxValue
 @onready var _haptics_label: Label = %HapticsLabel
 @onready var _haptics_toggle: CheckButton = %HapticsToggle
+@onready var _damage_label: Label = %DamageNumbersLabel
+@onready var _damage_toggle: CheckButton = %DamageNumbersToggle
+@onready var _focus_label: Label = %FocusLabel
+@onready var _focus_toggle: CheckButton = %FocusToggle
+@onready var _replay_button: Button = %ReplayButton
 @onready var _language_label: Label = %LanguageLabel
 @onready var _language_option: OptionButton = %LanguageOption
 @onready var _quality_label: Label = %QualityLabel
@@ -31,6 +36,9 @@ func _ready() -> void:
 	_music_slider.value_changed.connect(_on_music_changed)
 	_sfx_slider.value_changed.connect(_on_sfx_changed)
 	_haptics_toggle.toggled.connect(_on_haptics_toggled)
+	_damage_toggle.toggled.connect(_on_damage_numbers_toggled)
+	_focus_toggle.toggled.connect(_on_focus_mute_toggled)
+	_replay_button.pressed.connect(_on_replay_tutorial)
 	_language_option.item_selected.connect(_on_language_selected)
 	_quality_option.item_selected.connect(_on_quality_selected)
 	_reset_button.pressed.connect(_on_reset_pressed)
@@ -43,6 +51,9 @@ func refresh() -> void:
 	_music_label.text = Loc.t_key("SET_MUSIC")
 	_sfx_label.text = Loc.t_key("SET_SFX")
 	_haptics_label.text = Loc.t_key("SET_HAPTICS")
+	_damage_label.text = Loc.t_key("SET_DAMAGE_NUMBERS")
+	_focus_label.text = Loc.t_key("SET_MUTE_FOCUS")
+	_replay_button.text = Loc.t_key("SET_REPLAY_TUTORIAL")
 	_language_label.text = Loc.t_key("SET_LANGUAGE")
 	_quality_label.text = Loc.t_key("SET_QUALITY")
 	_quality_hint.text = Loc.t_key("SET_QUALITY_HINT")
@@ -56,9 +67,11 @@ func refresh() -> void:
 	var sfx := float(GameState.get_setting("sfx", 1.0))
 	_music_slider.set_value_no_signal(music * 100.0)
 	_sfx_slider.set_value_no_signal(sfx * 100.0)
-	_music_value.text = "%d%%" % roundi(music * 100.0)
-	_sfx_value.text = "%d%%" % roundi(sfx * 100.0)
+	_music_value.text = Loc.format_percent(music * 100.0)
+	_sfx_value.text = Loc.format_percent(sfx * 100.0)
 	_haptics_toggle.set_pressed_no_signal(bool(GameState.get_setting("haptics", true)))
+	_damage_toggle.set_pressed_no_signal(bool(GameState.get_setting("show_damage_numbers", true)))
+	_focus_toggle.set_pressed_no_signal(bool(GameState.get_setting("mute_on_focus_loss", true)))
 	_populate_languages()
 	_populate_quality()
 	_updating = false
@@ -89,7 +102,7 @@ func _on_music_changed(value: float) -> void:
 	if _updating:
 		return
 	AudioManager.set_bus_volume(AudioManager.MUSIC_BUS, value / 100.0)
-	_music_value.text = "%d%%" % roundi(value)
+	_music_value.text = Loc.format_percent(value)
 
 
 func _on_sfx_changed(value: float) -> void:
@@ -97,13 +110,33 @@ func _on_sfx_changed(value: float) -> void:
 		return
 	AudioManager.set_bus_volume(AudioManager.SFX_BUS, value / 100.0)
 	AudioManager.set_bus_volume(AudioManager.UI_BUS, value / 100.0)
-	_sfx_value.text = "%d%%" % roundi(value)
+	_sfx_value.text = Loc.format_percent(value)
 
 
 func _on_haptics_toggled(pressed: bool) -> void:
 	if _updating:
 		return
 	GameState.set_setting("haptics", pressed)
+
+
+func _on_damage_numbers_toggled(pressed: bool) -> void:
+	if _updating:
+		return
+	GameState.set_setting("show_damage_numbers", pressed)
+
+
+func _on_focus_mute_toggled(pressed: bool) -> void:
+	if _updating:
+		return
+	GameState.set_setting("mute_on_focus_loss", pressed)
+	AudioManager.apply_settings()
+
+
+## Clears the tutorial flag; the hints return on the next battle.
+func _on_replay_tutorial() -> void:
+	AudioManager.play_ui("ui_tap")
+	GameState.set_flag("tutorial_done", false)
+	main_menu.show_toast(Loc.t_key("SET_REPLAY_TOAST"))
 
 
 func _on_language_selected(index: int) -> void:

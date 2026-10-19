@@ -11,12 +11,12 @@ script = ExtResource("1_counter")
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "GOLD"
+text = "CURRENCY_GOLD"
 horizontal_alignment = 1
 
 [node name="Value" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudValue"
-text = "0"
+text = ""
 horizontal_alignment = 1

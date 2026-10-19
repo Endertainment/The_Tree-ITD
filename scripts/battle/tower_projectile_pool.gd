@@ -111,8 +111,8 @@ func on_impact(position: Vector2, kind: int, splash_radius: float) -> void:
 	match kind:
 		TowerProjectile.Kind.BALLISTA_BOLT:
 			ring.play(position, Color(0.95, 0.85, 0.5), 30.0, 5.0)
-			if battle != null and battle.core != null:
-				battle.core.shake(0.7)
+			if battle != null:
+				battle.request_shake(6.0)
 		TowerProjectile.Kind.FROST_BOLT:
 			ring.play(position, Color(0.44, 0.85, 0.91), splash_radius, 4.0)
 		_:

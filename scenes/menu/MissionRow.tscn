@@ -21,14 +21,14 @@ theme_override_constants/separation = 8
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "Mission"
+text = ""
 autowrap_mode = 3
 
 [node name="Description" type="Label" parent="Row/Info"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Description"
+text = ""
 autowrap_mode = 3
 
 [node name="Bar" type="ProgressBar" parent="Row/Info"]
@@ -44,7 +44,7 @@ show_percentage = false
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "0 / 1"
+text = ""
 
 [node name="Actions" type="VBoxContainer" parent="Row"]
 custom_minimum_size = Vector2(260, 0)
@@ -55,7 +55,7 @@ theme_override_constants/separation = 8
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "100 Gold · 5 Gems"
+text = ""
 autowrap_mode = 3
 
 [node name="ClaimButton" type="Button" parent="Row/Actions"]
@@ -64,4 +64,4 @@ custom_minimum_size = Vector2(240, 88)
 layout_mode = 2
 size_flags_vertical = 8
 theme_type_variation = &"RowButton"
-text = "CLAIM"
+text = "MISSIONS_CLAIM"

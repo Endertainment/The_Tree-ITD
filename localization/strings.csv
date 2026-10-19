@@ -366,6 +366,26 @@ DEBUG_READY,ready,готово
 DEBUG_NEXT_REWARDED,Next rewarded: {outcome},Наступна реклама: {outcome}
 DEBUG_NEXT_PURCHASE,Next purchase: {outcome},Наступна покупка: {outcome}
 DEBUG_COUNTERS_RESET,Counters reset,Лічильники скинуто
-TIME_HOURS_MINUTES,{hours}h {minutes}m,{hours}г {minutes}хв
-TIME_MINUTES,{minutes}m,{minutes}хв
+TIME_HOURS_MINUTES,{hours}h {minutes}m,{hours} год {minutes} хв
+TIME_MINUTES,{minutes}m,{minutes} хв
 DEBUG_PLACEMENTS_LINE,READY — speed: {speed}  free: {free}  interstitial: {interstitial},ГОТОВО — швидкість: {speed}  безкоштовні: {free}  міжсторінкова: {interstitial}
+ICON_PAUSE,II,II
+ICON_CLOSE,X,X
+HUD_SPEED_LOCK,LOCK,ЗАМОК
+PERCENT,{value}%,{value} %
+TUTORIAL_BUILD,Tap a pad to build a tower,"Торкніться майданчика, щоб звести вежу"
+TUTORIAL_UPGRADE,Spend Coins to grow stronger,"Витрачайте монети, щоб стати сильнішим"
+TUTORIAL_CALL,Call the next wave early for bonus Coins,"Викличте наступну хвилю достроково за бонусні монети"
+TUTORIAL_SKIP,SKIP,ПРОПУСТИТИ
+SET_REPLAY_TUTORIAL,Replay tutorial,Повторити навчання
+SET_MUTE_FOCUS,Mute in background,Тихо у фоні
+DEV_HINT,Type a command — HELP for the list.,Введіть команду — HELP для списку.
+DEV_HELP,"Commands: LOCALE en|uk, BENCHMARK, HELP","Команди: LOCALE en|uk, BENCHMARK, HELP"
+DEV_UNKNOWN,Unknown command: {name},Невідома команда: {name}
+DEV_LOCALE_SET,Locale: {locale},Мова: {locale}
+DEV_BENCH_RUNNING,Benchmark running…,Тест продуктивності…
+DEV_BENCH_RESULT,Benchmark: {fps} FPS over {seconds} s,Тест: {fps} FPS за {seconds} с
+DEV_BENCH_BATTLE_ONLY,BENCHMARK runs in battle only,BENCHMARK працює лише в бою
+SET_DAMAGE_NUMBERS,Damage numbers,Числа ушкоджень
+SET_REPLAY_TOAST,Tutorial will replay in your next battle,Навчання повториться в наступному бою
+TOWER_TAB_LEVEL,{name}  L{level},{name}  {level} р.

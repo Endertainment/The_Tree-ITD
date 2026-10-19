@@ -83,21 +83,13 @@ func _update_countdown() -> void:
 		return
 	var remaining := MissionTracker.seconds_until_reset()
 	_reset_label.text = Loc.t_key("MISSIONS_RESETS", {
-		"time": _format_remaining(remaining),
+		"time": Loc.format_time(remaining),
 	})
 	# A menu left open across local midnight rolls over in place.
 	if remaining <= 1 and not _rolling and GameState.missions.refresh_daily():
 		_rolling = true
 		refresh()
 		_rolling = false
-
-
-func _format_remaining(seconds: int) -> String:
-	var hours := seconds / 3600
-	var minutes := (seconds % 3600) / 60
-	if hours > 0:
-		return "%dh %02dm" % [hours, minutes]
-	return "%dm" % minutes
 
 
 func _on_claim_requested(mission: MissionData) -> void:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/battle/battle.gd" id="1_battle"]
 [ext_resource type="Script" path="res://scripts/battle/arena.gd" id="2_arena"]
@@ -11,6 +11,10 @@
 [ext_resource type="Script" path="res://scripts/battle/tower_manager.gd" id="9_tower_manager"]
 [ext_resource type="Script" path="res://scripts/battle/range_indicator.gd" id="10_range"]
 [ext_resource type="Script" path="res://scripts/battle/tower_projectile_pool.gd" id="11_tower_pool"]
+[ext_resource type="Script" path="res://scripts/battle/screen_shake.gd" id="12_shake"]
+[ext_resource type="Script" path="res://scripts/battle/vfx_layer.gd" id="13_vfx"]
+[ext_resource type="PackedScene" path="res://scenes/ui/tutorial_overlay.tscn" id="14_tutorial"]
+[ext_resource type="PackedScene" path="res://ui/debug/DevConsole.tscn" id="15_console"]
 
 [sub_resource type="CircleShape2D" id="CircleShape_core"]
 radius = 90.0
@@ -147,5 +151,20 @@ script = ExtResource("6_wave_manager")
 unique_name_in_owner = true
 z_index = 4
 script = ExtResource("7_floating_text")
+
+[node name="ScreenShake" type="Camera2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(540, 960)
+script = ExtResource("12_shake")
+
+[node name="VfxLayer" type="Node2D" parent="."]
+unique_name_in_owner = true
+z_index = 3
+script = ExtResource("13_vfx")
+
+[node name="TutorialOverlay" parent="." instance=ExtResource("14_tutorial")]
+unique_name_in_owner = true
+
+[node name="DevConsole" parent="." instance=ExtResource("15_console")]
 
 [node name="HUD" parent="." instance=ExtResource("8_hud")]

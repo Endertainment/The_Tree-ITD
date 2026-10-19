@@ -53,7 +53,7 @@ theme_override_constants/separation = 12
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"PanelTitle"
-text = "MONETIZATION DEBUG"
+text = "DEBUG_TITLE"
 autowrap_mode = 3
 
 [node name="Status" type="Label" parent="Safe/Center/Panel/Column"]
@@ -69,7 +69,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "FORCE NEXT REWARDED"
+text = "DEBUG_FORCE_REWARDED"
 
 [node name="RewardedGrid" type="GridContainer" parent="Safe/Center/Panel/Column"]
 layout_mode = 2
@@ -83,7 +83,7 @@ custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"RowButton"
-text = "SUCCESS"
+text = "DEBUG_SUCCESS"
 
 [node name="FailButton" type="Button" parent="Safe/Center/Panel/Column/RewardedGrid"]
 unique_name_in_owner = true
@@ -91,7 +91,7 @@ custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"RowButton"
-text = "FAIL"
+text = "DEBUG_FAIL"
 
 [node name="CloseAdButton" type="Button" parent="Safe/Center/Panel/Column/RewardedGrid"]
 unique_name_in_owner = true
@@ -99,7 +99,7 @@ custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"RowButton"
-text = "CLOSE (NO REWARD)"
+text = "DEBUG_CLOSE_AD"
 
 [node name="TimeoutButton" type="Button" parent="Safe/Center/Panel/Column/RewardedGrid"]
 unique_name_in_owner = true
@@ -107,13 +107,13 @@ custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"RowButton"
-text = "TIMEOUT"
+text = "DEBUG_TIMEOUT"
 
 [node name="PurchaseTitle" type="Label" parent="Safe/Center/Panel/Column"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "FORCE NEXT PURCHASE"
+text = "DEBUG_FORCE_PURCHASE"
 
 [node name="PurchaseGrid" type="GridContainer" parent="Safe/Center/Panel/Column"]
 layout_mode = 2
@@ -127,7 +127,7 @@ custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"RowButton"
-text = "SUCCESS"
+text = "DEBUG_SUCCESS"
 
 [node name="BuyCancelButton" type="Button" parent="Safe/Center/Panel/Column/PurchaseGrid"]
 unique_name_in_owner = true
@@ -135,7 +135,7 @@ custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"RowButton"
-text = "CANCEL"
+text = "COMMON_CANCEL"
 
 [node name="BuyFailButton" type="Button" parent="Safe/Center/Panel/Column/PurchaseGrid"]
 unique_name_in_owner = true
@@ -143,7 +143,7 @@ custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"RowButton"
-text = "FAIL"
+text = "DEBUG_FAIL"
 
 [node name="Divider2" type="HSeparator" parent="Safe/Center/Panel/Column"]
 layout_mode = 2
@@ -160,7 +160,7 @@ custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"RowButton"
-text = "RESET COUNTERS"
+text = "DEBUG_RESET"
 
 [node name="ConsentButton" type="Button" parent="Safe/Center/Panel/Column/UtilityGrid"]
 unique_name_in_owner = true
@@ -168,7 +168,7 @@ custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"RowButton"
-text = "TOGGLE CONSENT"
+text = "DEBUG_TOGGLE_CONSENT"
 
 [node name="ClosePanelButton" type="Button" parent="Safe/Center/Panel/Column/UtilityGrid"]
 unique_name_in_owner = true
@@ -176,4 +176,4 @@ custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"SecondaryButton"
-text = "CLOSE"
+text = "COMMON_CLOSE"

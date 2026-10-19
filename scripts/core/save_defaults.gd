@@ -66,6 +66,7 @@ static func create() -> Dictionary:
 			"locale": "en",
 			"quality": "high",
 			"show_damage_numbers": true,
+			"mute_on_focus_loss": true,
 		},
 		"shop": {
 			"owned_products": [],

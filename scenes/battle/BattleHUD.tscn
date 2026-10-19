@@ -11,6 +11,16 @@ process_mode = 3
 layer = 10
 script = ExtResource("1_hud")
 
+[node name="DamageVignette" type="ColorRect" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.8, 0.12, 0.1, 0)
+
 [node name="TopSafe" type="MarginContainer" parent="."]
 unique_name_in_owner = true
 anchors_preset = 10
@@ -36,7 +46,7 @@ theme_override_constants/separation = 6
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "HP 1000 / 1000"
+text = ""
 
 [node name="HpBar" type="ProgressBar" parent="TopSafe/TopBar/HpBox"]
 unique_name_in_owner = true
@@ -56,14 +66,14 @@ alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudCenter"
-text = "PREPARE"
+text = "HUD_PREPARE"
 horizontal_alignment = 1
 
 [node name="TimerLabel" type="Label" parent="TopSafe/TopBar/CenterBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "NEXT IN 10"
+text = ""
 horizontal_alignment = 1
 
 [node name="RightBox" type="HBoxContainer" parent="TopSafe/TopBar"]
@@ -80,14 +90,14 @@ theme_override_constants/separation = 0
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "COINS"
+text = "HUD_COINS"
 horizontal_alignment = 1
 
 [node name="CoinsLabel" type="Label" parent="TopSafe/TopBar/RightBox/CoinsBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudValue"
-text = "120"
+text = ""
 horizontal_alignment = 1
 
 [node name="SpeedButton" parent="TopSafe/TopBar/RightBox" instance=ExtResource("2_speed")]
@@ -101,7 +111,7 @@ custom_minimum_size = Vector2(88, 88)
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"SecondaryButton"
-text = "II"
+text = "ICON_PAUSE"
 
 [node name="BottomSafe" type="MarginContainer" parent="."]
 unique_name_in_owner = true
@@ -130,14 +140,14 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"HudSmall"
-text = "TOWERS 0 / 8"
+text = ""
 
 [node name="PadHint" type="Label" parent="BottomSafe/BottomBar/TowerRow"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"HudSmall"
-text = "Tap a pad to build"
+text = "HUD_TAP_PAD"
 horizontal_alignment = 2
 
 [node name="CallButton" type="Button" parent="BottomSafe/BottomBar"]
@@ -145,14 +155,14 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 124)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
-text = "CALL WAVE"
+text = "HUD_CALL_WAVE"
 
 [node name="UpgradesButton" type="Button" parent="BottomSafe/BottomBar"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 92)
 layout_mode = 2
 theme_type_variation = &"SecondaryButton"
-text = "UPGRADES"
+text = "HUD_UPGRADES"
 
 [node name="BossBar" parent="." instance=ExtResource("3_boss")]
 unique_name_in_owner = true
@@ -175,14 +185,14 @@ alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"BannerTitle"
-text = "WAVE 3 CLEARED"
+text = ""
 horizontal_alignment = 1
 
 [node name="BannerBonus" type="Label" parent="Banner"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudCenter"
-text = "+16"
+text = ""
 horizontal_alignment = 1
 
 [node name="WaveBanner" parent="." instance=ExtResource("4_banner")]
@@ -196,7 +206,7 @@ offset_right = 760.0
 offset_bottom = 560.0
 mouse_filter = 2
 theme_type_variation = &"HudSmall"
-text = "FPS"
+text = ""
 visible = false
 
 [node name="SheetHost" type="Control" parent="."]
@@ -250,7 +260,7 @@ theme_override_constants/separation = 18
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"PanelTitle"
-text = "PAUSED"
+text = "PAUSE_TITLE"
 horizontal_alignment = 1
 
 [node name="ResumeButton" type="Button" parent="PauseMenu/Center/PausePanel/PauseColumn"]
@@ -258,27 +268,27 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
-text = "RESUME"
+text = "PAUSE_RESUME"
 
 [node name="QuitButton" type="Button" parent="PauseMenu/Center/PausePanel/PauseColumn"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 92)
 layout_mode = 2
 theme_type_variation = &"SecondaryButton"
-text = "QUIT RUN"
+text = "PAUSE_QUIT"
 
 [node name="SettingsButton" type="Button" parent="PauseMenu/Center/PausePanel/PauseColumn"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 92)
 layout_mode = 2
 theme_type_variation = &"SecondaryButton"
-text = "SETTINGS"
+text = "PAUSE_SETTINGS"
 
 [node name="PauseVersion" type="Label" parent="PauseMenu/Center/PausePanel/PauseColumn"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "v0.1.0"
+text = ""
 horizontal_alignment = 1
 
 [node name="QuitConfirm" type="Control" parent="PauseMenu"]
@@ -321,7 +331,7 @@ theme_override_constants/separation = 18
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"PanelTitle"
-text = "Quit this run?"
+text = "QUIT_TITLE"
 horizontal_alignment = 1
 
 [node name="QuitBody" type="Label" parent="PauseMenu/QuitConfirm/Center/QuitPanel/QuitColumn"]
@@ -329,7 +339,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(540, 0)
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Cleared waves count as a finished run."
+text = ""
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -343,7 +353,7 @@ custom_minimum_size = Vector2(0, 92)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"SecondaryButton"
-text = "KEEP PLAYING"
+text = "QUIT_CANCEL"
 
 [node name="QuitConfirmButton" type="Button" parent="PauseMenu/QuitConfirm/Center/QuitPanel/QuitColumn/QuitButtons"]
 unique_name_in_owner = true
@@ -351,7 +361,7 @@ custom_minimum_size = Vector2(0, 92)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"PrimaryButton"
-text = "QUIT"
+text = "QUIT_CONFIRM"
 
 [node name="RevivePrompt" parent="." instance=ExtResource("5_revive")]
 unique_name_in_owner = true

@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/battle/results.gd" id="1_results"]
 [ext_resource type="PackedScene" path="res://ui/RewardCounter.tscn" id="2_counter"]
 [ext_resource type="PackedScene" path="res://ui/Toast.tscn" id="3_toast"]
 [ext_resource type="PackedScene" path="res://ui/AdSpinner.tscn" id="4_spinner"]
+[ext_resource type="Script" path="res://scripts/ui/safe_area.gd" id="5_safe"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_card"]
 content_margin_left = 44.0
@@ -40,6 +41,7 @@ grow_vertical = 2
 color = Color(0.039216, 0.062745, 0.043137, 1)
 
 [node name="SafeArea" type="MarginContainer" parent="."]
+script = ExtResource("5_safe")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -67,7 +69,7 @@ theme_override_constants/separation = 14
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"PanelTitle"
-text = "THE TREE HAS FALLEN"
+text = "RESULTS_DEFEAT_TITLE"
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -80,14 +82,14 @@ alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "BEST: 0"
+text = ""
 
 [node name="NewBest" type="Label" parent="SafeArea/Center/Card/Column/BestRow"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "NEW BEST!"
+text = "RESULTS_NEW_BEST"
 modulate = Color(0.94902, 0.756863, 0.305882, 1)
 
 [node name="Stats" type="VBoxContainer" parent="SafeArea/Center/Card/Column"]
@@ -98,35 +100,35 @@ theme_override_constants/separation = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "Waves survived: 0"
+text = ""
 horizontal_alignment = 1
 
 [node name="StatKills" type="Label" parent="SafeArea/Center/Card/Column/Stats"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "Orcs slain: 0"
+text = ""
 horizontal_alignment = 1
 
 [node name="StatBosses" type="Label" parent="SafeArea/Center/Card/Column/Stats"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "Bosses slain: 0"
+text = ""
 horizontal_alignment = 1
 
 [node name="StatTime" type="Label" parent="SafeArea/Center/Card/Column/Stats"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Run time: 0:00"
+text = ""
 horizontal_alignment = 1
 
 [node name="StatCoins" type="Label" parent="SafeArea/Center/Card/Column/Stats"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Coins earned: 0"
+text = ""
 horizontal_alignment = 1
 
 [node name="Divider" type="HSeparator" parent="SafeArea/Center/Card/Column"]
@@ -149,7 +151,7 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Wave 30 milestone: +10 Gems"
+text = ""
 horizontal_alignment = 1
 
 [node name="DoubleGoldButton" type="Button" parent="SafeArea/Center/Card/Column"]
@@ -157,7 +159,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
-text = "DOUBLE GOLD (AD)"
+text = "RESULTS_DOUBLE_GOLD"
 
 [node name="SpinnerBox" type="CenterContainer" parent="SafeArea/Center/Card/Column"]
 layout_mode = 2
@@ -176,7 +178,7 @@ custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"PrimaryButton"
-text = "PLAY AGAIN"
+text = "RESULTS_PLAY_AGAIN"
 
 [node name="MenuButton" type="Button" parent="SafeArea/Center/Card/Column/Buttons"]
 unique_name_in_owner = true
@@ -184,7 +186,7 @@ custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"SecondaryButton"
-text = "MAIN MENU"
+text = "RESULTS_MENU"
 
 [node name="Toast" parent="." instance=ExtResource("3_toast")]
 unique_name_in_owner = true

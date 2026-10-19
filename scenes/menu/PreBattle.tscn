@@ -16,7 +16,7 @@ theme_override_constants/separation = 14
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"PanelTitle"
-text = "PREPARE FOR BATTLE"
+text = "PREPARE_TITLE"
 autowrap_mode = 3
 
 [node name="InfoRow" type="HBoxContainer" parent="Column"]
@@ -28,20 +28,20 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"HudLabel"
-text = "BEST: 0"
+text = ""
 
 [node name="DifficultyLabel" type="Label" parent="Column/InfoRow"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "DIFFICULTY: EASY"
+text = ""
 vertical_alignment = 1
 
 [node name="CardsTitle" type="Label" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "EQUIPPED CARDS"
+text = "HOME_EQUIPPED"
 
 [node name="CardsRow" type="HBoxContainer" parent="Column"]
 unique_name_in_owner = true
@@ -52,21 +52,21 @@ theme_override_constants/separation = 16
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "No cards equipped"
+text = "HOME_NO_CARDS"
 
 [node name="SpeedTrialButton" type="Button" parent="Column"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 theme_type_variation = &"RowButton"
-text = "SPEED TRIAL"
+text = ""
 
 [node name="SpeedUnlockedLabel" type="Label" parent="Column"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "1.5x UNLOCKED"
+text = "PREPARE_SPEED_UNLOCKED"
 
 [node name="StatusRow" type="HBoxContainer" parent="Column"]
 layout_mode = 2
@@ -88,4 +88,4 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
-text = "BATTLE"
+text = "MENU_BATTLE"

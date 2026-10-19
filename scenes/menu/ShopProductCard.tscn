@@ -18,32 +18,32 @@ theme_override_constants/separation = 8
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"CardTitle"
-text = "BEST VALUE"
+text = "SHOP_BADGE_BEST"
 visible = false
 
 [node name="Title" type="Label" parent="Card"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "100 Gems"
+text = ""
 
 [node name="Contents" type="Label" parent="Card"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_type_variation = &"HudSmall"
-text = "100 Gems"
+text = ""
 autowrap_mode = 3
 
 [node name="Price" type="Label" parent="Card"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudValue"
-text = "$1.99"
+text = ""
 
 [node name="BuyButton" type="Button" parent="Card"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
-text = "BUY"
+text = "SHOP_BUY"

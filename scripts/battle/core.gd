@@ -8,6 +8,9 @@ extends Area2D
 
 signal died
 
+## Emitted after contact damage was actually applied, for screen shake and VFX.
+signal damage_taken(amount: float)
+
 const BODY_RADIUS := 90.0
 const HP_BAR_WIDTH := 240.0
 const HP_BAR_HEIGHT := 20.0
@@ -88,6 +91,7 @@ func take_damage(amount: float) -> void:
 		_leaf_puff.restart()
 		_leaf_puff.emitting = true
 	EventBus.core_damaged.emit(hp, max_hp)
+	damage_taken.emit(amount)
 	queue_redraw()
 	if hp <= 0.0:
 		_dead = true

@@ -42,6 +42,8 @@ func goto(path: String, force := false) -> void:
 	_fade.mouse_filter = Control.MOUSE_FILTER_STOP
 	await _fade_to(1.0)
 	Engine.time_scale = 1.0
+	# No pooled voice may outlive the scene that started it.
+	AudioManager.stop_all_sfx()
 	var err := get_tree().change_scene_to_file(path)
 	if err != OK:
 		push_error("[SceneRouter] change_scene_to_file failed (%d): %s" % [err, path])

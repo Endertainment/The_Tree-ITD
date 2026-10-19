@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
 [ext_resource type="PackedScene" path="res://ui/Toast.tscn" id="2_toast"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" path="res://assets/art/ui/tab_missions.svg" id="7_missions"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/tab_shop.svg" id="8_shop"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/tab_settings.svg" id="9_settings"]
+[ext_resource type="Script" path="res://scripts/ui/safe_area.gd" id="10_safe"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -31,6 +32,7 @@ color = Color(0.086275, 0.117647, 0.090196, 1)
 
 [node name="SafeArea" type="MarginContainer" parent="."]
 unique_name_in_owner = true
+script = ExtResource("10_safe")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -55,28 +57,28 @@ theme_override_constants/separation = 16
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Gold 0"
+text = ""
 vertical_alignment = 1
 
 [node name="GemsLabel" type="Label" parent="SafeArea/Column/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Gems 0"
+text = ""
 vertical_alignment = 1
 
 [node name="ElfLabel" type="Label" parent="SafeArea/Column/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "ELF LV 1"
+text = ""
 vertical_alignment = 1
 
 [node name="BestLabel" type="Label" parent="SafeArea/Column/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "BEST 0"
+text = ""
 vertical_alignment = 1
 
 [node name="Spacer" type="Control" parent="SafeArea/Column/TopBar"]
@@ -89,7 +91,7 @@ custom_minimum_size = Vector2(120, 88)
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"RowButton"
-text = "BATTLE"
+text = "MENU_BATTLE"
 
 [node name="ScreenHost" type="Control" parent="SafeArea/Column"]
 unique_name_in_owner = true
@@ -134,7 +136,7 @@ stretch_mode = 5
 [node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabHome/Stack"]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
-text = "HOME"
+text = "TAB_HOME"
 horizontal_alignment = 1
 
 [node name="TabUpgrades" type="Button" parent="SafeArea/Column/TabBar"]
@@ -167,7 +169,7 @@ stretch_mode = 5
 [node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabUpgrades/Stack"]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
-text = "UPGRADES"
+text = "HUD_UPGRADES"
 horizontal_alignment = 1
 
 [node name="TabCards" type="Button" parent="SafeArea/Column/TabBar"]
@@ -200,7 +202,7 @@ stretch_mode = 5
 [node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabCards/Stack"]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
-text = "CARDS"
+text = "TAB_CARDS"
 horizontal_alignment = 1
 
 [node name="TabMissions" type="Button" parent="SafeArea/Column/TabBar"]
@@ -233,7 +235,7 @@ stretch_mode = 5
 [node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabMissions/Stack"]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
-text = "MISSIONS"
+text = "TAB_MISSIONS"
 horizontal_alignment = 1
 
 [node name="TabShop" type="Button" parent="SafeArea/Column/TabBar"]
@@ -266,7 +268,7 @@ stretch_mode = 5
 [node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabShop/Stack"]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
-text = "SHOP"
+text = "TAB_SHOP"
 horizontal_alignment = 1
 
 [node name="TabSettings" type="Button" parent="SafeArea/Column/TabBar"]
@@ -299,7 +301,7 @@ stretch_mode = 5
 [node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabSettings/Stack"]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
-text = "SETTINGS"
+text = "PAUSE_SETTINGS"
 horizontal_alignment = 1
 
 [node name="Modal" parent="." instance=ExtResource("3_modal")]

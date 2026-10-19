@@ -351,3 +351,87 @@ $proj  = "C:\Users\VOVA\Documents\the-tree---idle-tower-defense"
   code. Ignore the exit code of a cold run, or open the project in the editor
   once instead.
 
+## Stage 7 — localization, audio, VFX, tutorial, Android
+
+### Automated (executed, this machine, Godot 4.7.2)
+
+- [x] `TestGlyphs` — 26 checks. Every Ukrainian letter, every character in the
+      `uk` column of `strings.csv`, `ЇїЄєҐґІі—`, a live `uk` lookup, and the
+      compiled `.translation` resources the exported APK actually ships
+      (including the newest keys).
+- [x] `TestPolish` — 54 checks. Safe-area maths for notched 1080x1920 and
+      720x1280, desktop no-op; trauma decay and its low-quality gate; 120-particle
+      cap; sound library + aliases; -6 dB pause duck and restore; Ukrainian
+      plurals for 1/2/5/11/21/22/25; localized percent/duration/number; haptics
+      gated off on desktop; tutorial start, SKIP persistence, no-restart, replay
+      flag, dismiss, damage-number setting and low-quality override.
+- [x] Existing suites still green: Save 46, Flow, Menu 112, Migrations 25,
+      Monetization 136, Battle 42, Towers 74, Progression 120, Soak 5.
+- [x] No user-facing string literal remains in any `.tscn` (182 rewritten:
+      103 keyed, 79 empty runtime placeholders) and none in gameplay `.gd` except
+      the `F3` debug overlay and format strings.
+- [x] `strings.csv` parses with 390 keys; every key has both `en` and `uk`; no
+      duplicate keys; no row loses a column to an unquoted comma; all 86 keys
+      referenced by `.tscn` files resolve.
+- [x] Boot smoke test: `--headless --quit-after 60` exits 0 with **no errors and
+      no warnings** (the earlier `AudioStreamWAV` leak at exit was fixed by
+      freeing the music player eagerly in `AudioManager._exit_tree`).
+- [x] All 13 generated WAVs import cleanly (`--import` exit 0, 13 `.import` files).
+- [x] `exports_presets.cfg`-driven debug APK builds and signs:
+      `aapt2 dump badging` reports `com.endertainment.thetree`, versionCode 1,
+      versionName 0.1.0, minSdk 24, targetSdk 36, `INTERNET`,
+      `arm64-v8a` + `armeabi-v7a`; `apksigner verify` passes v2 + v3;
+      size 56.2 MB (< 80 MB budget).
+- [x] `BENCHMARK` command runs headless and prints FPS/draws/objects/orphans.
+- [x] Desktop benchmark (`tools/BenchmarkRun.tscn`, RTX 3050, 1080x1920
+      viewport, 70 grunts + 8 archer towers, 10 s):
+      **high** — 60 FPS (vsync-capped), 964 draws, 971 nodes, 0 orphans;
+      **low** — 60 FPS, 469 draws (−51%), 971 nodes, 0 orphans.
+      The quality toggle measurably halves draw calls.
+- [x] Windowed capture review: battle HUD in EN and UK at 540x960 and 720x1280,
+      tutorial step 1 in both locales, Settings in both locales. No clipped or
+      missing text; the tutorial card and SKIP button sit clear of the bottom
+      bar. Captures by `tools/PolishCapture.tscn`.
+- [ ] **Master §8.5 budgets are still exceeded at the 70-enemy stress case.**
+      964 draws (budget < 120) and 971 nodes (budget < 400); low quality lowers
+      draws to 469 but the baseline is already ~260 draws before any enemy,
+      because each orc issues ~12 immediate-mode `_draw` primitives and every
+      sheet scene is instantiated up front. This was measured, not fixed —
+      collapsing orcs into one `MultiMeshInstance2D` and building sheets lazily
+      is a rendering refactor that does not belong in a presentation pass.
+
+### Manual / device (NOT executed — no device, no emulator, no system image)
+
+- [ ] **Install and launch the APK on hardware.** Only the artifact was verified,
+      never installation or a first launch. Command is in `BUILD_ANDROID.md` §6.
+- [ ] Notch / punch-hole rendering on a real 1080x1920 device. The inset maths is
+      unit-tested and the HUD, menu and results containers consume it, but no
+      cutout was ever rendered.
+- [ ] Android back stack (sheet → Home → confirm exit) and background pause for
+      30 s with no time jump.
+- [ ] Haptics (`Input.vibrate_handheld`) — the code path is gated by settings and
+      platform, but nothing has vibrated.
+- [ ] Real frame time at wave 20 and the low-quality delta. `BENCHMARK` was only
+      run headless, where the dummy renderer makes FPS meaningless.
+- [ ] Startup to menu under 4 s and battery drain over 10 minutes.
+- [ ] Audio on device: bus routing, ducking and the 30 s loop seam were verified
+      structurally and headlessly, never heard through a speaker.
+- [ ] Tutorial on a touch device: the 20 s fallbacks and SKIP were exercised in
+      `TestPolish`, but the ring/card were not seen over live gameplay.
+- [ ] Release signing through `tools/export_android.ps1` — the wrapper was
+      written and not executed (no release keystore exists yet).
+
+### Known environment quirks (stage 7)
+
+- **`--export-debug` hangs after writing the APK** unless
+  `export/android/shutdown_adb_on_exit = false` is set in the editor settings.
+  The APK is complete and signed when it hangs; the setting makes the process
+  exit cleanly in ~17 s.
+- **`ERROR: EditorSettings not instantiated yet ... shutdown_adb_on_exit`** is
+  printed by the engine during teardown, after the APK is signed. It is a log
+  line, not a build failure.
+- **Mono editor warning**: `Exporting to Android when using C#/.NET is
+  experimental` appears because only the .NET build of Godot 4.7.2 is installed.
+  The project contains no C#; a standard editor removes the message.
+
+

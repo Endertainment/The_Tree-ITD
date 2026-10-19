@@ -32,13 +32,13 @@ theme_override_constants/separation = 12
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SectionTitle"
-text = "SHOP"
+text = "TAB_SHOP"
 
 [node name="Banner" type="Label" parent="Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "TEST MODE — no real charges"
+text = "SHOP_TEST_MODE"
 autowrap_mode = 3
 
 [node name="FreeCard" type="PanelContainer" parent="Margin/Content"]
@@ -53,13 +53,13 @@ theme_override_constants/separation = 8
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"CardTitle"
-text = "FREE GEMS"
+text = "FREE_GEMS_TITLE"
 
 [node name="FreeStatus" type="Label" parent="Margin/Content/FreeCard/Values"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "0 / 3 today"
+text = ""
 
 [node name="FreeButton" type="Button" parent="Margin/Content/FreeCard/Values"]
 unique_name_in_owner = true
@@ -67,7 +67,7 @@ custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 36
-text = "WATCH AD  +5 GEMS"
+text = ""
 
 [node name="FreeSpinnerBox" type="CenterContainer" parent="Margin/Content/FreeCard/Values"]
 layout_mode = 2
@@ -96,4 +96,4 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 theme_type_variation = &"RowButton"
-text = "RESTORE PURCHASES"
+text = "SHOP_RESTORE"

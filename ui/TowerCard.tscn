@@ -37,7 +37,7 @@ unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_type_variation = &"CardTitle"
-text = "ARCHER TOWER"
+text = "TOWER_ARCHER_NAME"
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -46,7 +46,7 @@ unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_type_variation = &"HudValue"
-text = "60"
+text = ""
 horizontal_alignment = 1
 
 [node name="CardRole" type="Label" parent="Content"]
@@ -54,7 +54,7 @@ unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_type_variation = &"HudSmall"
-text = "Cheap single target"
+text = "TOWER_ARCHER_ROLE"
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -63,7 +63,7 @@ unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_type_variation = &"HudSmall"
-text = "DPS 14"
+text = ""
 horizontal_alignment = 1
 
 [node name="Reason" type="Label" parent="Content"]
@@ -72,7 +72,7 @@ visible = false
 layout_mode = 2
 mouse_filter = 2
 theme_type_variation = &"HudSmall"
-text = "Need 60 Coins"
+text = ""
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -102,6 +102,6 @@ offset_bottom = 104.0
 grow_horizontal = 2
 mouse_filter = 2
 theme_type_variation = &"CardTitle"
-text = "LOCKED"
+text = "SHEET_LOCKED"
 horizontal_alignment = 1
 vertical_alignment = 1

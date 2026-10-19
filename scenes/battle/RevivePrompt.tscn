@@ -54,7 +54,7 @@ theme_override_constants/separation = 16
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"PanelTitle"
-text = "THE TREE FALLS"
+text = "REVIVE_TITLE"
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -62,7 +62,7 @@ autowrap_mode = 3
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"BodyText"
-text = "Watch an ad to rise again?"
+text = "REVIVE_BODY"
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -70,7 +70,7 @@ autowrap_mode = 3
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "50% HP · clear nearby orcs · 3 s shield"
+text = "REVIVE_REWARD"
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -91,7 +91,7 @@ custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"SecondaryButton"
-text = "GIVE UP"
+text = "REVIVE_GIVE_UP"
 
 [node name="ReviveButton" type="Button" parent="Safe/Center/Panel/Column/Buttons"]
 unique_name_in_owner = true
@@ -100,4 +100,4 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 38
-text = "REVIVE (AD)"
+text = "REVIVE_BUTTON"

@@ -49,7 +49,8 @@ static func is_percent(stat: String) -> bool:
 static func format_value(stat: String, value: float) -> String:
 	var sign_text := "+" if value >= 0.0 else ""
 	if is_percent(stat):
-		return "%s%d%%" % [sign_text, roundi(value * 100.0)]
+		var shown := Loc.format_percent(value * 100.0)
+		return sign_text + shown if value >= 0.0 else shown
 	if absf(value) < 0.05:
 		return "0"
 	var flat := ("%.1f" % value).trim_suffix(".0")

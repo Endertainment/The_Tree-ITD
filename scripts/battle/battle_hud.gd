@@ -56,10 +56,12 @@ const DEBUG_REFRESH_SECONDS := 0.25
 @onready var _tower_count: Label = %TowerCount
 @onready var _pad_hint: Label = %PadHint
 @onready var _sheet_host: Control = %SheetHost
+@onready var _vignette: ColorRect = %DamageVignette
 
 var _battle: Battle
 var _waves: WaveManager
 var _stats: RunStats
+var _vignette_tween: Tween
 var _last_state := -1
 var _last_prep_second := -1
 var _last_bonus := -1
@@ -374,22 +376,19 @@ func _update_debug() -> void:
 
 
 func _apply_safe_area() -> void:
-	var viewport_size := get_viewport().get_visible_rect().size
-	var window_size := DisplayServer.window_get_size()
-	var scale_y := 1.0
-	if window_size.y > 0:
-		scale_y = viewport_size.y / float(window_size.y)
-	var safe := DisplayServer.get_display_safe_area()
-	var top_inset := int(maxf(0.0, float(safe.position.y) * scale_y))
-	var bottom_inset := int(maxf(0.0, float(window_size.y - safe.end.y) * scale_y))
-
-	_top_safe.add_theme_constant_override("margin_top", BASE_MARGIN_TOP + top_inset)
-	_top_safe.add_theme_constant_override("margin_left", SIDE_MARGIN)
-	_top_safe.add_theme_constant_override("margin_right", SIDE_MARGIN)
-	_bottom_safe.add_theme_constant_override("margin_bottom", BASE_MARGIN_BOTTOM + bottom_inset)
-	_bottom_safe.add_theme_constant_override("margin_left", SIDE_MARGIN)
-	_bottom_safe.add_theme_constant_override("margin_right", SIDE_MARGIN)
-	_bottom_inset = bottom_inset
+	var insets := SafeArea.insets_for(
+		DisplayServer.window_get_size(),
+		DisplayServer.get_display_safe_area(),
+		get_viewport().get_visible_rect().size,
+		OS.has_feature("mobile")
+	)
+	_top_safe.add_theme_constant_override("margin_top", BASE_MARGIN_TOP + int(insets.x))
+	_top_safe.add_theme_constant_override("margin_left", SIDE_MARGIN + int(insets.w))
+	_top_safe.add_theme_constant_override("margin_right", SIDE_MARGIN + int(insets.y))
+	_bottom_safe.add_theme_constant_override("margin_bottom", BASE_MARGIN_BOTTOM + int(insets.z))
+	_bottom_safe.add_theme_constant_override("margin_left", SIDE_MARGIN + int(insets.w))
+	_bottom_safe.add_theme_constant_override("margin_right", SIDE_MARGIN + int(insets.y))
+	_bottom_inset = int(insets.z)
 
 
 func _hide_announcements() -> void:
@@ -459,3 +458,25 @@ func _on_settings_pressed() -> void:
 
 func _on_speed_info_pressed() -> void:
 	speed_info_requested.emit()
+
+
+## Global rect of the UPGRADES button, used by the tutorial highlight.
+func get_upgrades_button_rect() -> Rect2:
+	return Rect2(_upgrades_button.global_position, _upgrades_button.size)
+
+
+## Global rect of the CALL WAVE button, used by the tutorial highlight.
+func get_call_button_rect() -> Rect2:
+	return Rect2(_call_button.global_position, _call_button.size)
+
+
+## Pulses the red damage vignette. Skipped on low quality.
+func pulse_damage() -> void:
+	if _vignette == null or GameState.is_low_quality():
+		return
+	if _vignette_tween != null and _vignette_tween.is_valid():
+		_vignette_tween.kill()
+	_vignette.color.a = 0.0
+	_vignette_tween = create_tween()
+	_vignette_tween.tween_property(_vignette, "color:a", 0.34, 0.08)
+	_vignette_tween.tween_property(_vignette, "color:a", 0.0, 0.36)

@@ -19,6 +19,15 @@ const BOSS_SLOW_MO := 0.25
 const BOSS_SLOW_MO_SECONDS := 0.3
 const RESULTS_SCENE := "res://scenes/battle/Results.tscn"
 
+const BENCHMARK_SECONDS := 10.0
+const BENCHMARK_ENEMIES := 70
+const BENCHMARK_TOWERS := 8
+const HIT_SHAKE_PIXELS := 6.0
+const CORE_SHAKE_PIXELS := 4.0
+
+## Emitted when the player calls the next wave early.
+signal wave_called
+
 ## `Archer.tscn` is deliberately loaded in `_ready()` instead of `preload`:
 ## preloading it here closes a Battle -> Archer -> Enemy -> Battle script cycle,
 ## and a cyclic preload yields an empty PackedScene in some load orders.
@@ -52,6 +61,14 @@ var obstacles: Array[Dictionary] = []
 @onready var floating_layer: FloatingTextLayer = $FloatingTextLayer
 @onready var hud: BattleHUD = $HUD
 @onready var archers_root: Node2D = $Core/Archers
+@onready var vfx: VfxLayer = %VfxLayer
+@onready var shake: ScreenShake = %ScreenShake
+@onready var tutorial: TutorialController = %TutorialOverlay
+
+var _bench_active := false
+var _bench_time := 0.0
+var _bench_frames := 0
+var _bench_duration := BENCHMARK_SECONDS
 
 var _ended := false
 var _ending := false
@@ -95,6 +112,7 @@ func _ready() -> void:
 	hud.speed_info_requested.connect(_on_speed_info_requested)
 
 	core.died.connect(_on_core_died)
+	core.damage_taken.connect(_on_core_hit)
 	EventBus.enemy_died.connect(_on_enemy_died)
 	EventBus.coins_changed.connect(_on_coins_changed)
 	EventBus.language_changed.connect(_on_language_changed)
@@ -103,7 +121,9 @@ func _ready() -> void:
 	wave_manager.wave_announced.connect(_on_wave_announced)
 
 	Analytics.set_screen("battle")
+	tutorial.setup(self, hud, tower_manager)
 	start_run()
+	tutorial.start_if_needed()
 
 
 ## Resets Coins, stats, archers, towers, waves and the summary, then emits
@@ -196,6 +216,58 @@ func get_kill_coin_multiplier() -> float:
 	return run_stats.coin_mult if run_stats != null else 1.0
 
 
+## Spawns the hit spark and, when enabled, a floating damage number.
+## Called by `Enemy.take_damage` so every damage source shares one path.
+func show_damage(enemy: Enemy, amount: float) -> void:
+	if enemy == null or not is_instance_valid(enemy) or amount <= 0.0:
+		return
+	var at := enemy.global_position
+	vfx.hit_spark(at)
+	if amount >= HIT_SHAKE_PIXELS * 8.0:
+		request_shake(HIT_SHAKE_PIXELS)
+	if not shows_damage_numbers():
+		return
+	floating_layer.add_popup(Loc.format_number(roundi(amount)), at)
+
+
+## True when damage numbers are both enabled in settings and cheap enough to draw.
+func shows_damage_numbers() -> bool:
+	if GameState.is_low_quality():
+		return false
+	return bool(GameState.get_setting("show_damage_numbers", true))
+
+
+## Asks the camera for a `pixels`-sized shake; low quality ignores it.
+func request_shake(pixels: float) -> void:
+	if shake != null:
+		shake.shake_pixels(pixels)
+
+
+## Runs the 70-enemy / 8-tower benchmark and reports the average FPS.
+func run_benchmark(duration := BENCHMARK_SECONDS) -> void:
+	if _bench_active or _ended or _ending:
+		return
+	_bench_active = true
+	_bench_time = 0.0
+	_bench_frames = 0
+	_bench_duration = maxf(1.0, duration)
+	var pads := tower_manager.get_pads()
+	for index in mini(BENCHMARK_TOWERS, pads.size()):
+		var pad: BuildPad = pads[index]
+		if not pad.has_tower():
+			tower_manager.build(pad, "archer_tower")
+	var grunt := ConfigDB.get_enemy("orc_grunt")
+	if grunt != null:
+		for index in BENCHMARK_ENEMIES:
+			var angle := TAU * float(index) / float(BENCHMARK_ENEMIES)
+			enemy_pool.spawn(
+				grunt,
+				CENTER + Vector2(cos(angle), sin(angle)) * SPAWN_RADIUS * 0.9,
+				{"hp_mult": 40.0, "speed_mult": 0.6, "coin_mult": 0.0, "spawn_delay": 0.0}
+			)
+	_toast.show_message(Loc.t_key("DEV_BENCH_RUNNING"), 3.0)
+
+
 ## Current price of a tower, including the run's `tower_cost_mult`.
 func get_tower_cost(tower_id: String) -> int:
 	var data := ConfigDB.get_tower(tower_id) as TowerData
@@ -249,6 +321,7 @@ func on_wave_cleared(wave: int, reward: int, time_taken: float) -> void:
 func on_boss_spawned(boss: Boss) -> void:
 	if boss == null:
 		return
+	Haptics.boss_spawn()
 	hud.show_boss(boss)
 
 
@@ -258,6 +331,7 @@ func pause_run() -> void:
 		return
 	SpeedService.reset()
 	get_tree().paused = true
+	shake.reset_shake()
 	hud.show_pause(true)
 
 
@@ -277,6 +351,8 @@ func end_run(reason: StringName) -> void:
 	_ended = true
 	close_sheet()
 	hud.hide_revive_prompt()
+	tutorial.dismiss()
+	shake.reset_shake()
 	wave_manager.stop()
 	hud.set_pause_enabled(false)
 	hud.hide_boss()
@@ -363,6 +439,7 @@ func get_boss() -> Boss:
 func _process(delta: float) -> void:
 	if not _ended and not _ending:
 		run_time += delta
+	_tick_benchmark(delta)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -525,12 +602,52 @@ func _on_stats_changed() -> void:
 func _on_enemy_died(_enemy_id: String, coin_value: int, position: Vector2) -> void:
 	kills += 1
 	floating_layer.add_popup("+%d" % coin_value, position)
+	vfx.coin_sparkle(position)
 
 
 func _on_call_wave() -> void:
 	if _ended or _ending:
 		return
-	wave_manager.call_wave_early()
+	if wave_manager.call_wave_early():
+		wave_called.emit()
+
+
+func _on_core_hit(amount: float) -> void:
+	if amount <= 0.0 or _ended or _ending:
+		return
+	Haptics.core_damage()
+	request_shake(CORE_SHAKE_PIXELS)
+	vfx.leaf_burst(core.global_position)
+	hud.pulse_damage()
+
+
+func _tick_benchmark(delta: float) -> void:
+	if not _bench_active:
+		return
+	_bench_time += delta
+	_bench_frames += 1
+	if _bench_time >= _bench_duration:
+		_finish_benchmark()
+
+
+func _finish_benchmark() -> void:
+	_bench_active = false
+	var fps := float(_bench_frames) / maxf(0.001, _bench_time)
+	var report := Loc.t_key("DEV_BENCH_RESULT", {
+		"fps": roundi(fps),
+		"seconds": roundi(_bench_time),
+	})
+	print("[BENCHMARK] quality=%s fps=%d frames=%d seconds=%.1f draws=%d objects=%d nodes=%d orphans=%d" % [
+		"low" if GameState.is_low_quality() else "high",
+		roundi(fps),
+		_bench_frames,
+		_bench_time,
+		int(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)),
+		int(Performance.get_monitor(Performance.OBJECT_COUNT)),
+		int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT)),
+		int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)),
+	])
+	_toast.show_message(report, 6.0)
 
 
 func _on_quit_confirmed() -> void:

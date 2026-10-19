@@ -70,6 +70,55 @@ func format_number(value: int) -> String:
 	return grouped
 
 
+## Localized percentage: "80%" in English, "80 %" in Ukrainian.
+func format_percent(value: float, decimals := 0) -> String:
+	var shown := str(roundi(value)) if decimals <= 0 else "%.1f" % value
+	return t_key("PERCENT", {"value": shown})
+
+
+## Localized duration from seconds: "7h 12m" / "7 год 12 хв".
+func format_time(total_seconds: int) -> String:
+	var seconds := maxi(0, total_seconds)
+	var hours := seconds / 3600
+	var minutes := (seconds % 3600) / 60
+	if hours > 0:
+		return t_key("TIME_HOURS_MINUTES", {"hours": hours, "minutes": "%02d" % minutes})
+	return t_key("TIME_MINUTES", {"minutes": minutes})
+
+
+## Picks a plural form and formats it with `{n}` plus any extra `args`.
+##
+## Ukrainian rule: 1 -> one, 2..4 -> few, 5..20 and 0 -> many, with the
+## 11..14 exception falling back to many. English only distinguishes 1.
+func plural(count: int, one_key: String, few_key: String, many_key: String, args: Dictionary = {}) -> String:
+	var key := plural_key(count, one_key, few_key, many_key, _current)
+	var merged := args.duplicate()
+	merged["n"] = format_number(absi(count))
+	return t_key(key, merged)
+
+
+## Returns the plural-form key for `count` without formatting it.
+## `locale` defaults to the active locale; exposed for tests.
+static func plural_key(
+	count: int,
+	one_key: String,
+	few_key: String,
+	many_key: String,
+	locale := "en"
+) -> String:
+	var value := absi(count)
+	if locale == "uk":
+		var mod100 := value % 100
+		if mod100 < 11 or mod100 > 14:
+			var mod10 := value % 10
+			if mod10 == 1:
+				return one_key
+			if mod10 >= 2 and mod10 <= 4:
+				return few_key
+		return many_key
+	return one_key if value == 1 else many_key
+
+
 func _load_csv() -> void:
 	for locale: String in _translations:
 		TranslationServer.remove_translation(_translations[locale])
@@ -78,7 +127,8 @@ func _load_csv() -> void:
 
 	var file := FileAccess.open(CSV_PATH, FileAccess.READ)
 	if file == null:
-		push_error("[Loc] cannot open %s" % CSV_PATH)
+		# Exported builds carry the compiled `.translation` resources instead of
+		# the CSV source; `_ready()` falls back to those. Not an error.
 		return
 
 	var header := file.get_csv_line()

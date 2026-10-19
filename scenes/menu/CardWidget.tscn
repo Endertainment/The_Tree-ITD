@@ -25,21 +25,21 @@ color = Color(0.494118, 0.784314, 0.313726, 1)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"CardTitle"
-text = "Card"
+text = ""
 autowrap_mode = 3
 
 [node name="State" type="Label" parent="Card"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "LOCKED"
+text = "SHEET_LOCKED"
 
 [node name="Modifiers" type="Label" parent="Card"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_type_variation = &"HudSmall"
-text = "+20%"
+text = ""
 autowrap_mode = 3
 
 [node name="ActionButton" type="Button" parent="Card"]
@@ -47,4 +47,4 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 theme_type_variation = &"RowButton"
-text = "UNLOCK"
+text = ""

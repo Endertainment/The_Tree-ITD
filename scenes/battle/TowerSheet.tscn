@@ -65,13 +65,13 @@ theme_override_constants/separation = 0
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"PanelTitle"
-text = "ARC REST TOWER"
+text = ""
 
 [node name="SheetLevel" type="Label" parent="Panel/Column/Header/TitleColumn"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Level 1 / 3"
+text = ""
 
 [node name="CloseButton" type="Button" parent="Panel/Column/Header"]
 unique_name_in_owner = true
@@ -79,26 +79,26 @@ custom_minimum_size = Vector2(88, 88)
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"SecondaryButton"
-text = "X"
+text = "ICON_CLOSE"
 
 [node name="StatsNow" type="Label" parent="Panel/Column"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "DMG 14   RATE 1.0s   RNG 430"
+text = ""
 
 [node name="StatsNext" type="Label" parent="Panel/Column"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "NEXT"
+text = ""
 
 [node name="UpgradeButton" type="Button" parent="Panel/Column"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 104)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
-text = "UPGRADE - 95"
+text = ""
 
 [node name="UpgradeReason" type="Label" parent="Panel/Column"]
 unique_name_in_owner = true
@@ -110,7 +110,7 @@ text = ""
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "TARGET"
+text = "TOWER_TARGET"
 
 [node name="TargetRow" type="HBoxContainer" parent="Panel/Column"]
 layout_mode = 2
@@ -124,7 +124,7 @@ size_flags_horizontal = 3
 theme_type_variation = &"SecondaryButton"
 toggle_mode = true
 button_pressed = true
-text = "NEAREST"
+text = "TOWER_TARGET_NEAREST"
 
 [node name="TargetStrongest" type="Button" parent="Panel/Column/TargetRow"]
 unique_name_in_owner = true
@@ -133,7 +133,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"SecondaryButton"
 toggle_mode = true
-text = "STRONGEST"
+text = "TOWER_TARGET_STRONGEST"
 
 [node name="TargetFirst" type="Button" parent="Panel/Column/TargetRow"]
 unique_name_in_owner = true
@@ -142,14 +142,14 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"SecondaryButton"
 toggle_mode = true
-text = "FIRST"
+text = "TOWER_TARGET_FIRST"
 
 [node name="SellButton" type="Button" parent="Panel/Column"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 theme_type_variation = &"SecondaryButton"
-text = "SELL - 93"
+text = ""
 
 [node name="SellConfirm" type="Control" parent="."]
 unique_name_in_owner = true
@@ -191,14 +191,14 @@ theme_override_constants/separation = 20
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudCenter"
-text = "Sell this tower?"
+text = "SHEET_SELL_TITLE"
 horizontal_alignment = 1
 
 [node name="SellBody" type="Label" parent="SellConfirm/Center/Card/Column"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Sell Archer Tower L2 for 93 Coins?"
+text = ""
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -212,7 +212,7 @@ custom_minimum_size = Vector2(0, 104)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"SecondaryButton"
-text = "CANCEL"
+text = "COMMON_CANCEL"
 
 [node name="SellConfirmButton" type="Button" parent="SellConfirm/Center/Card/Column/Buttons"]
 unique_name_in_owner = true
@@ -220,4 +220,4 @@ custom_minimum_size = Vector2(0, 104)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"PrimaryButton"
-text = "SELL"
+text = "SHEET_SELL_CONFIRM"

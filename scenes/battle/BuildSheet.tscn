@@ -51,7 +51,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"PanelTitle"
-text = "BUILD"
+text = "SHEET_BUILD_TITLE"
 
 [node name="Spacer" type="Control" parent="Panel/Column/Header"]
 layout_mode = 2
@@ -63,7 +63,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"HudValue"
-text = "120"
+text = ""
 
 [node name="CloseButton" type="Button" parent="Panel/Column/Header"]
 unique_name_in_owner = true
@@ -71,7 +71,7 @@ custom_minimum_size = Vector2(88, 88)
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"SecondaryButton"
-text = "X"
+text = "ICON_CLOSE"
 
 [node name="Cards" type="HBoxContainer" parent="Panel/Column"]
 unique_name_in_owner = true
@@ -84,5 +84,5 @@ alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Tap a tower to build it"
+text = "SHEET_BUILD_HINT"
 horizontal_alignment = 1

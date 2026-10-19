@@ -31,13 +31,13 @@ theme_override_constants/separation = 14
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SectionTitle"
-text = "CARDS"
+text = "TAB_CARDS"
 
 [node name="Hint" type="Label" parent="Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Equip up to two cards."
+text = ""
 autowrap_mode = 3
 
 [node name="Scroll" type="ScrollContainer" parent="Margin/Content"]

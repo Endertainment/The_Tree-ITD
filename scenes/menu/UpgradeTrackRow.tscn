@@ -21,20 +21,20 @@ theme_override_constants/separation = 8
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"CardTitle"
-text = "Roots"
+text = "UPG_ROOTS_NAME"
 
 [node name="Description" type="Label" parent="Row/Info"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Description"
+text = ""
 autowrap_mode = 3
 
 [node name="Level" type="Label" parent="Row/Info"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Level 0 / 10"
+text = ""
 
 [node name="Values" type="VBoxContainer" parent="Row"]
 custom_minimum_size = Vector2(330, 0)
@@ -45,17 +45,17 @@ theme_override_constants/separation = 8
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "NOW +0%"
+text = ""
 
 [node name="Next" type="Label" parent="Row/Values"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "NEXT +5%"
+text = ""
 
 [node name="BuyButton" type="Button" parent="Row/Values"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 88)
 layout_mode = 2
 theme_type_variation = &"RowButton"
-text = "150 Gold"
+text = ""

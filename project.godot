@@ -17,6 +17,10 @@ run/main_scene="res://scenes/boot/Boot.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
 
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
+
 [autoload]
 
 EventBus="*res://autoload/event_bus.gd"

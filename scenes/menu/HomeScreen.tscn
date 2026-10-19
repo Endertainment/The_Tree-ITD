@@ -37,14 +37,14 @@ theme_override_constants/separation = 18
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"Title"
-text = "The Tree"
+text = "BOOT_TITLE"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Scroll/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"Subtitle"
-text = "Idle Tower Defense"
+text = "MENU_SUBTITLE"
 horizontal_alignment = 1
 
 [node name="BestCard" type="PanelContainer" parent="Scroll/Margin/Content"]
@@ -59,19 +59,19 @@ theme_override_constants/separation = 10
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "BEST WAVE 0"
+text = ""
 
 [node name="ElfLabel" type="Label" parent="Scroll/Margin/Content/BestCard/Values"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "ELF LV 1"
+text = ""
 
 [node name="ElfProgress" type="Label" parent="Scroll/Margin/Content/BestCard/Values"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "0 / 15"
+text = ""
 
 [node name="ElfBar" type="ProgressBar" parent="Scroll/Margin/Content/BestCard/Values"]
 unique_name_in_owner = true
@@ -98,20 +98,20 @@ theme_override_constants/separation = 12
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"CardTitle"
-text = "DAILY MISSIONS"
+text = "HOME_DAILY"
 
 [node name="DailyProgress" type="Label" parent="Scroll/Margin/Content/DailyCard/Values"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "0 / 3 complete"
+text = ""
 
 [node name="DailyView" type="Button" parent="Scroll/Margin/Content/DailyCard/Values"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 theme_type_variation = &"RowButton"
-text = "VIEW"
+text = "HOME_DAILY_VIEW"
 
 [node name="Footer" type="HBoxContainer" parent="Scroll/Margin/Content"]
 layout_mode = 2
@@ -123,7 +123,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 0
 theme_type_variation = &"Caption"
-text = "v0.1.0"
+text = ""
 vertical_alignment = 1
 
 [node name="MusicButton" type="Button" parent="Scroll/Margin/Content/Footer"]
@@ -131,4 +131,4 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(220, 88)
 layout_mode = 2
 theme_type_variation = &"RowButton"
-text = "MUSIC ON"
+text = "HOME_MUSIC_ON"

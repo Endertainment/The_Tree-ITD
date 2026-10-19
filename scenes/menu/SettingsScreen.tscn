@@ -31,7 +31,7 @@ theme_override_constants/separation = 12
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SectionTitle"
-text = "SETTINGS"
+text = "PAUSE_SETTINGS"
 
 [node name="Scroll" type="ScrollContainer" parent="Margin/Content"]
 layout_mode = 2
@@ -55,7 +55,7 @@ theme_override_constants/separation = 10
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "Music"
+text = "SET_MUSIC"
 
 [node name="MusicRow" type="HBoxContainer" parent="Margin/Content/Scroll/List/AudioCard/Values"]
 layout_mode = 2
@@ -75,14 +75,14 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "80%"
+text = ""
 horizontal_alignment = 2
 
 [node name="SfxLabel" type="Label" parent="Margin/Content/Scroll/List/AudioCard/Values"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "SFX"
+text = "SET_SFX"
 
 [node name="SfxRow" type="HBoxContainer" parent="Margin/Content/Scroll/List/AudioCard/Values"]
 layout_mode = 2
@@ -102,7 +102,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "100%"
+text = ""
 horizontal_alignment = 2
 
 [node name="HapticsRow" type="HBoxContainer" parent="Margin/Content/Scroll/List/AudioCard/Values"]
@@ -113,9 +113,39 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"HudLabel"
-text = "Haptics"
+text = "SET_HAPTICS"
 
 [node name="HapticsToggle" type="CheckButton" parent="Margin/Content/Scroll/List/AudioCard/Values/HapticsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+
+[node name="DamageRow" type="HBoxContainer" parent="Margin/Content/Scroll/List/AudioCard/Values"]
+layout_mode = 2
+
+[node name="DamageNumbersLabel" type="Label" parent="Margin/Content/Scroll/List/AudioCard/Values/DamageRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HudLabel"
+text = "SET_DAMAGE_NUMBERS"
+
+[node name="DamageNumbersToggle" type="CheckButton" parent="Margin/Content/Scroll/List/AudioCard/Values/DamageRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+
+[node name="FocusRow" type="HBoxContainer" parent="Margin/Content/Scroll/List/AudioCard/Values"]
+layout_mode = 2
+
+[node name="FocusLabel" type="Label" parent="Margin/Content/Scroll/List/AudioCard/Values/FocusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HudLabel"
+text = "SET_MUTE_FOCUS"
+
+[node name="FocusToggle" type="CheckButton" parent="Margin/Content/Scroll/List/AudioCard/Values/FocusRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
@@ -132,7 +162,7 @@ theme_override_constants/separation = 10
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "Language"
+text = "MENU_LANGUAGE"
 
 [node name="LanguageOption" type="OptionButton" parent="Margin/Content/Scroll/List/LanguageCard/Values"]
 unique_name_in_owner = true
@@ -151,7 +181,7 @@ theme_override_constants/separation = 10
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudLabel"
-text = "Quality"
+text = "SET_QUALITY"
 
 [node name="QualityOption" type="OptionButton" parent="Margin/Content/Scroll/List/QualityCard/Values"]
 unique_name_in_owner = true
@@ -162,8 +192,19 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = "Low disables particles and camera shake."
+text = "SET_QUALITY_HINT"
 autowrap_mode = 3
+
+[node name="TutorialCard" type="PanelContainer" parent="Margin/Content/Scroll/List"]
+layout_mode = 2
+theme_type_variation = &"PanelCard"
+
+[node name="ReplayButton" type="Button" parent="Margin/Content/Scroll/List/TutorialCard"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_type_variation = &"SecondaryButton"
+text = "SET_REPLAY_TUTORIAL"
 
 [node name="ProgressCard" type="PanelContainer" parent="Margin/Content/Scroll/List"]
 layout_mode = 2
@@ -174,7 +215,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 theme_type_variation = &"DangerButton"
-text = "RESET PROGRESS"
+text = "SET_RESET"
 
 [node name="AboutCard" type="PanelContainer" parent="Margin/Content/Scroll/List"]
 layout_mode = 2
@@ -189,17 +230,17 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 theme_type_variation = &"RowButton"
-text = "Privacy policy"
+text = "SET_PRIVACY"
 
 [node name="Version" type="Label" parent="Margin/Content/Scroll/List/AboutCard/Values"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"Caption"
-text = "Version 0.1.0"
+text = ""
 
 [node name="Credits" type="Label" parent="Margin/Content/Scroll/List/AboutCard/Values"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"Caption"
-text = "Made with Godot 4"
+text = ""
 autowrap_mode = 3

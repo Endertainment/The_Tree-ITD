@@ -1,0 +1,75 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/tutorial_controller.gd" id="1_tutorial"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_card"]
+content_margin_left = 36.0
+content_margin_top = 26.0
+content_margin_right = 36.0
+content_margin_bottom = 26.0
+bg_color = Color(0.113725, 0.164706, 0.121569, 0.97)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.94902, 0.756863, 0.305882, 0.9)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_highlight"]
+bg_color = Color(0.94902, 0.756863, 0.305882, 0.1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(0.94902, 0.756863, 0.305882, 0.95)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[node name="TutorialOverlay" type="CanvasLayer"]
+layer = 9
+script = ExtResource("1_tutorial")
+
+[node name="Root" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Highlight" type="Panel" parent="Root"]
+unique_name_in_owner = true
+visible = false
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_highlight")
+
+[node name="Card" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(680, 0)
+theme_override_styles/panel = SubResource("StyleBox_card")
+
+[node name="Box" type="VBoxContainer" parent="Root/Card"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="TutorialText" type="Label" parent="Root/Card/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="SkipButton" type="Button" parent="Root/Card/Box"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"SecondaryButton"

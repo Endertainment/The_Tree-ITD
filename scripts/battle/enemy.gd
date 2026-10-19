@@ -14,6 +14,7 @@ const STUCK_PROGRESS_PX := 6.0
 const NUDGE_SECONDS := 0.45
 const NUDGE_WEIGHT := 0.9
 const SLOW_FLASH_SECONDS := 0.3
+const HIT_FLASH_SECONDS := 0.06
 
 var data: EnemyData
 var speed := 0.0
@@ -179,6 +180,8 @@ func take_damage(amount: float, ignore_armor := false) -> void:
 	if dealt <= 0.0:
 		return
 	_flash = 1.0
+	if _battle != null:
+		_battle.show_damage(self, dealt)
 	queue_redraw()
 
 
@@ -348,7 +351,7 @@ func _tick_attack(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	if _flash > 0.0:
-		_flash = maxf(0.0, _flash - delta * 6.0)
+		_flash = maxf(0.0, _flash - delta / HIT_FLASH_SECONDS)
 		queue_redraw()
 	if _lunge > 0.0:
 		_lunge = maxf(0.0, _lunge - delta * 4.0)
@@ -381,6 +384,15 @@ func _draw() -> void:
 			body = body.lerp(Color("#e0c34a"), 0.3)
 	var accent := data.accent_color.darkened(0.35)
 	var offset := Vector2(radius * 0.3 * _lunge, 0.0)
+	var low := GameState.is_low_quality()
+
+	# Low quality keeps only the silhouette and its outline: one enemy drops
+	# from ~12 immediate-mode primitives to 3, which is what makes the quality
+	# toggle measurable in the BENCHMARK draw-call count.
+	if low:
+		draw_circle(offset, radius, body)
+		draw_arc(offset, radius, 0.0, TAU, 16, accent, 3.0, true)
+		return
 
 	if _modifier == "swift":
 		for index in 3:

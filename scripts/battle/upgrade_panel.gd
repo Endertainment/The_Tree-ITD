@@ -169,7 +169,10 @@ func _rebuild_towers() -> void:
 		var button := Button.new()
 		button.custom_minimum_size = Vector2(0.0, 92.0)
 		button.theme_type_variation = &"SecondaryButton"
-		button.text = "%s  L%d" % [Loc.t_key(tower.data.display_name_key), tower.level]
+		button.text = Loc.t_key("TOWER_TAB_LEVEL", {
+			"name": Loc.t_key(tower.data.display_name_key),
+			"level": tower.level,
+		})
 		button.pressed.connect(_on_tower_button_pressed.bind(tower))
 		_towers_box.add_child(button)
 		_tower_buttons.append(button)
