@@ -75,8 +75,9 @@ Verified with Godot `4.7.2.stable.official` (standard build, not .NET), Windows 
 Verified with Godot `4.7.2.stable.official` (standard build), Windows 11,
 NVIDIA RTX 3050 Laptop, 540x960 window (1080x1920 reference).
 
-- [x] `MainMenu` → `Battle` → quit confirmation → `MainMenu` flow: `TestFlow`
-      prints `FLOW TEST PASSED: MainMenu -> Battle -> quit confirmation -> MainMenu`.
+- [x] `MainMenu` → `Battle` (10 s prep → automatic wave 1) → quit
+      confirmation → `MainMenu` flow: `TestFlow` prints
+      `FLOW TEST PASSED: menu -> battle -> 10 s prep -> wave 1 -> quit -> menu`.
 - [x] Fresh run starts with 120 Coins, 1000 Tree HP, 2 archers and a ~10 s
       `PREPARE` (`TestBattle`, 42 checks).
 - [x] `CALL WAVE` during prep grants 4-5 Coins at ~10 s left and starts wave 1.
