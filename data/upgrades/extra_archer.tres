@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UpgradeTrack" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/upgrade_track.gd" id="1_track"]
+
+[resource]
+script = ExtResource("1_track")
+id = "extra_archer"
+tab = "archers"
+effect = "archer_count"
+value_per_level = 1.0
+name_key = "UPG_EXTRA_ARCHER_NAME"
+description_key = "UPG_EXTRA_ARCHER_DESC"
+max_level = 3
+base_cost = 400
+cost_growth = 2.25

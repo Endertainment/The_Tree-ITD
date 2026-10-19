@@ -1,15 +1,16 @@
 extends Node
-## Headless scene-flow test: MainMenu.BATTLE unlocks Battle, and the quit
-## confirmation returns to MainMenu.
+## Headless scene-flow test: MainMenu.BATTLE unlocks Battle, the quit
+## confirmation opens the Results screen, and MAIN MENU returns to the menu.
 ##
 ## Run with:
 ##   godot --headless --path <project> res://tests/TestFlow.tscn
 ##
-## A monitor node is parented to the tree root so it survives the scene swap.
+## A monitor node is parented to the tree root so it survives every scene swap.
 
 const MAIN_MENU_SCENE := "res://scenes/menu/MainMenu.tscn"
 const BATTLE_SCENE := "res://scenes/battle/Battle.tscn"
-const TIMEOUT_SECONDS := 16.0
+const RESULTS_SCENE := "res://scenes/battle/Results.tscn"
+const TIMEOUT_SECONDS := 24.0
 const QUIT_DELAY_SECONDS := 0.6
 
 var _monitor: FlowMonitor
@@ -29,9 +30,10 @@ class FlowMonitor extends Node:
 		elapsed += delta
 		phase_time += delta
 		var current := get_tree().current_scene
+		var path := current.scene_file_path if current != null else "<none>"
 
 		if phase == 0:
-			if current != null and current.scene_file_path == BATTLE_SCENE:
+			if path == BATTLE_SCENE:
 				phase = 1
 				phase_time = 0.0
 				battle = current as Battle
@@ -55,17 +57,32 @@ class FlowMonitor extends Node:
 					quit_button.pressed.emit()
 					confirm_button.pressed.emit()
 					battle = null
+					phase = 2
+					phase_time = 0.0
 				elif prep_checked and phase_time > 12.0:
 					printerr("FLOW TEST FAILED: wave 1 did not start after prep")
 					get_tree().quit(1)
 					return
-			elif current != null and current.scene_file_path == MAIN_MENU_SCENE:
-				print("FLOW TEST PASSED: menu -> battle -> 10 s prep -> wave 1 -> quit -> menu")
+		elif phase == 2:
+			if path == RESULTS_SCENE and phase_time >= 0.5:
+				var menu_button := current.find_child("MenuButton", true, false) as Button
+				if menu_button == null:
+					printerr("FLOW TEST FAILED: results screen has no MenuButton")
+					get_tree().quit(1)
+					return
+				phase = 3
+				phase_time = 0.0
+				menu_button.pressed.emit()
+			elif path == MAIN_MENU_SCENE:
+				printerr("FLOW TEST FAILED: quit skipped the results screen")
+				get_tree().quit(1)
+		elif phase == 3:
+			if path == MAIN_MENU_SCENE:
+				print("FLOW TEST PASSED: menu -> battle -> 10 s prep -> wave 1 -> quit -> results -> menu")
 				get_tree().quit(0)
 				return
 
 		if elapsed > TIMEOUT_SECONDS:
-			var path := current.scene_file_path if current != null else "<none>"
 			printerr("FLOW TEST FAILED: phase %d, current scene is %s" % [phase, path])
 			get_tree().quit(1)
 

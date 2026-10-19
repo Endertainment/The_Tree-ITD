@@ -1,22 +1,61 @@
 extends Node
 ## Dev-only screenshot helper (excluded from export).
 ##
-## Renders the menu in EN/UK and a battle in prep, mid-wave, paused and defeated:
+## Renders the menu, the battle HUD, both bottom sheets, the upgrade panel, a
+## wave-modifier banner, the boss bar and the results screen:
 ##   godot --path <project> res://tools/CaptureTool.tscn
 ## It exists so layout, Cyrillic rendering and the battle HUD can be checked
 ## without a device.
 
 const MAIN_MENU_SCENE := "res://scenes/menu/MainMenu.tscn"
 const BATTLE_SCENE := "res://scenes/battle/Battle.tscn"
+const RESULTS_SCENE := "res://scenes/battle/Results.tscn"
 const SETTLE_SECONDS := 0.8
 const LOCALE_SETTLE_SECONDS := 0.3
 const BATTLE_SETTLE_SECONDS := 1.0
 const WAVE_SETTLE_SECONDS := 3.0
 const PAUSE_SETTLE_SECONDS := 0.3
-const DEFEAT_SETTLE_SECONDS := 1.0
+const RESULTS_SETTLE_SECONDS := 1.4
 
 var _menu: Node
 var _battle: Battle
+
+
+class ResultsCapture extends Node:
+	## Survives the battle -> results scene swap and captures the results screen.
+	const RESULTS_PATH := "res://scenes/battle/Results.tscn"
+	const SETTLE := 1.4
+	const LOCALE_SETTLE := 0.3
+
+	func _ready() -> void:
+		process_mode = Node.PROCESS_MODE_ALWAYS
+		_capture_results()
+
+	func _capture_results() -> void:
+		var waited := 0.0
+		while true:
+			await get_tree().process_frame
+			waited += get_process_delta_time()
+			var current := get_tree().current_scene
+			if current != null and current.scene_file_path == RESULTS_PATH:
+				break
+			if waited > 10.0:
+				printerr("[capture] results screen never appeared")
+				get_tree().quit(1)
+				return
+		await get_tree().create_timer(SETTLE, true, false, true).timeout
+		await _capture("results_defeat")
+		Loc.set_locale("uk")
+		await get_tree().create_timer(LOCALE_SETTLE, true, false, true).timeout
+		await _capture("results_defeat_uk")
+		get_tree().quit(0)
+
+	func _capture(label: String) -> void:
+		await RenderingServer.frame_post_draw
+		var image := get_viewport().get_texture().get_image()
+		var path := "user://screenshot_%s.png" % label
+		var err := image.save_png(path)
+		print("[capture] %s -> %s (error %d)" % [path, ProjectSettings.globalize_path(path), err])
 
 
 func _ready() -> void:
@@ -66,20 +105,20 @@ func _ready() -> void:
 	await get_tree().create_timer(0.2, true, false, true).timeout
 	await _capture("battle_popup")
 
-	# Stage 2 spawns only the two base archers; fill the three upgrade slots so
-	# the stress shot matches the acceptance budget (70 enemies + 5 archers).
+	# Fill the three upgrade slots so the stress shot matches the acceptance
+	# budget (70 enemies + 5 archers).
 	var archer_scene := preload("res://scenes/battle/Archer.tscn")
-	for index in range(_count_archers(), 5):
+	for index in range(_count_archers(), RunStats.MAX_ARCHERS):
 		var archer: Archer = archer_scene.instantiate()
 		_battle.archers_root.add_child(archer)
 		archer.global_position = _battle.core.get_archer_anchor(index)
 		archer.setup(
 			_battle.enemy_pool,
 			_battle.projectile_pool,
-			Battle.ARCHER_DAMAGE,
-			Battle.ARCHER_INTERVAL,
-			Battle.ARCHER_RANGE,
-			Battle.ARCHER_PROJECTILE_SPEED
+			_battle.run_stats.archer_damage,
+			_battle.run_stats.archer_interval,
+			_battle.run_stats.archer_range,
+			_battle.run_stats.projectile_speed
 		)
 
 	# Stress the pool and show the F3 overlay for a readable performance shot.
@@ -93,7 +132,7 @@ func _ready() -> void:
 	await _capture("battle_stress")
 	_battle.hud.toggle_debug()
 
-	# Stage 3: build every pad, then capture the ring and both bottom sheets.
+	# Build every pad, then capture the ring and both bottom sheets.
 	_battle.add_coins(10000)
 	var pad_list := _battle.tower_manager.get_pads()
 	var tower_ids: Array[String] = ["archer_tower", "frost_spire", "ballista"]
@@ -151,15 +190,45 @@ func _ready() -> void:
 	await _capture("battle_pause")
 	_battle.resume_run()
 
-	_battle.core.take_damage(999999.0)
-	await get_tree().create_timer(DEFEAT_SETTLE_SECONDS, true, false, true).timeout
-	await _capture("battle_defeat")
-
+	# Stage 4: upgrade panel, in both locales.
+	_battle.add_coins(2000)
+	_battle.open_upgrades()
+	await get_tree().create_timer(PAUSE_SETTLE_SECONDS, true, false, true).timeout
+	await _capture("battle_upgrades")
+	var archers_tab := _battle.hud.find_child("ArchersTab", true, false) as Button
+	if archers_tab != null:
+		archers_tab.pressed.emit()
+		await get_tree().create_timer(PAUSE_SETTLE_SECONDS, true, false, true).timeout
+		await _capture("battle_upgrades_archers")
+		var tree_tab := _battle.hud.find_child("TreeTab", true, false) as Button
+		if tree_tab != null:
+			tree_tab.pressed.emit()
+			await get_tree().create_timer(PAUSE_SETTLE_SECONDS, true, false, true).timeout
 	Loc.set_locale("uk")
 	await get_tree().create_timer(LOCALE_SETTLE_SECONDS, true, false, true).timeout
-	await _capture("battle_defeat_uk")
+	await _capture("battle_upgrades_uk")
+	Loc.set_locale("en")
+	await get_tree().create_timer(LOCALE_SETTLE_SECONDS, true, false, true).timeout
+	_battle.close_sheet()
 
-	get_tree().quit(0)
+	# Wave-modifier banner and a boss wave for the bar / silhouette. Clear the
+	# stress crowd first so the boss and its escorts read clearly.
+	_battle.enemy_pool.despawn_all()
+	_battle.wave_manager.start(4242)
+	_battle.wave_manager.debug_begin_wave(8)
+	await get_tree().create_timer(0.4, true, false, true).timeout
+	await _capture("battle_modifier")
+	_battle.enemy_pool.despawn_all()
+	_battle.wave_manager.debug_begin_wave(10)
+	await get_tree().create_timer(2.5, true, false, true).timeout
+	await _capture("battle_boss")
+
+	# Real defeat flow: the helper survives the scene swap and captures Results.
+	var helper := ResultsCapture.new()
+	helper.name = "ResultsCapture"
+	get_tree().root.add_child(helper)
+	await get_tree().process_frame
+	_battle.core.take_damage(999999.0)
 
 
 func _capture(label: String) -> void:

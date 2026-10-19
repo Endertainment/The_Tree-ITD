@@ -14,9 +14,11 @@ const HP_BAR_HEIGHT := 20.0
 const HP_BAR_TOP := Vector2(-120.0, -232.0)
 const SHAKE_SECONDS := 0.12
 const SHAKE_DISTANCE := 4.0
+const REGEN_TICK := 0.25
 
 var max_hp := 1000.0
 var hp := 1000.0
+var regen := 0.0
 
 @onready var _archers: Node2D = %Archers
 @onready var _leaf_puff: CPUParticles2D = %LeafPuff
@@ -27,6 +29,7 @@ var _shake_time := 0.0
 var _shake_offset := Vector2.ZERO
 var _base_position := Vector2.ZERO
 var _dead := false
+var _regen_tick := 0.0
 
 
 func _ready() -> void:
@@ -40,10 +43,30 @@ func setup(new_max_hp: float) -> void:
 	max_hp = maxf(1.0, new_max_hp)
 	hp = max_hp
 	_display_hp = hp
+	regen = 0.0
 	_flash = 0.0
 	_shake_time = 0.0
+	_regen_tick = 0.0
 	position = _base_position
 	_dead = false
+	queue_redraw()
+
+
+## Applies the run's live max HP and regeneration without resetting current HP.
+func apply_stats(stats: RunStats) -> void:
+	max_hp = maxf(1.0, stats.max_hp)
+	hp = minf(hp, max_hp)
+	_display_hp = minf(_display_hp, max_hp)
+	regen = maxf(0.0, stats.regen)
+	EventBus.core_damaged.emit(hp, max_hp)
+	queue_redraw()
+
+
+## Adds max HP and heals by `heal_amount` (Roots heals exactly what it adds).
+func add_max_hp(amount: float, heal_amount: float) -> void:
+	max_hp = maxf(1.0, max_hp + amount)
+	hp = minf(max_hp, hp + maxf(0.0, heal_amount))
+	EventBus.core_damaged.emit(hp, max_hp)
 	queue_redraw()
 
 
@@ -54,6 +77,7 @@ func take_damage(amount: float) -> void:
 	hp = maxf(0.0, hp - amount)
 	_flash = 1.0
 	_shake_time = SHAKE_SECONDS
+	_regen_tick = 0.0
 	var angle := randf_range(0.0, TAU)
 	_shake_offset = Vector2(cos(angle), sin(angle)) * SHAKE_DISTANCE
 	_leaf_puff.restart()
@@ -87,6 +111,11 @@ func get_hp() -> float:
 	return hp
 
 
+## Current regeneration in HP/s.
+func get_regen() -> float:
+	return regen
+
+
 ## Maximum HP for this run.
 func get_max_hp() -> float:
 	return max_hp
@@ -107,6 +136,14 @@ func get_archer_anchor(index: int) -> Vector2:
 
 func _process(delta: float) -> void:
 	var needs_redraw := false
+
+	if regen > 0.0 and not _dead and hp > 0.0 and hp < max_hp:
+		_regen_tick += delta
+		if _regen_tick >= REGEN_TICK:
+			hp = minf(max_hp, hp + regen * _regen_tick)
+			_regen_tick = 0.0
+			EventBus.core_damaged.emit(hp, max_hp)
+			needs_redraw = true
 
 	if not is_equal_approx(_display_hp, hp):
 		var speed := maxf(1.0, max_hp * 0.9)

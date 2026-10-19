@@ -1,15 +1,18 @@
 class_name BattleHUD
 extends CanvasLayer
-## Battle HUD, pause sheet and defeat stub. Runs with `PROCESS_MODE_ALWAYS`
-## so it keeps working while the gameplay tree is paused.
+## Battle HUD, pause sheet, boss bar, wave banner and the bottom action bar.
+##
+## Runs with `PROCESS_MODE_ALWAYS` so it keeps working while the gameplay tree is
+## paused. Results are a separate scene now; this HUD never shows them.
 
 signal pause_requested
 signal resume_requested
 signal quit_requested
-signal back_to_menu_requested
 signal call_wave_requested
 signal upgrades_requested
 signal settings_requested
+signal speed_trial_requested
+signal speed_info_requested
 
 ## Android back / Escape. `Battle` decides whether to close a sheet or pause.
 signal back_requested
@@ -27,13 +30,16 @@ const DEBUG_REFRESH_SECONDS := 0.25
 @onready var _timer_label: Label = %TimerLabel
 @onready var _coins_caption: Label = %CoinsCaption
 @onready var _coins_label: Label = %CoinsLabel
-@onready var _speed_button: Button = %SpeedButton
+@onready var _speed_button: SpeedButton = %SpeedButton
 @onready var _pause_button: Button = %PauseButton
 @onready var _call_button: Button = %CallButton
 @onready var _upgrades_button: Button = %UpgradesButton
+@onready var _trial_chip: Button = %TrialChip
 @onready var _banner: VBoxContainer = %Banner
 @onready var _banner_title: Label = %BannerTitle
 @onready var _banner_bonus: Label = %BannerBonus
+@onready var _wave_banner: WaveBanner = %WaveBanner
+@onready var _boss_bar: BossBar = %BossBar
 @onready var _debug_label: Label = %DebugLabel
 @onready var _pause_menu: Control = %PauseMenu
 @onready var _pause_title: Label = %PauseTitle
@@ -46,21 +52,13 @@ const DEBUG_REFRESH_SECONDS := 0.25
 @onready var _quit_body: Label = %QuitBody
 @onready var _quit_cancel: Button = %QuitCancel
 @onready var _quit_confirm_button: Button = %QuitConfirmButton
-@onready var _defeat_panel: Control = %DefeatPanel
-@onready var _defeat_title: Label = %DefeatTitle
-@onready var _defeat_wave: Label = %DefeatWave
-@onready var _defeat_kills: Label = %DefeatKills
-@onready var _defeat_coins: Label = %DefeatCoins
-@onready var _defeat_time: Label = %DefeatTime
-@onready var _defeat_stub: Label = %DefeatStub
-@onready var _defeat_back: Button = %DefeatBack
 @onready var _tower_count: Label = %TowerCount
 @onready var _pad_hint: Label = %PadHint
 @onready var _sheet_host: Control = %SheetHost
 
 var _battle: Battle
 var _waves: WaveManager
-var _last_summary: RunSummary
+var _stats: RunStats
 var _last_state := -1
 var _last_prep_second := -1
 var _last_bonus := -1
@@ -68,14 +66,15 @@ var _debug_accum := 0.0
 var _banner_tween: Tween
 var _coin_tween: Tween
 var _bottom_inset := 0
+var _trial_available := false
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_pause_menu.visible = false
 	_quit_confirm.visible = false
-	_defeat_panel.visible = false
 	_sheet_host.visible = false
+	_trial_chip.visible = false
 	_banner.modulate.a = 0.0
 	_debug_label.visible = false
 
@@ -85,9 +84,10 @@ func _ready() -> void:
 	_settings_button.pressed.connect(_on_settings_pressed)
 	_quit_cancel.pressed.connect(_on_quit_cancel)
 	_quit_confirm_button.pressed.connect(_on_quit_confirmed)
-	_defeat_back.pressed.connect(_on_back_pressed)
 	_call_button.pressed.connect(_on_call_pressed)
 	_upgrades_button.pressed.connect(_on_upgrades_pressed)
+	_trial_chip.pressed.connect(_on_trial_pressed)
+	_speed_button.info_requested.connect(_on_speed_info_pressed)
 
 	EventBus.coins_changed.connect(_on_coins_changed)
 	EventBus.core_damaged.connect(_on_core_damaged)
@@ -106,11 +106,39 @@ func _ready() -> void:
 func bind(battle: Battle, waves: WaveManager) -> void:
 	_battle = battle
 	_waves = waves
+	_hp_bar.max_value = battle.core.get_max_hp()
 	_refresh_texts()
 	set_coins(battle.coins)
 	set_hp(battle.core.get_hp(), battle.core.get_max_hp())
+	_hide_announcements()
 	_last_state = -1
 	_refresh_wave_state()
+
+
+## Keeps a reference to the live stats for the debug overlay.
+func set_stats(stats: RunStats) -> void:
+	_stats = stats
+
+
+## Shows the boss bar for a freshly spawned boss.
+func show_boss(boss: Boss) -> void:
+	_boss_bar.show_boss(boss)
+
+
+## Hides the boss bar.
+func hide_boss() -> void:
+	_boss_bar.hide_boss()
+
+
+## Shows the 1.5 s modifier banner for a wave, if the wave has one.
+func show_wave_modifier(wave: int, modifier: int) -> void:
+	if modifier == WaveRules.Modifier.NONE:
+		return
+	var key := WaveRules.banner_key(modifier)
+	if key.is_empty():
+		return
+	_wave_banner.show_banner(Loc.t_key(key))
+	Analytics.log_event("wave_modifier", {"wave": wave, "modifier": WaveRules.modifier_name(modifier)})
 
 
 ## Updates the Coins readout with thousands separators and pulses on change.
@@ -134,13 +162,13 @@ func set_tower_count(built: int, total: int) -> void:
 	_pad_hint.visible = built == 0
 
 
-## Hides the bottom action bar while a build/tower sheet is open.
+## Hides the bottom action bar while a sheet is open.
 func set_sheet_mode(active: bool) -> void:
 	_bottom_safe.visible = not active
 	_sheet_host.visible = active
 
 
-## Container that hosts the build and tower sheets, below the pause menu.
+## Container that hosts the build, tower and upgrade sheets.
 func get_sheet_host() -> Control:
 	return _sheet_host
 
@@ -169,8 +197,6 @@ func set_pause_enabled(enabled: bool) -> void:
 func show_pause(visible_now: bool) -> void:
 	_pause_menu.visible = visible_now
 	if visible_now:
-		_defeat_panel.visible = false
-	else:
 		_quit_confirm.visible = false
 
 
@@ -184,28 +210,6 @@ func is_quit_confirm_visible() -> bool:
 	return _quit_confirm.visible
 
 
-## True while the results stub panel is visible.
-func is_defeat_visible() -> bool:
-	return _defeat_panel.visible
-
-
-## Hides the results stub, used when a run starts.
-func hide_defeat() -> void:
-	_defeat_panel.visible = false
-
-
-## Fills and shows the stage-2 results stub panel.
-func show_defeat(summary: RunSummary) -> void:
-	_last_summary = summary
-	_pause_menu.visible = false
-	_quit_confirm.visible = false
-	_defeat_panel.visible = true
-	_defeat_wave.text = Loc.t_key("DEFEAT_WAVES", {"count": summary.waves_cleared})
-	_defeat_kills.text = Loc.t_key("DEFEAT_KILLS", {"count": summary.kills})
-	_defeat_coins.text = Loc.t_key("DEFEAT_COINS", {"count": summary.coins_earned})
-	_defeat_time.text = Loc.t_key("DEFEAT_TIME", {"time": summary.get_time_string()})
-
-
 ## Shows the wave-cleared banner under the top bar.
 func show_wave_cleared(wave: int, bonus: int) -> void:
 	_banner_title.text = Loc.t_key("HUD_WAVE_CLEARED", {"wave": wave})
@@ -216,6 +220,17 @@ func show_wave_cleared(wave: int, bonus: int) -> void:
 	_banner_tween = create_tween()
 	_banner_tween.tween_interval(1.2)
 	_banner_tween.tween_property(_banner, "modulate:a", 0.0, 0.45)
+
+
+## Enables the speed-trial chip (only shown during the first preparation).
+func set_trial_available(available: bool) -> void:
+	_trial_available = available
+	_refresh_trial_chip()
+
+
+## Repaints the speed button after the trial or an unlock changed.
+func refresh_speed() -> void:
+	_speed_button.refresh()
 
 
 ## Toggles the F3 diagnostics overlay.
@@ -232,8 +247,6 @@ func is_debug_visible() -> bool:
 
 ## Android back / Escape: close the top panel, else open pause.
 func handle_back() -> void:
-	if _defeat_panel.visible:
-		return
 	if _quit_confirm.visible:
 		_quit_confirm.visible = false
 		return
@@ -273,6 +286,7 @@ func _refresh_wave_state() -> void:
 		return
 	_last_state = _waves.get_state()
 	var wave := _waves.get_wave()
+	_refresh_trial_chip()
 
 	match _last_state:
 		WaveManager.State.PREPARE:
@@ -293,10 +307,16 @@ func _refresh_wave_state() -> void:
 			_call_button.text = Loc.t_key("HUD_CALL_WAVE")
 
 
+func _refresh_trial_chip() -> void:
+	var first_prep := _waves != null and _waves.get_wave() == 0 and _waves.is_preparing()
+	_trial_chip.text = Loc.t_key("SPEED_TRIAL_CHIP")
+	_trial_chip.visible = _trial_available and first_prep
+
+
 func _refresh_texts() -> void:
 	_coins_caption.text = Loc.t_key("HUD_COINS")
 	_upgrades_button.text = Loc.t_key("HUD_UPGRADES")
-	_speed_button.tooltip_text = Loc.t_key("HUD_SPEED_LOCKED")
+	_trial_chip.text = Loc.t_key("SPEED_TRIAL_CHIP")
 	_pause_title.text = Loc.t_key("PAUSE_TITLE")
 	_resume_button.text = Loc.t_key("PAUSE_RESUME")
 	_quit_button.text = Loc.t_key("PAUSE_QUIT")
@@ -305,10 +325,8 @@ func _refresh_texts() -> void:
 	_quit_body.text = Loc.t_key("QUIT_BODY")
 	_quit_cancel.text = Loc.t_key("QUIT_CANCEL")
 	_quit_confirm_button.text = Loc.t_key("QUIT_CONFIRM")
-	_defeat_title.text = Loc.t_key("DEFEAT_TITLE")
-	_defeat_stub.text = Loc.t_key("DEFEAT_STUB")
-	_defeat_back.text = Loc.t_key("DEFEAT_BACK")
 	_pad_hint.text = Loc.t_key("HUD_TAP_PAD")
+	_speed_button.refresh()
 
 	var version := str(ProjectSettings.get_setting("application/config/version", "0.1.0"))
 	_pause_version.text = Loc.t_key("VERSION_LABEL", {"version": version})
@@ -318,16 +336,24 @@ func _update_debug() -> void:
 	if _battle == null:
 		return
 	var run_total := maxi(0, int(_battle.run_time))
-	_debug_label.text = "FPS %d\nWAVE %d  %s\nALIVE %d  QUEUED %d\nARROWS %d  SHOTS %d  POPUPS %d  CELLS %d\nTIME x%.2f  RUN %d:%02d" % [
+	var dps := 0.0
+	if _stats != null:
+		dps = _stats.get_archer_dps()
+	_debug_label.text = "FPS %d\nWAVE %d  %s  MOD %s\nALIVE %d  QUEUED %d\nARROWS %d  SHOTS %d  POPUPS %d  CELLS %d\nHP %d/%d  REGEN %.1f  DPS %d\nTIME x%.2f  RUN %d:%02d" % [
 		Engine.get_frames_per_second(),
 		_battle.wave_manager.get_wave(),
 		_battle.wave_manager.get_state_name(),
+		WaveRules.modifier_name(_battle.wave_manager.get_wave_modifier()),
 		_battle.get_alive_enemy_count(),
 		_battle.get_queued_enemy_count(),
 		_battle.get_active_arrow_count(),
 		_battle.get_active_tower_shot_count(),
 		_battle.floating_layer.count_active(),
 		_battle.enemy_pool.get_spatial_cell_count(),
+		int(_battle.core.get_hp()),
+		int(_battle.core.get_max_hp()),
+		_battle.core.get_regen(),
+		int(round(dps)),
 		Engine.time_scale,
 		run_total / 60,
 		run_total % 60,
@@ -353,6 +379,12 @@ func _apply_safe_area() -> void:
 	_bottom_inset = bottom_inset
 
 
+func _hide_announcements() -> void:
+	_banner.modulate.a = 0.0
+	_wave_banner.hide_banner()
+	_boss_bar.hide_boss()
+
+
 func _on_coins_changed(amount: int) -> void:
 	set_coins(amount)
 
@@ -368,11 +400,10 @@ func _on_wave_started(wave: int) -> void:
 func _on_language_changed(_locale: String) -> void:
 	_refresh_texts()
 	_refresh_wave_state()
+	_wave_banner.hide_banner()
 	if _battle != null:
 		_coins_label.text = Loc.format_number(_battle.coins)
 		set_hp(_battle.core.get_hp(), _battle.core.get_max_hp())
-	if _defeat_panel.visible and _last_summary != null:
-		show_defeat(_last_summary)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -401,10 +432,6 @@ func _on_quit_confirmed() -> void:
 	quit_requested.emit()
 
 
-func _on_back_pressed() -> void:
-	back_to_menu_requested.emit()
-
-
 func _on_call_pressed() -> void:
 	call_wave_requested.emit()
 
@@ -415,3 +442,11 @@ func _on_upgrades_pressed() -> void:
 
 func _on_settings_pressed() -> void:
 	settings_requested.emit()
+
+
+func _on_trial_pressed() -> void:
+	speed_trial_requested.emit()
+
+
+func _on_speed_info_pressed() -> void:
+	speed_info_requested.emit()

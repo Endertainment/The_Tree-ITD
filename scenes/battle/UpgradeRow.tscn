@@ -1,0 +1,78 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/battle/upgrade_row.gd" id="1_row"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_row"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+bg_color = Color(0.062745, 0.094118, 0.062745, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.352941, 0.415686, 0.313726, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="UpgradeRow" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 148)
+theme_override_styles/panel = SubResource("StyleBox_row")
+script = ExtResource("1_row")
+
+[node name="Content" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Info" type="VBoxContainer" parent="Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="TopRow" type="HBoxContainer" parent="Content/Info"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="NameLabel" type="Label" parent="Content/Info/TopRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HudLabel"
+text = "Roots"
+text_overrun_behavior = 3
+
+[node name="LevelLabel" type="Label" parent="Content/Info/TopRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "0 / 5"
+
+[node name="ValueLabel" type="Label" parent="Content/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudCenter"
+text = "HP 1000 → 1150"
+
+[node name="DescriptionLabel" type="Label" parent="Content/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "+150 max HP, heals by the same amount"
+autowrap_mode = 3
+
+[node name="ReasonLabel" type="Label" parent="Content/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = ""
+
+[node name="CostButton" type="Button" parent="Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(210, 96)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"PrimaryButton"
+text = "70"

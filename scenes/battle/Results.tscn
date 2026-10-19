@@ -1,0 +1,182 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/battle/results.gd" id="1_results"]
+[ext_resource type="PackedScene" path="res://ui/RewardCounter.tscn" id="2_counter"]
+[ext_resource type="PackedScene" path="res://ui/Toast.tscn" id="3_toast"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_card"]
+content_margin_left = 44.0
+content_margin_top = 36.0
+content_margin_right = 44.0
+content_margin_bottom = 36.0
+bg_color = Color(0.101961, 0.152941, 0.109804, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.909804, 0.85098, 0.658824, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[node name="Results" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_results")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.039216, 0.062745, 0.043137, 1)
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 48
+
+[node name="Center" type="CenterContainer" parent="SafeArea"]
+layout_mode = 2
+
+[node name="Card" type="PanelContainer" parent="SafeArea/Center"]
+custom_minimum_size = Vector2(860, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_card")
+
+[node name="Column" type="VBoxContainer" parent="SafeArea/Center/Card"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="Label" parent="SafeArea/Center/Card/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PanelTitle"
+text = "THE TREE HAS FALLEN"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="BestRow" type="HBoxContainer" parent="SafeArea/Center/Card/Column"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="BestLabel" type="Label" parent="SafeArea/Center/Card/Column/BestRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "BEST: 0"
+
+[node name="NewBest" type="Label" parent="SafeArea/Center/Card/Column/BestRow"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "NEW BEST!"
+modulate = Color(0.94902, 0.756863, 0.305882, 1)
+
+[node name="Stats" type="VBoxContainer" parent="SafeArea/Center/Card/Column"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StatWaves" type="Label" parent="SafeArea/Center/Card/Column/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "Waves survived: 0"
+horizontal_alignment = 1
+
+[node name="StatKills" type="Label" parent="SafeArea/Center/Card/Column/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "Orcs slain: 0"
+horizontal_alignment = 1
+
+[node name="StatBosses" type="Label" parent="SafeArea/Center/Card/Column/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+text = "Bosses slain: 0"
+horizontal_alignment = 1
+
+[node name="StatTime" type="Label" parent="SafeArea/Center/Card/Column/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "Run time: 0:00"
+horizontal_alignment = 1
+
+[node name="StatCoins" type="Label" parent="SafeArea/Center/Card/Column/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "Coins earned: 0"
+horizontal_alignment = 1
+
+[node name="Divider" type="HSeparator" parent="SafeArea/Center/Card/Column"]
+layout_mode = 2
+
+[node name="Rewards" type="HBoxContainer" parent="SafeArea/Center/Card/Column"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="GoldCounter" parent="SafeArea/Center/Card/Column/Rewards" instance=ExtResource("2_counter")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="GemsCounter" parent="SafeArea/Center/Card/Column/Rewards" instance=ExtResource("2_counter")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MilestoneLabel" type="Label" parent="SafeArea/Center/Card/Column"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = "Wave 30 milestone: +10 Gems"
+horizontal_alignment = 1
+
+[node name="DoubleGoldButton" type="Button" parent="SafeArea/Center/Card/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "DOUBLE GOLD (AD)"
+
+[node name="Buttons" type="HBoxContainer" parent="SafeArea/Center/Card/Column"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PlayAgainButton" type="Button" parent="SafeArea/Center/Card/Column/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"PrimaryButton"
+text = "PLAY AGAIN"
+
+[node name="MenuButton" type="Button" parent="SafeArea/Center/Card/Column/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SecondaryButton"
+text = "MAIN MENU"
+
+[node name="Toast" parent="." instance=ExtResource("3_toast")]
+unique_name_in_owner = true

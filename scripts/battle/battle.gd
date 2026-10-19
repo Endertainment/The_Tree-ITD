@@ -1,36 +1,29 @@
 class_name Battle
 extends Node2D
-## Owns one run: Coins, archers, waves, towers, pause/defeat and the RunSummary.
+## Owns one run: Coins, stats, archers, waves, towers, pause/defeat and the
+## RunSummary.
 ##
 ## Gameplay nodes are pausable; the HUD is `PROCESS_MODE_ALWAYS` so pause,
-## sheets and the defeat panel keep working while `get_tree().paused` is true.
-## Tower world state lives in `TowerManager`; this script owns the run economy
-## and the sheet/pause ownership rules.
+## sheets and the results hand-off keep working while `get_tree().paused` is
+## true. Tower world state lives in `TowerManager`, sheet ownership in
+## `BattleSheets`, and every live combat value in `RunStats`.
 
 const CENTER := Vector2(540.0, 900.0)
 const ARENA_RADIUS := 500.0
 const SPAWN_RADIUS := 640.0
 const CORE_RADIUS := 90.0
 
-# TODO(stage-4): move these run constants into RunModifiers once it exists.
-const START_COINS := 120
-const BASE_TREE_HP := 1000.0
-const BASE_ARCHERS := 2
-const ARCHER_DAMAGE := 12.0
-const ARCHER_INTERVAL := 0.8
-const ARCHER_RANGE := 520.0
-const ARCHER_PROJECTILE_SPEED := 900.0
 const DEFEAT_SLOW_MO := 0.35
 const DEFEAT_SLOW_MO_SECONDS := 0.4
+const BOSS_SLOW_MO := 0.25
+const BOSS_SLOW_MO_SECONDS := 0.3
+const RESULTS_SCENE := "res://scenes/battle/Results.tscn"
 
-const MAIN_MENU_SCENE := "res://scenes/menu/MainMenu.tscn"
 ## `Archer.tscn` is deliberately loaded in `_ready()` instead of `preload`:
 ## preloading it here closes a Battle -> Archer -> Enemy -> Battle script cycle,
 ## and a cyclic preload yields an empty PackedScene in some load orders.
 const ARCHER_SCENE_PATH := "res://scenes/battle/Archer.tscn"
 const TOAST_SCENE := preload("res://ui/Toast.tscn")
-const BUILD_SHEET_SCENE := preload("res://scenes/battle/BuildSheet.tscn")
-const TOWER_SHEET_SCENE := preload("res://scenes/battle/TowerSheet.tscn")
 
 var coins := 0
 var coins_earned := 0
@@ -38,6 +31,11 @@ var kills := 0
 var run_time := 0.0
 var summary: RunSummary
 var rng := RandomNumberGenerator.new()
+var run_modifiers: RunModifiers
+var run_stats: RunStats
+
+## Tests switch this off to keep the battle scene alive after a defeat.
+var auto_route_results := true
 
 ## Same Array instance as `TowerManager.obstacles`; enemies read it directly.
 var obstacles: Array[Dictionary] = []
@@ -55,12 +53,10 @@ var obstacles: Array[Dictionary] = []
 var _ended := false
 var _ending := false
 var _toast: Toast
-var _build_sheet: BuildSheet
-var _tower_sheet: TowerSheet
-var _sheet_open := false
-var _active_pad: BuildPad
-var _tower_cost_mult := 1.0
+var _sheets: BattleSheets
 var _archer_scene: PackedScene
+var _boss_slow_mo := false
+var _starting_run := false
 
 
 func _ready() -> void:
@@ -72,7 +68,7 @@ func _ready() -> void:
 	obstacles = tower_manager.obstacles
 	enemy_pool.set_obstacles(obstacles)
 	wave_manager.setup(enemy_pool, self)
-	core.setup(BASE_TREE_HP)
+	core.setup(RunStats.BASE_TREE_HP)
 
 	_toast = TOAST_SCENE.instantiate()
 	_toast.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -84,29 +80,34 @@ func _ready() -> void:
 	hud.pause_requested.connect(pause_run)
 	hud.resume_requested.connect(resume_run)
 	hud.quit_requested.connect(_on_quit_confirmed)
-	hud.back_to_menu_requested.connect(_on_back_to_menu)
 	hud.call_wave_requested.connect(_on_call_wave)
 	hud.upgrades_requested.connect(_on_upgrades)
 	hud.settings_requested.connect(_on_settings)
 	hud.back_requested.connect(_handle_back)
+	hud.speed_trial_requested.connect(_on_speed_trial_requested)
+	hud.speed_info_requested.connect(_on_speed_info_requested)
 
 	core.died.connect(_on_core_died)
 	EventBus.enemy_died.connect(_on_enemy_died)
 	EventBus.coins_changed.connect(_on_coins_changed)
 	EventBus.language_changed.connect(_on_language_changed)
 	EventBus.tower_built.connect(_on_tower_built)
+	EventBus.boss_died.connect(_on_boss_died)
+	wave_manager.wave_announced.connect(_on_wave_announced)
 
 	Analytics.set_screen("battle")
 	start_run()
 
 
-## Resets Coins, archers, towers, waves and the summary, then emits `run_started`.
-func start_run(modifiers: Dictionary = {}) -> void:
+## Resets Coins, stats, archers, towers, waves and the summary, then emits
+## `run_started`. Passing null builds the modifiers from the save file.
+func start_run(modifiers: RunModifiers = null) -> void:
 	_ended = false
 	_ending = false
+	_boss_slow_mo = false
 	close_sheet()
 	# A run always starts from a clean pause state, even when the previous run
-	# ended on the defeat panel or with a sheet open.
+	# ended on the results panel or with a sheet open.
 	get_tree().paused = false
 	hud.show_pause(false)
 	enemy_pool.despawn_all()
@@ -118,19 +119,33 @@ func start_run(modifiers: Dictionary = {}) -> void:
 	coins_earned = 0
 	kills = 0
 	run_time = 0.0
-	_tower_cost_mult = float(modifiers.get("tower_cost_mult", 1.0))
+
+	run_modifiers = modifiers if modifiers != null else RunModifiers.build(
+		GameState.to_dict(),
+		GameState.get_equipped_cards(),
+		false
+	)
+	SpeedService.set_run_trials(run_modifiers.speed_trial_15, run_modifiers.speed_trial_2)
+	_ensure_run_stats()
+	_starting_run = true
+	run_stats.setup(run_modifiers)
+	_starting_run = false
 
 	summary = RunSummary.new()
 	summary.reason = &"in_progress"
+	summary.best_wave_before = GameState.get_best_wave()
+	summary.gold_mult = run_modifiers.gold_mult
 
-	var tree_hp := BASE_TREE_HP * float(modifiers.get("tree_hp_mult", 1.0))
-	core.setup(tree_hp)
-	_spawn_archers(BASE_ARCHERS + int(modifiers.get("start_archers_add", 0)))
+	core.setup(run_stats.max_hp)
+	core.apply_stats(run_stats)
+	_spawn_archers(run_stats.start_archers)
 
-	coins = maxi(0, START_COINS + int(modifiers.get("start_coins_add", 0)))
+	coins = run_stats.start_coins
 	hud.set_pause_enabled(true)
-	hud.hide_defeat()
-	wave_manager.start()
+	hud.set_stats(run_stats)
+	hud.set_trial_available(not run_modifiers.speed_trial_15 and not SpeedService.is_speed_unlocked(1.5))
+	hud.refresh_speed()
+	wave_manager.start(rng.randi())
 	_refresh_tower_hud()
 	tower_manager.on_coins_changed()
 
@@ -159,12 +174,18 @@ func spend_coins(cost: int) -> bool:
 	return true
 
 
+## Multiplier applied to kill rewards by the `coin_gain` meta upgrade.
+func get_kill_coin_multiplier() -> float:
+	return run_stats.coin_mult if run_stats != null else 1.0
+
+
 ## Current price of a tower, including the run's `tower_cost_mult`.
 func get_tower_cost(tower_id: String) -> int:
 	var data := ConfigDB.get_tower(tower_id) as TowerData
 	if data == null:
 		return 0
-	return Tower.round_to_step(float(data.cost) * _tower_cost_mult, Tower.PRICE_STEP)
+	var cost_mult := run_stats.tower_cost_mult if run_stats != null else 1.0
+	return Tower.round_to_step(float(data.cost) * cost_mult, Tower.PRICE_STEP)
 
 
 ## Lowest tower price this run; drives the pad affordability glow.
@@ -180,11 +201,38 @@ func get_cheapest_tower_cost() -> int:
 	return cheapest
 
 
+## Buys one level of an in-run upgrade. Returns false when maxed or unaffordable.
+func purchase_run_upgrade(track_id: String) -> bool:
+	if _ended or _ending or run_stats == null:
+		return false
+	var track := run_stats.get_track(track_id)
+	if track == null or run_stats.is_maxed(track_id):
+		return false
+	var cost := run_stats.get_next_cost(track_id)
+	if not spend_coins(cost):
+		_sheets.refresh()
+		return false
+	if track.effect == "max_hp":
+		# Grow the Tree before the stats signal so `apply_stats` sees no delta.
+		core.add_max_hp(track.value_per_level, track.value_per_level)
+	if not run_stats.apply_upgrade(track_id):
+		return false
+	_sheets.refresh()
+	return true
+
+
 ## Called by WaveManager when a wave is cleared. The reward is already added.
 func on_wave_cleared(wave: int, reward: int, time_taken: float) -> void:
 	add_coins(reward)
 	EventBus.wave_cleared.emit(wave, time_taken)
 	hud.show_wave_cleared(wave, reward)
+
+
+## Called by WaveManager when a boss finishes spawning.
+func on_boss_spawned(boss: Boss) -> void:
+	if boss == null:
+		return
+	hud.show_boss(boss)
 
 
 ## Freezes gameplay and opens the pause sheet. Safe to call twice.
@@ -196,16 +244,16 @@ func pause_run() -> void:
 	hud.show_pause(true)
 
 
-## Closes the pause sheet and resumes, unless a build/tower sheet is still open.
+## Closes the pause sheet and resumes, unless a sheet is still open.
 func resume_run() -> void:
 	if not hud.is_pause_visible():
 		return
 	hud.show_pause(false)
-	if not _sheet_open and not _ended and not _ending:
+	if not _sheets.is_open() and not _ended and not _ending:
 		get_tree().paused = false
 
 
-## Ends the run once, builds the summary and routes or shows the defeat panel.
+## Ends the run once, builds the summary and routes to the results screen.
 func end_run(reason: StringName) -> void:
 	if _ended:
 		return
@@ -213,6 +261,7 @@ func end_run(reason: StringName) -> void:
 	close_sheet()
 	wave_manager.stop()
 	hud.set_pause_enabled(false)
+	hud.hide_boss()
 
 	if summary == null:
 		summary = RunSummary.new()
@@ -221,17 +270,16 @@ func end_run(reason: StringName) -> void:
 	summary.coins_earned = coins_earned
 	summary.time_seconds = run_time
 	summary.reason = reason
+	if run_modifiers != null:
+		summary.gold_mult = run_modifiers.gold_mult
 
 	EventBus.run_ended.emit(summary)
 	Analytics.log_event("run_ended", summary.to_dict())
 
-	if reason == &"quit":
-		get_tree().paused = false
-		SpeedService.reset()
-		SceneRouter.goto(MAIN_MENU_SCENE)
-	elif reason == &"defeat":
-		get_tree().paused = true
-		hud.show_defeat(summary)
+	get_tree().paused = false
+	SpeedService.reset()
+	if auto_route_results:
+		SceneRouter.goto_with_payload(RESULTS_SCENE, summary)
 
 
 ## True once `end_run` has built the summary.
@@ -239,43 +287,29 @@ func is_over() -> bool:
 	return _ended
 
 
-## True while a build or tower sheet owns the pause.
+## True while a build, tower or upgrade sheet owns the pause.
 func is_sheet_open() -> bool:
-	return _sheet_open
+	return _sheets != null and _sheets.is_open()
 
 
 ## Opens the build sheet for an empty pad, or the tower sheet for a built one.
-## Pauses the tree and keeps exactly one sheet on screen.
 func open_pad(pad: BuildPad) -> void:
-	if pad == null or _sheet_open or _ended or _ending:
+	if _ended or _ending:
 		return
-	_sheet_open = true
-	_active_pad = pad
-	tower_manager.select(pad)
-	get_tree().paused = true
-	hud.set_sheet_mode(true)
+	_sheets.open_pad(pad)
 
-	var inset := hud.get_bottom_inset()
-	if pad.has_tower():
-		_tower_sheet.set_bottom_inset(inset)
-		_tower_sheet.open(pad.tower, self)
-	else:
-		_build_sheet.set_bottom_inset(inset)
-		_build_sheet.open(pad, self)
+
+## Opens the in-run upgrade panel.
+func open_upgrades() -> void:
+	if _ended or _ending:
+		return
+	_sheets.open_upgrades()
 
 
 ## Closes whichever sheet is open and releases the pause it held.
 func close_sheet() -> void:
-	if not _sheet_open:
-		return
-	_sheet_open = false
-	_build_sheet.close()
-	_tower_sheet.close()
-	hud.set_sheet_mode(false)
-	tower_manager.select(null)
-	_active_pad = null
-	if not _ended and not _ending and not hud.is_pause_visible():
-		get_tree().paused = false
+	if _sheets != null:
+		_sheets.close()
 
 
 ## Active enemy nodes, including enemies still playing their death effect.
@@ -303,6 +337,11 @@ func get_queued_enemy_count() -> int:
 	return wave_manager.get_queued_count()
 
 
+## Boss currently alive, or null.
+func get_boss() -> Boss:
+	return wave_manager.get_boss()
+
+
 func _process(delta: float) -> void:
 	if not _ended and not _ending:
 		run_time += delta
@@ -315,7 +354,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 
-	if _sheet_open or _ended or _ending:
+	if is_sheet_open() or _ended or _ending:
 		return
 
 	var tap_position := Vector2.INF
@@ -338,7 +377,7 @@ func _notification(what: int) -> void:
 		if hud != null:
 			_handle_back()
 	elif what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
-		if not _ended and not _ending and not _sheet_open and not get_tree().paused:
+		if not _ended and not _ending and not is_sheet_open() and not get_tree().paused:
 			pause_run()
 
 
@@ -349,21 +388,23 @@ func _exit_tree() -> void:
 		SpeedService.reset()
 
 
-func _create_sheets() -> void:
-	var host := hud.get_sheet_host()
-	_build_sheet = BUILD_SHEET_SCENE.instantiate()
-	_build_sheet.process_mode = Node.PROCESS_MODE_ALWAYS
-	host.add_child(_build_sheet)
-	_build_sheet.build_requested.connect(_on_build_requested)
-	_build_sheet.close_requested.connect(_on_sheet_close_requested)
+func _ensure_run_stats() -> void:
+	if run_stats == null:
+		run_stats = RunStats.new()
+		run_stats.stats_changed.connect(_on_stats_changed)
 
-	_tower_sheet = TOWER_SHEET_SCENE.instantiate()
-	_tower_sheet.process_mode = Node.PROCESS_MODE_ALWAYS
-	host.add_child(_tower_sheet)
-	_tower_sheet.close_requested.connect(_on_sheet_close_requested)
-	_tower_sheet.upgrade_requested.connect(_on_tower_upgrade_requested)
-	_tower_sheet.sell_requested.connect(_on_tower_sell_requested)
-	_tower_sheet.target_mode_changed.connect(_on_target_mode_changed)
+
+func _create_sheets() -> void:
+	_sheets = BattleSheets.new()
+	_sheets.name = "Sheets"
+	add_child(_sheets)
+	_sheets.setup(self, hud, tower_manager)
+	_sheets.build_requested.connect(_on_build_requested)
+	_sheets.tower_upgrade_requested.connect(_on_tower_upgrade_requested)
+	_sheets.tower_sell_requested.connect(_on_tower_sell_requested)
+	_sheets.target_mode_changed.connect(_on_target_mode_changed)
+	_sheets.upgrade_requested.connect(purchase_run_upgrade)
+	_sheets.tower_focus_requested.connect(_on_tower_focus_requested)
 
 
 func _handle_tap(screen_position: Vector2) -> bool:
@@ -379,7 +420,7 @@ func _handle_back() -> void:
 	if hud.is_quit_confirm_visible() or hud.is_pause_visible():
 		hud.handle_back()
 		return
-	if _sheet_open:
+	if is_sheet_open():
 		close_sheet()
 		return
 	hud.handle_back()
@@ -398,22 +439,69 @@ func _spawn_archers(count: int) -> void:
 			archers_root.remove_child(child)
 			child.queue_free()
 
-	var archer_count := clampi(count, 0, 5)
+	var archer_count := clampi(count, 0, RunStats.MAX_ARCHERS)
 	for index in archer_count:
-		var archer: Archer = _archer_scene.instantiate() as Archer
-		if archer == null:
-			push_error("[Battle] could not instantiate the archer scene")
-			return
-		archers_root.add_child(archer)
-		archer.global_position = core.get_archer_anchor(index)
-		archer.setup(
-			enemy_pool,
-			projectile_pool,
-			ARCHER_DAMAGE,
-			ARCHER_INTERVAL,
-			ARCHER_RANGE,
-			ARCHER_PROJECTILE_SPEED
-		)
+		_spawn_archer(index)
+
+
+func _spawn_archer(index: int) -> void:
+	if _archer_scene == null:
+		return
+	var archer: Archer = _archer_scene.instantiate() as Archer
+	if archer == null:
+		push_error("[Battle] could not instantiate the archer scene")
+		return
+	archers_root.add_child(archer)
+	archer.global_position = core.get_archer_anchor(index)
+	archer.setup(
+		enemy_pool,
+		projectile_pool,
+		run_stats.archer_damage,
+		run_stats.archer_interval,
+		run_stats.archer_range,
+		run_stats.projectile_speed
+	)
+
+
+func _count_archers() -> int:
+	var count := 0
+	for child in archers_root.get_children():
+		if child is Archer:
+			count += 1
+	return count
+
+
+## Adds or removes archers so the canopy matches `RunStats.start_archers`.
+func _sync_archer_count() -> void:
+	if run_stats == null:
+		return
+	var target := run_stats.start_archers
+	var current := _count_archers()
+	while current < target:
+		_spawn_archer(current)
+		current += 1
+	while current > target:
+		var last := archers_root.get_child(archers_root.get_child_count() - 1)
+		if last is Archer:
+			archers_root.remove_child(last)
+			last.queue_free()
+			current -= 1
+		else:
+			break
+
+
+func _on_stats_changed() -> void:
+	if run_stats == null or _starting_run:
+		return
+	core.apply_stats(run_stats)
+	for child in archers_root.get_children():
+		if child is Archer:
+			(child as Archer).apply_stats(run_stats)
+	_sync_archer_count()
+	hud.set_stats(run_stats)
+	_refresh_tower_hud()
+	if _sheets != null:
+		_sheets.refresh()
 
 
 func _on_enemy_died(_enemy_id: String, coin_value: int, position: Vector2) -> void:
@@ -433,15 +521,8 @@ func _on_quit_confirmed() -> void:
 	end_run(&"quit")
 
 
-func _on_back_to_menu() -> void:
-	close_sheet()
-	get_tree().paused = false
-	SpeedService.reset()
-	SceneRouter.goto(MAIN_MENU_SCENE)
-
-
 func _on_upgrades() -> void:
-	_toast.show_message(Loc.t_key("HUD_UPGRADES_SOON"))
+	open_upgrades()
 
 
 func _on_settings() -> void:
@@ -455,42 +536,84 @@ func _on_core_died() -> void:
 	close_sheet()
 	wave_manager.stop()
 	hud.set_pause_enabled(false)
+	hud.hide_boss()
 	Engine.time_scale = DEFEAT_SLOW_MO
 	await get_tree().create_timer(DEFEAT_SLOW_MO_SECONDS, true, false, true).timeout
-	Engine.time_scale = 1.0
 	SpeedService.reset()
 	_ending = false
 	end_run(&"defeat")
 
 
+func _on_boss_died(_boss_index: int) -> void:
+	if summary != null:
+		summary.bosses_killed += 1
+	hud.hide_boss()
+	if _ended or _ending or _boss_slow_mo:
+		return
+	_boss_slow_mo = true
+	Engine.time_scale = BOSS_SLOW_MO
+	await get_tree().create_timer(BOSS_SLOW_MO_SECONDS, true, false, true).timeout
+	_boss_slow_mo = false
+	if not _ending and not _ended:
+		SpeedService.reapply()
+
+
+func _on_wave_announced(wave: int, modifier: int) -> void:
+	hud.show_wave_modifier(wave, modifier)
+
+
+func _on_speed_trial_requested() -> void:
+	if _ended or run_modifiers == null or run_modifiers.speed_trial_15:
+		return
+	Monetization.show_rewarded("run_speed_trial", _on_speed_trial_result)
+
+
+func _on_speed_trial_result(success: bool) -> void:
+	if not success or _ended or run_modifiers == null:
+		_toast.show_message(Loc.t_key("SPEED_TRIAL_FAILED"))
+		return
+	run_modifiers.speed_trial_15 = true
+	SpeedService.set_run_trials(true, run_modifiers.speed_trial_2)
+	hud.set_trial_available(false)
+	hud.refresh_speed()
+	_toast.show_message(Loc.t_key("SPEED_TRIAL_GRANTED"))
+
+
+func _on_speed_info_requested() -> void:
+	var available := SpeedService.get_available_speeds()
+	if available.size() >= SpeedService.SPEEDS.size():
+		_toast.show_message(Loc.t_key("SPEED_ALL_UNLOCKED"))
+		return
+	var next_locked := 1.5 if available.size() < 2 else 2.0
+	_toast.show_message(Loc.t_key(SpeedService.get_locked_reason_key(next_locked)))
+
+
 func _on_coins_changed(_amount: int) -> void:
 	tower_manager.on_coins_changed()
+	if _sheets != null:
+		_sheets.refresh()
 
 
 func _on_language_changed(_locale: String) -> void:
 	_refresh_tower_hud()
-	if not _sheet_open:
-		return
-	if _active_pad != null and _active_pad.has_tower():
-		_tower_sheet.refresh()
-	else:
-		_build_sheet.refresh()
+	if _sheets != null:
+		_sheets.refresh()
 
 
 func _on_build_requested(tower_id: String) -> void:
-	if _active_pad == null:
+	if _sheets.active_pad() == null:
 		return
-	if tower_manager.build(_active_pad, tower_id):
+	if tower_manager.build(_sheets.active_pad(), tower_id):
 		_refresh_tower_hud()
 		close_sheet()
 		return
-	_build_sheet.refresh()
+	_sheets.refresh()
 
 
 func _on_tower_upgrade_requested(tower: Tower) -> void:
 	if tower_manager.upgrade(tower):
 		_refresh_tower_hud()
-	_tower_sheet.refresh()
+	_sheets.refresh()
 
 
 func _on_tower_sell_requested(tower: Tower) -> void:
@@ -508,11 +631,13 @@ func _on_target_mode_changed(tower: Tower, mode: int) -> void:
 	if tower == null or not is_instance_valid(tower):
 		return
 	tower.set_target_mode(mode)
-	_tower_sheet.refresh()
+	_sheets.refresh()
 
 
-func _on_sheet_close_requested() -> void:
-	close_sheet()
+func _on_tower_focus_requested(tower: Tower) -> void:
+	if tower == null or not is_instance_valid(tower) or tower.pad == null:
+		return
+	_sheets.focus_tower(tower)
 
 
 func _on_tower_built(_tower_id: String) -> void:

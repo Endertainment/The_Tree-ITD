@@ -74,3 +74,28 @@ row that supersedes the old one — never rewrite or delete history.
 | 2026-10-19 | Verification: `TestTowers` (74 checks), plus `TestBattle` 42, `TestSave` 42, `TestFlow`, `TestSoak`, and new `CaptureTool` screenshots for the ring, both sheets, the locked cards and the 8-tower stress frame. | Desktop window only; no Android device, no 720x1280 device pass. |
 | 2026-10-19 | Known deviation: `battle.gd` grew to ~520 lines (master §8.1 suggests ~300). Tower world state already moved into `TowerManager`; the remaining run lifecycle, economy, pause ownership and sheet plumbing stay in the scene controller until stage 4 adds `RunModifiers`/`RunState`. | Splitting the economy now would duplicate stage 4's work; the behaviour is covered by 74 tower checks plus the stage-2 suites. Recorded so stage 4 pays this debt instead of forgetting it. |
 
+
+## Stage 4 decisions
+
+| Date | Decision | Why |
+|---|---|---|
+| 2026-10-19 | `CardData` is defined in stage 4 even though cards are stage-5 content. | `RunModifiers.build(meta, cards, trial)` is a stage-4 signature; the class has no `.tres` instances and the collection UI stays out of scope. |
+| 2026-10-19 | `RunStats` is a `RefCounted` with `stats_changed`; `Battle` owns the only instance. | Typed signal, no node overhead, and one writer for every live combat value. |
+| 2026-10-19 | Modifier order is base -> meta/cards -> in-run upgrades; multipliers are additive per category, attack speed divides the interval. | Matches master 7.7 and keeps stacking predictable; the arithmetic is pinned by `TestProgression`. |
+| 2026-10-19 | Upgrade effects and values live in `data/upgrades/*.tres`; `RunStats` only switches on the `effect` id. | Balance stays out of code and the six tracks stay data-driven. |
+| 2026-10-19 | Scene names are PascalCase (`UpgradePanel.tscn`, `SpeedButton.tscn`, ...), not the lowercase names in the stage file list. | Follows the stage-2 naming decision and master 8.2. |
+| 2026-10-19 | `WaveRules` is a pure static class for boss cadence/HP, modifier choice and spawn modifiers. | Every formula is testable headlessly and `WaveManager` stays a state machine. |
+| 2026-10-19 | The authored wave 10 is replaced by a pure boss wave (boss + 6 Grunts + 2 Brutes). | The stage asks for a boss on every tenth wave; authored grunt groups would dilute the escort. |
+| 2026-10-19 | The boss is a non-pooled `Enemy` (`Boss.tscn` inherits `Enemy.tscn`) tracked by `EnemyPool.spawn_custom()`. | One spawn per ten waves does not need a second pool; it still counts toward the alive cap and targeting. |
+| 2026-10-19 | `Boss.tscn` is `load()`ed in `WaveManager.setup()`, never preloaded. | WaveManager -> Boss -> Enemy -> Battle -> WaveManager is the same cyclic-preload class that broke archers in stage 3; a windowed `CaptureTool` run reproduced it (WaveManager lost its script). |
+| 2026-10-19 | A boss may enter at the 70-alive cap. | The wave's centrepiece must never be skipped; regular spawns keep respecting the cap. |
+| 2026-10-19 | Results replaces the HUD defeat panel for both defeat and quit; the summary travels as a one-shot `SceneRouter` payload. | One payout path, no global run state, and quit now pays for cleared waves as master 5.10 requires. |
+| 2026-10-19 | `Results` grants rewards once on entry; the double-Gold ad adds the base Gold exactly once. | Prevents double payouts on replay, language change or a repeated ad callback. |
+| 2026-10-19 | `RunSummary.gold_mult` snapshots the run's multiplier instead of re-reading meta on the results screen. | The payout must not change if the profile changes between battle and results. |
+| 2026-10-19 | `MissionHooks` stores metric counters (`run_completed`, `wave_reached`, `bosses_killed`, `gold_earned`) and emits `mission_progress` with target 0. | Stage 5 owns MissionData; target 0 means "metric updated, no specific mission yet" and is documented in the class. |
+| 2026-10-19 | The speed-trial chip lives in the first battle preparation; stage 6 moves it to the pre-battle card row. | Stage 4 has no menu surface for it and the acceptance requires a working one-run trial now. |
+| 2026-10-19 | Boss slow-mo (0.3 s at 0.25x) restores `SpeedService.get_speed()` via `reapply()`, not 1x. | The player's chosen 1.5x/2x must survive the boss death beat; defeat still resets to 1x. |
+| 2026-10-19 | `BattleSheets` owns the build/tower/upgrade sheet lifecycle and the single pause claim. | Pays part of the stage-3 `battle.gd` size debt; the controller still exceeds the 300-line guideline. |
+| 2026-10-19 | `Battle.auto_route_results` lets headless suites inspect a defeated battle. | `SceneRouter` replaces the current scene, which would otherwise kill the test runner mid-suite. Test-only switch, documented here. |
+| 2026-10-19 | Verification: `TestProgression` (107 checks), `TestBattle` 42, `TestTowers` 74, `TestSave` 42, `TestFlow` (quit -> results -> menu), `TestSoak` 5, plus CaptureTool shots (upgrade panel EN/UK, modifier banner, boss bar, results EN/UK). | Desktop window and headless only; no Android device, no 720x1280 pass, no real ad SDK. |
+| 2026-10-19 | Known deviation: battle node count is ~922 (master 8.5 suggests <400); `battle.gd` is ~644, `battle_hud.gd` ~452 and `wave_manager.gd` ~374 lines (master 8.1 suggests ~300). | Pools, sheets and HUD widgets dominate the node count; recorded rather than hidden. Stage 7 perf work should profile the HUD and the pool split, and the controllers can be split further. |

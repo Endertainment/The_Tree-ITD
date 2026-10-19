@@ -134,6 +134,75 @@ func get_card_state() -> Dictionary:
 	return _section("cards").duplicate(true)
 
 
+## Equipped cards as resources. Unknown ids are skipped; the collection UI is
+## stage 5, so the list is normally empty in stage 4.
+func get_equipped_cards() -> Array[CardData]:
+	var result: Array[CardData] = []
+	var equipped: Array = _section("cards").get("equipped", [])
+	for id: Variant in equipped:
+		var card := ConfigDB.get_card(str(id))
+		if card != null:
+			result.append(card)
+	return result
+
+
+## Adds run-domain counters used by the stage-5 mission system.
+func record_mission_metrics(metrics: Dictionary) -> void:
+	var missions := _section("missions")
+	var achievements: Dictionary = missions.get("achievements", {})
+	var progress: Dictionary = achievements.get("progress", {})
+	for key: String in metrics:
+		progress[key] = maxi(0, int(progress.get(key, 0)) + int(metrics[key]))
+	achievements["progress"] = progress
+	missions["achievements"] = achievements
+	_persist()
+
+
+## Current value of one mission/achievement metric.
+func get_mission_metric(id: String) -> int:
+	var achievements: Dictionary = _section("missions").get("achievements", {})
+	var progress: Dictionary = achievements.get("progress", {})
+	return int(progress.get(id, 0))
+
+
+## Applies one finished run exactly once: stats, best wave, milestone flag,
+## Gold/Gems and the Elf Level transition. Returns a summary dictionary for the
+## results screen. The caller computes the reward amounts.
+func apply_run_result(summary: RunSummary, gold: int, gems: int) -> Dictionary:
+	var stats := _section("stats")
+	var currencies := _section("currencies")
+	var flags := _section("flags")
+	var best_before := int(stats.get("best_wave", 0))
+	var elf_before := get_elf_level()
+
+	stats["runs"] = int(stats.get("runs", 0)) + 1
+	stats["best_wave"] = maxi(best_before, summary.waves_cleared)
+	stats["total_kills"] = int(stats.get("total_kills", 0)) + summary.kills
+	stats["bosses_killed"] = int(stats.get("bosses_killed", 0)) + summary.bosses_killed
+	stats["total_gold_earned"] = int(stats.get("total_gold_earned", 0)) + gold
+	stats["total_waves_cleared"] = int(stats.get("total_waves_cleared", 0)) + summary.waves_cleared
+	if summary.waves_cleared >= 30:
+		flags["milestone_30"] = true
+
+	currencies["gold"] = maxi(0, int(currencies.get("gold", 0)) + gold)
+	currencies["gems"] = maxi(0, int(currencies.get("gems", 0)) + gems)
+
+	var elf_after := get_elf_level()
+	_persist()
+	EventBus.gold_changed.emit(get_gold())
+	EventBus.gems_changed.emit(get_gems())
+
+	return {
+		"gold": gold,
+		"gems": gems,
+		"best_before": best_before,
+		"best_wave": int(stats["best_wave"]),
+		"new_best": summary.waves_cleared > best_before,
+		"elf_before": elf_before,
+		"elf_after": elf_after,
+	}
+
+
 func _section(section_name: String) -> Dictionary:
 	var value: Variant = _data.get(section_name, null)
 	if value is Dictionary:

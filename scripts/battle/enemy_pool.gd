@@ -46,6 +46,7 @@ func spawn(enemy_data: EnemyData, position: Vector2, modifiers: Dictionary) -> E
 	if enemy_data == null or _free.is_empty() or _active.size() >= MAX_ALIVE:
 		return null
 	var enemy: Enemy = _free.pop_back()
+	enemy.pooled = true
 	enemy.configure(self, battle)
 	enemy.global_position = position
 	enemy.rotation = 0.0
@@ -56,14 +57,44 @@ func spawn(enemy_data: EnemyData, position: Vector2, modifiers: Dictionary) -> E
 	return enemy
 
 
-## Returns an enemy to the free list. Called by the enemy after its death effect.
+## Instantiates a one-off enemy (the boss) and tracks it like a pooled one.
+## Boss waves spawn one such node, so this is not a hot path. The boss may enter
+## at the alive cap: it is the wave's centrepiece and must never be skipped.
+func spawn_custom(
+	scene: PackedScene,
+	enemy_data: EnemyData,
+	position: Vector2,
+	modifiers: Dictionary
+) -> Enemy:
+	if scene == null or enemy_data == null:
+		return null
+	var enemy := scene.instantiate() as Enemy
+	if enemy == null:
+		push_error("[EnemyPool] spawn_custom needs a scene with an Enemy root")
+		return null
+	add_child(enemy)
+	enemy.pooled = false
+	enemy.configure(self, battle)
+	enemy.global_position = position
+	enemy.rotation = 0.0
+	enemy.set_obstacles(_obstacles)
+	enemy.setup(enemy_data, modifiers)
+	enemy.activate()
+	_active.append(enemy)
+	return enemy
+
+
+## Returns an enemy to the free list, or frees a non-pooled boss.
 func release(enemy: Enemy) -> void:
 	var index := _active.find(enemy)
 	if index >= 0:
 		_active.remove_at(index)
 	enemy.despawn()
-	if not _free.has(enemy):
-		_free.append(enemy)
+	if enemy.pooled:
+		if not _free.has(enemy):
+			_free.append(enemy)
+	else:
+		enemy.queue_free()
 
 
 ## Fills `out` with broad-phase neighbours around `position`.

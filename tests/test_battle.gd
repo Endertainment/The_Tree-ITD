@@ -27,6 +27,8 @@ func _run() -> void:
 
 	_section("start")
 	_battle = BATTLE_SCENE.instantiate()
+	# Keep the battle alive after a defeat; the real game routes to Results.
+	_battle.auto_route_results = false
 	add_child(_battle)
 	# The test root runs ALWAYS so it survives pause; the battle itself must be
 	# pausable, exactly like the real scene root.
@@ -34,9 +36,9 @@ func _run() -> void:
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 
-	_check(_battle.coins == Battle.START_COINS, "run starts with 120 Coins")
-	_check(is_equal_approx(_battle.core.get_hp(), Battle.BASE_TREE_HP), "Tree starts at 1000 HP")
-	_check(_count_archers() == Battle.BASE_ARCHERS, "two archers spawn")
+	_check(_battle.coins == RunStats.BASE_COINS, "run starts with 120 Coins")
+	_check(is_equal_approx(_battle.core.get_hp(), RunStats.BASE_TREE_HP), "Tree starts at 1000 HP")
+	_check(_count_archers() == RunStats.BASE_ARCHERS, "two archers spawn")
 	_check(
 		_battle.wave_manager.get_state() == WaveManager.State.PREPARE,
 		"run starts in PREPARE"
@@ -71,7 +73,7 @@ func _run() -> void:
 	var bonus := _battle.wave_manager.get_call_bonus()
 	_check(bonus >= 4 and bonus <= 5, "calling immediately grants 4-5 Coins")
 	_check(_battle.wave_manager.call_wave_early(), "call wave is accepted during prep")
-	_check(_battle.coins == Battle.START_COINS + bonus, "call bonus is added to Coins")
+	_check(_battle.coins == RunStats.BASE_COINS + bonus, "call bonus is added to Coins")
 	_check(_battle.wave_manager.get_wave() == 1, "wave counter advances to 1")
 
 	_section("steering")
@@ -161,11 +163,11 @@ func _run() -> void:
 	_battle.core.take_damage(999999.0)
 	await _real_wait(1.0)
 	_check(_battle.is_over(), "Tree death ends the run")
-	_check(_battle.hud.is_defeat_visible(), "defeat panel is visible")
 	_check(_battle.summary.reason == &"defeat", "summary reason is defeat")
-	_check(get_tree().paused, "defeat freezes gameplay")
 	_check(_battle.summary.waves_cleared >= 1, "summary keeps cleared waves")
 	_check(_battle.summary.kills >= 5, "summary keeps kill count")
+	_check(_battle.summary.bosses_killed == 0, "no boss was killed before wave 10")
+	_check(not get_tree().paused, "the battle releases the pause on the way out")
 
 	_section("cleanup")
 	get_tree().paused = false

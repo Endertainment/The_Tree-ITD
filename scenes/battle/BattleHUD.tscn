@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/battle/battle_hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" path="res://ui/SpeedButton.tscn" id="2_speed"]
+[ext_resource type="PackedScene" path="res://ui/BossBar.tscn" id="3_boss"]
+[ext_resource type="PackedScene" path="res://ui/WaveBanner.tscn" id="4_banner"]
 
 [node name="BattleHUD" type="CanvasLayer"]
 process_mode = 3
@@ -86,14 +89,10 @@ theme_type_variation = &"HudValue"
 text = "120"
 horizontal_alignment = 1
 
-[node name="SpeedButton" type="Button" parent="TopSafe/TopBar/RightBox"]
+[node name="SpeedButton" parent="TopSafe/TopBar/RightBox" instance=ExtResource("2_speed")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(88, 88)
 layout_mode = 2
 size_flags_vertical = 4
-disabled = true
-theme_type_variation = &"SecondaryButton"
-text = "1x"
 
 [node name="PauseButton" type="Button" parent="TopSafe/TopBar/RightBox"]
 unique_name_in_owner = true
@@ -109,7 +108,7 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -300.0
+offset_top = -340.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/margin_left = 32
@@ -140,6 +139,14 @@ theme_type_variation = &"HudSmall"
 text = "Tap a pad to build"
 horizontal_alignment = 2
 
+[node name="TrialChip" type="Button" parent="BottomSafe/BottomBar"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+theme_type_variation = &"SecondaryButton"
+text = "SPEED TRIAL +1.5x (AD)"
+
 [node name="CallButton" type="Button" parent="BottomSafe/BottomBar"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 124)
@@ -153,6 +160,9 @@ custom_minimum_size = Vector2(0, 92)
 layout_mode = 2
 theme_type_variation = &"SecondaryButton"
 text = "UPGRADES"
+
+[node name="BossBar" parent="." instance=ExtResource("3_boss")]
+unique_name_in_owner = true
 
 [node name="Banner" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
@@ -182,12 +192,15 @@ theme_type_variation = &"HudCenter"
 text = "+16"
 horizontal_alignment = 1
 
+[node name="WaveBanner" parent="." instance=ExtResource("4_banner")]
+unique_name_in_owner = true
+
 [node name="DebugLabel" type="Label" parent="."]
 unique_name_in_owner = true
 offset_left = 32.0
-offset_top = 210.0
+offset_top = 380.0
 offset_right = 760.0
-offset_bottom = 390.0
+offset_bottom = 560.0
 mouse_filter = 2
 theme_type_variation = &"HudSmall"
 text = "FPS"
@@ -346,91 +359,3 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"PrimaryButton"
 text = "QUIT"
-
-[node name="DefeatPanel" type="Control" parent="."]
-unique_name_in_owner = true
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Dim" type="ColorRect" parent="DefeatPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.027451, 0.039216, 0.027451, 0.84)
-
-[node name="Center" type="CenterContainer" parent="DefeatPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="DefeatCard" type="PanelContainer" parent="DefeatPanel/Center"]
-custom_minimum_size = Vector2(680, 0)
-layout_mode = 2
-theme_type_variation = &"PanelCard"
-
-[node name="DefeatColumn" type="VBoxContainer" parent="DefeatPanel/Center/DefeatCard"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="DefeatTitle" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"PanelTitle"
-text = "The Tree has fallen"
-horizontal_alignment = 1
-autowrap_mode = 3
-
-[node name="DefeatWave" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"HudLabel"
-text = "Waves survived: 0"
-horizontal_alignment = 1
-
-[node name="DefeatKills" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"HudLabel"
-text = "Orcs slain: 0"
-horizontal_alignment = 1
-
-[node name="DefeatCoins" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"HudLabel"
-text = "Coins earned: 0"
-horizontal_alignment = 1
-
-[node name="DefeatTime" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"HudSmall"
-text = "Run time: 0:00"
-horizontal_alignment = 1
-
-[node name="DefeatStub" type="Label" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 0)
-layout_mode = 2
-theme_type_variation = &"HudSmall"
-text = "Results screen arrives in stage 4"
-horizontal_alignment = 1
-autowrap_mode = 3
-
-[node name="DefeatBack" type="Button" parent="DefeatPanel/Center/DefeatCard/DefeatColumn"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 96)
-layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-text = "BACK TO MENU"

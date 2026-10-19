@@ -43,6 +43,15 @@ func setup(
 	queue_redraw()
 
 
+## Refreshes damage, rate, range and projectile speed from the run's live stats.
+func apply_stats(stats: RunStats) -> void:
+	damage = stats.archer_damage
+	attack_interval = stats.archer_interval
+	attack_range = stats.archer_range
+	projectile_speed = stats.projectile_speed
+	_cooldown = minf(_cooldown, attack_interval)
+
+
 func _physics_process(delta: float) -> void:
 	_sway += delta
 

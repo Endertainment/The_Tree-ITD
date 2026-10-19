@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_data.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "orc_warlord"
+display_name_key = "BOSS_WARLORD"
+max_hp = 1500.0
+speed = 30.0
+damage = 120.0
+armor = 6.0
+coin_value = 150
+radius = 70.0
+color = Color(0.239216, 0.152941, 0.109804, 1)
+accent_color = Color(0.65098, 0.176471, 0.133333, 1)
+separation_weight = 0.3
+weave_amplitude = 0.0
+weave_frequency = 2.2
+attack_cooldown = 0.8
+shape = "brute"

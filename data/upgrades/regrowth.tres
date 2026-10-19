@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UpgradeTrack" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/upgrade_track.gd" id="1_track"]
+
+[resource]
+script = ExtResource("1_track")
+id = "regrowth"
+tab = "tree"
+effect = "regen"
+value_per_level = 2.0
+name_key = "UPG_REGROWTH_NAME"
+description_key = "UPG_REGROWTH_DESC"
+max_level = 5
+base_cost = 90
+cost_growth = 1.5

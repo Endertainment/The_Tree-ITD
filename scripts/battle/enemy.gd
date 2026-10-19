@@ -22,12 +22,19 @@ var coin_mult := 1.0
 var is_alive := false
 var is_dying := false
 
+## False for non-pooled nodes such as the boss; `EnemyPool` frees those instead
+## of returning them to the free list.
+var pooled := true
+
 ## Incremented on every reuse. Arrows store it so a homing arrow cannot follow a
 ## recycled node that now represents a different orc.
 var spawn_serial := 0
 
 var _pool: EnemyPool
 var _battle: Battle
+var _base_speed := 0.0
+var _enrage_mult := 1.0
+var _modifier := ""
 var _velocity := Vector2.ZERO
 var _attacking := false
 var _spawn_timer := 0.0
@@ -67,12 +74,21 @@ func configure(pool: EnemyPool, battle: Battle) -> void:
 
 
 ## Applies data plus per-wave multipliers. The pool positions the node first.
+## Recognised keys: `hp_mult`, `speed_mult`, `coin_mult`, `armor_mult`, `scale`,
+## `spawn_delay`, `modifier` ("armored" / "swift" / "swarm") and `boss_index`.
 func setup(enemy_data: EnemyData, modifiers: Dictionary) -> void:
 	data = enemy_data
-	radius = data.radius
-	speed = maxf(1.0, data.speed * float(modifiers.get("speed_mult", 1.0)))
+	var scale_mult := maxf(0.2, float(modifiers.get("scale", 1.0)))
+	radius = data.radius * scale_mult
+	_base_speed = maxf(1.0, data.speed * float(modifiers.get("speed_mult", 1.0)))
+	_enrage_mult = 1.0
+	speed = _base_speed
 	coin_mult = float(modifiers.get("coin_mult", 1.0))
-	_health.setup(data.max_hp * float(modifiers.get("hp_mult", 1.0)), data.armor)
+	_modifier = str(modifiers.get("modifier", ""))
+	_health.setup(
+		data.max_hp * float(modifiers.get("hp_mult", 1.0)),
+		data.armor * float(modifiers.get("armor_mult", 1.0))
+	)
 
 	_steering.target_position = Battle.CENTER
 	_steering.max_speed = speed
@@ -99,7 +115,7 @@ func setup(enemy_data: EnemyData, modifiers: Dictionary) -> void:
 
 	var circle := _shape.shape as CircleShape2D
 	if circle != null:
-		circle.radius = data.radius
+		circle.radius = radius
 	_shape.set_deferred("disabled", _spawn_timer > 0.0)
 	_puff.color = data.color
 	_puff.emitting = false
@@ -141,6 +157,18 @@ func apply_slow(strength: float, duration: float) -> void:
 ## Current slow multiplier, used by tests and the frost visual.
 func get_slow_multiplier() -> float:
 	return _status.slow_multiplier
+
+
+## Current wave-modifier id ("armored", "swift", "swarm" or "").
+func get_modifier_name() -> String:
+	return _modifier
+
+
+## Multiplies base speed for the boss enrage phase.
+func apply_enrage(multiplier: float) -> void:
+	_enrage_mult = maxf(1.0, multiplier)
+	speed = _base_speed * _enrage_mult
+	_steering.max_speed = speed
 
 
 ## Applies damage after armor. Ignore-armor is used by the Ballista later.
@@ -186,6 +214,7 @@ func despawn() -> void:
 	_puff.emitting = false
 	_shape.set_deferred("disabled", true)
 	visible = false
+	_enrage_mult = 1.0
 	set_physics_process(false)
 	set_process(false)
 
@@ -344,8 +373,23 @@ func _draw() -> void:
 	var body := data.color.lerp(Color.WHITE, _flash * 0.65)
 	if _status.slow_multiplier < 0.999:
 		body = body.lerp(Color("#7fc8e8"), 0.45)
+	match _modifier:
+		"armored":
+			body = body.lerp(Color("#9aa0a6"), 0.5)
+		"swift":
+			body = body.lerp(Color("#e0c34a"), 0.3)
 	var accent := data.accent_color.darkened(0.35)
 	var offset := Vector2(radius * 0.3 * _lunge, 0.0)
+
+	if _modifier == "swift":
+		for index in 3:
+			var trail_alpha := 0.2 * (1.0 - float(index) / 3.0)
+			var trail_distance := radius * (1.25 + float(index) * 0.6)
+			draw_circle(
+				Vector2(-trail_distance, 0.0),
+				radius * (0.62 - float(index) * 0.12),
+				Color(0.88, 0.76, 0.29, trail_alpha)
+			)
 
 	if data.shape == "brute":
 		draw_circle(offset + Vector2(-radius * 0.55, -radius * 0.35), radius * 0.45, body.darkened(0.12))

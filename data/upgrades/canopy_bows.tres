@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UpgradeTrack" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/upgrade_track.gd" id="1_track"]
+
+[resource]
+script = ExtResource("1_track")
+id = "canopy_bows"
+tab = "archers"
+effect = "archer_damage"
+value_per_level = 0.15
+name_key = "UPG_CANOPY_NAME"
+description_key = "UPG_CANOPY_DESC"
+max_level = 8
+base_cost = 80
+cost_growth = 1.4

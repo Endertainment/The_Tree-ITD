@@ -40,12 +40,12 @@ func get_wave_table(id := "main") -> WaveTable:
 	return _lookup("waves", id) as WaveTable
 
 
-func get_upgrade(id: String) -> Resource:
-	return _lookup("upgrades", id)
+func get_upgrade(id: String) -> UpgradeTrack:
+	return _lookup("upgrades", id) as UpgradeTrack
 
 
-func get_card(id: String) -> Resource:
-	return _lookup("cards", id)
+func get_card(id: String) -> CardData:
+	return _lookup("cards", id) as CardData
 
 
 func get_mission(id: String) -> Resource:

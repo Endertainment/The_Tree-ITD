@@ -2,7 +2,8 @@ extends Node
 ## Scene transitions: fades out, swaps the scene, fades in.
 ##
 ## The fade overlay lives on a CanvasLayer owned by this autoload, so it
-## survives the scene swap. Double navigation is ignored.
+## survives the scene swap. Double navigation is ignored. One-shot payloads let
+## the battle hand its `RunSummary` to the results screen without a global.
 
 const FADE_SECONDS := 0.2
 const OVERLAY_LAYER := 128
@@ -10,6 +11,7 @@ const OVERLAY_LAYER := 128
 var _fade: ColorRect
 var _tween: Tween
 var _transitioning := false
+var _payload: Variant = null
 
 
 func _ready() -> void:
@@ -53,12 +55,17 @@ func goto(path: String, force := false) -> void:
 	_transitioning = false
 
 
-## Reloads the current scene with a fade.
-func reload_current() -> void:
-	var path := _current_scene_path()
-	if path.is_empty():
-		return
-	await goto(path, true)
+## Stores `payload` for the next scene, then performs a normal `goto`.
+func goto_with_payload(path: String, payload: Variant, force := false) -> void:
+	_payload = payload
+	await goto(path, force)
+
+
+## Returns and clears the payload left by the previous scene.
+func consume_payload() -> Variant:
+	var value: Variant = _payload
+	_payload = null
+	return value
 
 
 ## True while a transition is in flight.

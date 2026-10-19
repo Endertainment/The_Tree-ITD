@@ -88,8 +88,10 @@ NVIDIA RTX 3050 Laptop, 540x960 window (1080x1920 reference).
       (`TestBattle`).
 - [x] Kills add Coins and `+N` popups; wave clear adds `10 + 2*wave`
       (`TestBattle`, `screenshot_battle_popup.png`).
-- [x] An enemy at the Tree damages it; defeat panel shows waves/kills/Coins/time
-      and `TestBattle` matches them against `RunSummary`.
+- [x] An enemy at the Tree damages it; the battle builds a `RunSummary` and
+      `TestBattle` matches its waves/kills/Coins/time fields.
+- [x] Defeat and quit both route to `Results.tscn`; the old in-HUD defeat panel
+      was removed in stage 4.
 - [x] Pause freezes enemies and timers; resume continues (`TestBattle`); pause
       sheet rendered in `screenshot_battle_pause.png`.
 - [x] F3 toggles the debug overlay; it reports FPS, wave/state, alive, queued,
@@ -181,17 +183,50 @@ $proj  = "C:\Users\VOVA\Documents\the-tree---idle-tower-defense"
 & $godot --headless --path $proj --fixed-fps 60 res://tests/TestBattle.tscn
 & $godot --headless --path $proj --fixed-fps 60 res://tests/TestSoak.tscn
 & $godot --headless --path $proj --fixed-fps 60 res://tests/TestTowers.tscn
-& $godot --path $proj res://tools/CaptureTool.tscn        # menu + battle screenshots
+& $godot --headless --path $proj --fixed-fps 60 res://tests/TestProgression.tscn
+& $godot --path $proj res://tools/CaptureTool.tscn        # menu, battle, results shots
 ```
 
 `CaptureTool` writes `user://screenshot_menu_en.png`, `menu_uk`, `battle_prep`,
-`battle_prep_uk`, `battle_wave`, `battle_stress`, `battle_towers`,
-`battle_towers_stress`, `battle_tower_sheet`, `battle_tower_sheet_uk`,
-`battle_tower_sheet_l1`, `battle_build_sheet`, `battle_build_sheet_locked`,
-`battle_sheet_pause`, `battle_pause`, `battle_defeat` and `battle_defeat_uk`.
+`battle_prep_uk`, `battle_wave`, `battle_popup`, `battle_stress`,
+`battle_towers`, `battle_towers_stress`, `battle_tower_sheet`,
+`battle_tower_sheet_uk`, `battle_tower_sheet_l1`, `battle_build_sheet`,
+`battle_build_sheet_locked`, `battle_sheet_pause`, `battle_pause`,
+`battle_upgrades`, `battle_upgrades_archers`, `battle_upgrades_uk`,
+`battle_modifier`, `battle_boss`, `results_defeat` and `results_defeat_uk`.
+
+## Stage 4 — progression, bosses, results, speed
+
+- [x] Six in-run tracks load from `data/upgrades/` with the authored costs
+      (`TestProgression`: roots 70 / 100 / 145, extra archer 900 at level 2).
+- [x] Roots adds and heals exactly 150 HP; Regrowth adds 2 HP/s and the Tree
+      regenerates during battle.
+- [x] The upgrade panel opens from UPGRADES during prep and combat, pauses the
+      game and switches TREE / ARCHERS / TOWERS.
+- [x] Canopy Bows, Elven Haste, Far Sight and Extra Archer change archer values
+      immediately (damage 12 -> 13.8, interval 0.8 -> 0.741, range 520 -> 560,
+      archers 2 -> 3).
+- [x] A boss spawns on wave 10 with the top bar, 1500 HP, 3 s slow immunity,
+      summons four runners at 70% and 40%, and enrages below 30%.
+- [x] Boss death emits `boss_died` once, counts in the summary and restores the
+      selected speed after the 0.3 s slow-mo.
+- [x] Wave modifiers begin at wave 8, are deterministic per run seed, are
+      announced by a 1.5 s banner and tint/scale the enemies.
+- [x] Speed cycles only through unlocked speeds; the lock badge and long-press
+      reason work; the prep chip grants 1.5x for one run.
+- [x] Results shows correct waves, kills, bosses, time and Coins for defeat and
+      for a quit; `TestFlow` covers quit -> Results -> menu.
+- [x] Gold = `sum(8 + 2w) * gold_mult`; Gems = `2*floor(N/5) + 5*bosses` plus the
+      one-time wave-30 milestone, all floored.
+- [x] Rewards are granted once, persist after restart and update best wave.
+- [x] DOUBLE GOLD doubles only Gold, once, and an ad failure keeps the base
+      reward.
+- [x] Wave 30 sets `flags.milestone_30` and pays +10 Gems only once.
+- [x] Elf Level 3 unlocks 1.5x and shows the toast on the results screen.
+- [ ] Real Android device pass, 720x1280 layout, real rewarded-ad SDK. Deferred
+      to stages 6-7.
 
 ## Known environment quirks
-
 - **Cold headless import exit code.** After deleting `.godot/`, the first
   `--headless --editor --quit` / `--import` run on this machine finishes the
   import and then dies with an access violation (`0xC0000005`) during editor

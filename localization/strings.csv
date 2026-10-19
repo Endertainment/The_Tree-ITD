@@ -3,7 +3,6 @@ BOOT_TITLE,The Tree,Дерево
 MENU_TITLE,The Tree,Дерево
 MENU_SUBTITLE,Idle Tower Defense,Захист Дерева
 MENU_BATTLE,BATTLE,БІЙ
-MENU_COMING_SOON,Coming in stage 2,З'явиться на етапі 2
 MENU_LANGUAGE,Language,Мова
 CURRENCY_GOLD,Gold,Золото
 CURRENCY_GEMS,Gems,Самоцвіти
@@ -20,12 +19,10 @@ HUD_PREPARE,PREPARE,ПІДГОТОВКА
 HUD_NEXT_IN,NEXT IN {seconds},НАСТУПНА ЗА {seconds}
 HUD_IN_PROGRESS,IN PROGRESS,У ПРОЦЕСІ
 HUD_COINS,COINS,МОНЕТИ
-HUD_SPEED_LOCKED,Speed unlocks arrive in stage 4,Швидкість з'явиться на етапі 4
 HUD_CALL_WAVE,CALL WAVE,ВИКЛИКАТИ ХВИЛЮ
 HUD_CALL_WAVE_BONUS,CALL WAVE  +{bonus},ВИКЛИКАТИ ХВИЛЮ  +{bonus}
 HUD_CALL_DISABLED,IN PROGRESS,У ПРОЦЕСІ
 HUD_UPGRADES,UPGRADES,ПОКРАЩЕННЯ
-HUD_UPGRADES_SOON,In-run upgrades arrive in stage 4,Покращення в бою з'являться на етапі 4
 HUD_WAVE_CLEARED,WAVE {wave} CLEARED,ХВИЛЮ {wave} ВІДБИТО
 HUD_WAVE_BONUS,+{coins},+{coins}
 PAUSE_TITLE,PAUSED,ПАУЗА
@@ -37,13 +34,6 @@ QUIT_TITLE,Quit this run?,Вийти з бою?
 QUIT_BODY,Cleared waves count as a finished run. This cannot be undone.,Пройдені хвилі зарахуються як завершений бій. Цю дію не можна скасувати.
 QUIT_CANCEL,KEEP PLAYING,ГРАТИ ДАЛІ
 QUIT_CONFIRM,QUIT,ВИЙТИ
-DEFEAT_TITLE,The Tree has fallen,Дерево загинуло
-DEFEAT_WAVES,Waves survived: {count},Пережито хвиль: {count}
-DEFEAT_KILLS,Orcs slain: {count},Знищено орків: {count}
-DEFEAT_COINS,Coins earned: {count},Зароблено монет: {count}
-DEFEAT_TIME,Run time: {time},Час бою: {time}
-DEFEAT_BACK,BACK TO MENU,ДО МЕНЮ
-DEFEAT_STUB,Results screen arrives in stage 4,Екран результатів з'явиться на етапі 4
 HUD_TOWERS,TOWERS {built} / {total},ВЕЖІ {built} / {total}
 HUD_TAP_PAD,Tap a pad to build,Торкніться майданчика, щоб збудувати
 TOWER_ARCHER_NAME,Archer Tower,Вежа лучників
@@ -71,3 +61,56 @@ TOWER_TARGET,TARGET,ЦІЛЬ
 TOWER_TARGET_NEAREST,NEAREST,НАЙБЛИЖЧА
 TOWER_TARGET_STRONGEST,STRONGEST,НАЙМІЦНІША
 TOWER_TARGET_FIRST,FIRST,ПЕРША
+SPEED_TRIAL_CHIP,SPEED TRIAL +1.5x (AD),СПРОБА ШВИДКОСТІ +1.5x (РЕКЛАМА)
+SPEED_TRIAL_GRANTED,1.5x is available for this run,Швидкість 1.5x доступна в цьому бою
+SPEED_TRIAL_FAILED,No ad available. Try again later.,Реклама недоступна. Спробуйте пізніше.
+SPEED_LOCK_15,1.5x: 250 Gems / Elf Level 3 / one-run ad trial,1.5x: 250 самоцвітів / рівень ельфа 3 / пробна реклама
+SPEED_LOCK_2,2x: 600 Gems / reach wave 25 / one-run ad trial,2x: 600 самоцвітів / хвиля 25 / пробна реклама
+SPEED_ALL_UNLOCKED,All speeds unlocked,Усі швидкості відкрито
+SPEED_UNLOCKED_TOAST,1.5x SPEED UNLOCKED,ШВИДКІСТЬ 1.5x ВІДКРИТО
+BOSS_WARLORD,WARLORD,ВОЄВОДА
+BANNER_MOD_ARMORED,ARMORED HORDE,БРОНЬОВАНА ОРДА
+BANNER_MOD_SWIFT,SWIFT HORDE,ШВИДКА ОРДА
+BANNER_MOD_SWARM,SWARMING HORDE,РОЗРОСЛА ОРДА
+UPG_TITLE,UPGRADES,ПОКРАЩЕННЯ
+UPG_TAB_TREE,TREE,ДЕРЕВО
+UPG_TAB_ARCHERS,ARCHERS,ЛУЧНИКИ
+UPG_TAB_TOWERS,TOWERS,ВЕЖІ
+UPG_SUMMARY,HP {hp}   REGEN {regen}   DPS {dps}   ARCHERS {archers},ЖИТТЯ {hp}   ВІДНОВ {regen}   DPS {dps}   ЛУЧНИКИ {archers}
+UPG_LEVEL,{level} / {max},{level} / {max}
+UPG_BUY,BUY {cost},КУПИТИ {cost}
+UPG_MAX,MAX,МАКС
+UPG_TOWERS_EMPTY,No towers built yet,Ще немає веж
+UPG_VALUE_HP,HP {now} → {next},ЖИТТЯ {now} → {next}
+UPG_VALUE_REGEN,REGEN {now} → {next},ВІДНОВ {now} → {next}
+UPG_VALUE_DMG,DMG {now} → {next},УРОН {now} → {next}
+UPG_VALUE_RATE,RATE {now}s → {next}s,ТЕМП {now}s → {next}s
+UPG_VALUE_RANGE,RNG {now} → {next},ДАЛЬН. {now} → {next}
+UPG_VALUE_ARCHERS,ARCHERS {now} → {next},ЛУЧНИКИ {now} → {next}
+UPG_ROOTS_NAME,Roots,Коріння
+UPG_ROOTS_DESC,+150 max HP and heals by the same amount,+150 макс. життя і лікує на стільки ж
+UPG_REGROWTH_NAME,Regrowth,Відростання
+UPG_REGROWTH_DESC,+2 HP per second,+2 життя за секунду
+UPG_CANOPY_NAME,Canopy Bows,Луки крони
+UPG_CANOPY_DESC,+15% archer damage,+15% урону лучників
+UPG_HASTE_NAME,Elven Haste,Ельфійська швидкість
+UPG_HASTE_DESC,+8% archer attack speed,+8% швидкості атаки лучників
+UPG_FARSIGHT_NAME,Far Sight,Далекий зір
+UPG_FARSIGHT_DESC,+40 archer range,+40 дальності лучників
+UPG_EXTRA_ARCHER_NAME,Extra Archer,Додатковий лучник
+UPG_EXTRA_ARCHER_DESC,+1 archer in the canopy,+1 лучник у кроні
+RESULTS_DEFEAT_TITLE,THE TREE HAS FALLEN,ДЕРЕВО ЗАГИНУЛО
+RESULTS_QUIT_TITLE,RUN ENDED,БІЙ ЗАВЕРШЕНО
+RESULTS_WAVES,Waves survived: {count},Пережито хвиль: {count}
+RESULTS_KILLS,Orcs slain: {count},Знищено орків: {count}
+RESULTS_BOSSES,Bosses slain: {count},Знищено воєвод: {count}
+RESULTS_TIME,Run time: {time},Час бою: {time}
+RESULTS_COINS,Coins earned: {count},Зароблено монет: {count}
+RESULTS_BEST,BEST: {wave},РЕКОРД: {wave}
+RESULTS_NEW_BEST,NEW BEST!,НОВИЙ РЕКОРД!
+RESULTS_MILESTONE,Wave 30 milestone: +{gems} Gems,Рубіж хвилі 30: +{gems} самоцвітів
+RESULTS_DOUBLE_GOLD,DOUBLE GOLD (AD),ПОДВОЇТИ ЗОЛОТО (РЕКЛАМА)
+RESULTS_DOUBLE_DONE,Gold doubled,Золото подвоєно
+RESULTS_AD_FAILED,No ad available. Your reward is safe.,Реклама недоступна. Нагороду збережено.
+RESULTS_PLAY_AGAIN,PLAY AGAIN,ГРАТИ ЩЕ
+RESULTS_MENU,MAIN MENU,ГОЛОВНЕ МЕНЮ

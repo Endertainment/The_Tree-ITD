@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/speed_button.gd" id="1_speed"]
+
+[node name="SpeedButton" type="Button"]
+custom_minimum_size = Vector2(100, 88)
+offset_right = 100.0
+offset_bottom = 88.0
+theme_type_variation = &"SecondaryButton"
+text = "1x"
+script = ExtResource("1_speed")
+
+[node name="LockBadge" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -52.0
+offset_top = 2.0
+offset_right = -4.0
+offset_bottom = 26.0
+grow_horizontal = 0
+theme_type_variation = &"HudSmall"
+theme_override_font_sizes/font_size = 16
+text = "LOCK"
+horizontal_alignment = 2

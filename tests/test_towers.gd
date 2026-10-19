@@ -27,6 +27,7 @@ func _ready() -> void:
 func _run() -> void:
 	await get_tree().process_frame
 	_battle = BATTLE_SCENE.instantiate()
+	_battle.auto_route_results = false
 	add_child(_battle)
 	_battle.process_mode = Node.PROCESS_MODE_PAUSABLE
 	await get_tree().physics_frame
@@ -48,7 +49,7 @@ func _run() -> void:
 	_check(pad0.get_tap_radius() * 2.0 >= 88.0, "tap target is at least 88 px wide")
 
 	_section("build")
-	_check(_battle.coins == Battle.START_COINS, "run starts with 120 Coins")
+	_check(_battle.coins == RunStats.BASE_COINS, "run starts with 120 Coins")
 	_check(_battle.get_tower_cost("archer_tower") == 60, "archer tower costs 60")
 	_check(_battle.get_tower_cost("frost_spire") == 90, "frost spire costs 90")
 	_check(_battle.get_tower_cost("ballista") == 140, "ballista costs 140")
