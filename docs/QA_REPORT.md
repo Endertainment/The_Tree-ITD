@@ -20,9 +20,9 @@ strength of code reading alone.
 
 | Result | Rows |
 |---|---|
-| PASS | 17 of 20 |
+| PASS | 18 of 20 |
 | FAIL | 0 |
-| BLOCKED | 3 (rows 14, 15, 20 — each with the missing device/asset named below) |
+| BLOCKED | 2 (rows 14 and 15 — tap injection and the missing screen sizes) |
 
 Every headless suite passes. The one `ERROR` printed in the release run is the
 deliberately simulated disk failure (row 13), not a defect.
@@ -50,7 +50,7 @@ deliberately simulated disk failure (row 13), not a defect.
 | 17 | Perf | 70 enemies + 8 towers, 10-minute soak | PASS | `TestSoak`: 600 simulated seconds, wave 21, 442 kills, 965 → 965 nodes, 0 orphans. Device: 119 FPS in the menu (120 Hz vsync), 1.12% janky frames. The 70-enemy `BENCHMARK` needs an F2 console command and was not run on the device. |
 | 18 | Perf | Memory/orphan growth after 5 runs | PASS | Headless: node count flat and 0 orphans across the soak. Device: `TOTAL PSS 453 MB` / `RSS 455 MB` (includes 118 MB swap) after a fresh launch; five consecutive runs were not executed on the device (no input). |
 | 19 | Audio | Buses, sliders, pause ducking, no leaks | PASS | `TestPolish` asserts bus routing, volume application, ducking and the library; no leak on scene change. Audibility was **not** checked by ear. |
-| 20 | Store | AAB builds, installs, versionCode correct | BLOCKED | The signed AAB was produced (`build/the-tree-release.aab`, 26.4 MB) and its signature verifies against the release certificate. `bundletool dump manifest` reports `com.endertainment.thetree`, `versionCode 1`, `versionName 0.1.0`, `minSdkVersion 26`, `targetSdkVersion 35`. Installing it on the phone failed with `INSTALL_FAILED_USER_RESTRICTED` (MIUI blocks USB installs of a release-signed APK; the debug APK installed fine). No Play track exists to upload the AAB to. |
+| 20 | Store | AAB builds, installs, versionCode correct | PASS | The signed AAB (`build/the-tree-release.aab`, 26.4 MB) verifies against the release certificate. `bundletool dump manifest` reports `com.endertainment.thetree`, `versionCode 1`, `versionName 0.1.0`, `minSdkVersion 26`, `targetSdkVersion 35`. Its universal APK installed on the phone (`adb install` → Success) and launched to the menu; `dumpsys package` confirms `versionCode=1`, `versionName=0.1.0`, `minSdk=26`, `targetSdk=35`, no fatal logcat entry. |
 
 ## Headless suites
 
@@ -82,6 +82,8 @@ menu flow.
 - Background 30 s → same process, `OnResume`, menu intact. No time jump observed
   in the HUD on resume.
 - Force-stop → relaunch: profile restored (Gold 0, Gems 5, Elf Lv 1), no crash.
+- Release build (universal APK built from the AAB): installed (Success), launched to the menu with a fresh profile (Gold 0, Gems 0), ersionCode 1, ersionName 0.1.0; no fatal logcat entry.
+- Screenshot of the release build: docs/qa/device_release_menu_1220x2712.png.
 - Screenshot evidence: `docs/qa/device_menu_1220x2712.png`.
 
 ## Defects found and fixed
@@ -101,7 +103,6 @@ by the new suites.
 - 720×1280 low-end phone, 1080×2400 tall phone, tablet.
 - 70-enemy frame time on the device (`BENCHMARK` needs manual input).
 - Audio by ear (buses, ducking, loop seam).
-- AAB install/launch on a clean device (the AAB verifies, but MIUI rejected the
-  release-signed APK with `INSTALL_FAILED_USER_RESTRICTED`, and there is no Play
-  track to upload to).
+- AAB upload to Play and the Play-side install (no Play track exists; the AAB
+  itself installs through its universal APK and launches).
 - Real AdMob and Play Billing sandboxes.

@@ -476,8 +476,8 @@ per-row evidence: `docs/QA_REPORT.md`.
       release keystore via `GODOT_ANDROID_KEYSTORE_RELEASE_*` env vars.
 - [x] AAB signature verifies; manifest is `com.endertainment.thetree`,
       `versionCode 1`, `versionName 0.1.0`.
-- [ ] AAB install on a clean device (no Play track, no bundletool in this
-      environment at the time of the run) — see the QA report.
+- [x] AAB install on a clean device: undletool build-apks --mode=universal then
+      db install → Success; the release build boots to the menu as  .1.0 (1).
 - [ ] Call interruption, 720×1280 / 1080×2400 / tablet, 70-enemy device FPS,
       audio by ear, real ad/billing sandboxes.
 

@@ -19,7 +19,7 @@ project; `[ ]` = still required.
 - [x] AAB build preset `Android AAB` (Gradle, `export_format=1`) committed.
 - [x] `tools/export_android.ps1 -Preset "Android AAB"` injects the keystore from
       `THE_TREE_KEYSTORE` / `_ALIAS` / `_PASSWORD` and restores the preset file.
-- [ ] A signed AAB installs and launches on a clean device.
+- [x] A signed AAB installs and launches on a clean device: its universal APK installed over adb (`Success`) and booted to the menu as `0.1.0 (1)` on the Xiaomi test phone.
 
 ## Play Console
 
