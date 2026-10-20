@@ -146,21 +146,54 @@ if (-not (Test-Path $target)) {
 $size = [Math]::Round((Get-Item $target).Length / 1MB, 1)
 Write-Output ("OK: " + $target + " (" + $size + " MB)")
 
-if ($Install) {
-    $adb = 'adb'
-    if (-not [string]::IsNullOrWhiteSpace($env:ANDROID_HOME)) {
-        $adb = Join-Path $env:ANDROID_HOME 'platform-tools\adb.exe'
-    } elseif (Test-Path 'C:\Android\Sdk\platform-tools\adb.exe') {
-        $adb = 'C:\Android\Sdk\platform-tools\adb.exe'
+# adb writes failures to stderr; with ErrorActionPreference=Stop that would
+# abort the script, so run it as a process and read both streams.
+function Invoke-Adb {
+    param([string[]]$Arguments)
+    $stdout = [System.IO.Path]::GetTempFileName()
+    $stderr = [System.IO.Path]::GetTempFileName()
+    try {
+        $process = Start-Process -FilePath $script:adbPath -ArgumentList $Arguments `
+            -NoNewWindow -Wait -PassThru `
+            -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+        $text = ((Get-Content $stdout -Raw -ErrorAction SilentlyContinue) + '' +
+                 (Get-Content $stderr -Raw -ErrorAction SilentlyContinue))
+        return @{ Code = $process.ExitCode; Text = $text.Trim() }
+    } finally {
+        Remove-Item $stdout, $stderr -Force -ErrorAction SilentlyContinue
     }
-    $devices = & $adb devices
-    if (($devices | Select-String 'device$').Count -eq 0) {
-        Write-Output 'No device attached; skipping install.'
+}
+
+if ($Install) {
+    $script:adbPath = 'adb'
+    if (-not [string]::IsNullOrWhiteSpace($env:ANDROID_HOME)) {
+        $script:adbPath = Join-Path $env:ANDROID_HOME 'platform-tools\adb.exe'
+    } elseif (Test-Path 'C:\Android\Sdk\platform-tools\adb.exe') {
+        $script:adbPath = 'C:\Android\Sdk\platform-tools\adb.exe'
+    }
+    $devices = Invoke-Adb @('devices')
+    if ($devices.Text -notmatch '\tdevice') {
+        Write-Output ("No device attached; skipping install. adb said: " + ($devices.Text -replace "`r?`n", " | "))
         return
     }
     Write-Output 'Installing on the attached device...'
-    & $adb install -r $target
-    if ($LASTEXITCODE -ne 0) {
-        Write-Output 'Install failed. If the signature changed (debug vs release), run: adb uninstall com.endertainment.thetree'
+    $result = Invoke-Adb @('install', '-r', $target)
+    if ($result.Code -eq 0) {
+        Write-Output 'Installed.'
+        return
     }
+    # A debug APK cannot replace a release build (and the reverse): the signing
+    # keys differ. Recover by removing the other build once.
+    if ($result.Text -match 'INSTALL_FAILED_UPDATE_INCOMPATIBLE|signatures do not match') {
+        Write-Output 'The phone has the other build type installed (debug vs release).'
+        Write-Output 'Uninstalling it first; local test progress on the phone is lost.'
+        Invoke-Adb @('uninstall', 'com.endertainment.thetree') | Out-Null
+        $result = Invoke-Adb @('install', $target)
+        if ($result.Code -eq 0) {
+            Write-Output 'Installed.'
+            return
+        }
+    }
+    Write-Output $result.Text
+    Write-Output 'Install failed. Unlock the phone, allow USB installs, then retry.'
 }
