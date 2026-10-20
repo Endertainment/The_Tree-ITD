@@ -318,6 +318,31 @@ godot --headless --path . --export-debug "Android" build/the-tree-debug.apk
 godot --headless --path . --export-release "Android" build/the-tree-release.apk
 ```
 
+### Export templates must match the engine build
+
+Godot looks for templates in `%APPDATA%\Godot\export_templates\<version>` where
+`<version>` differs per build:
+
+| Engine | Template folder |
+|---|---|
+| Standard 4.7.2 | `4.7.2.stable` |
+| .NET / mono 4.7.2 | `4.7.2.stable.mono` |
+
+A standard editor cannot use .NET templates (and the reverse). If the version
+folder or `android_debug.apk` is missing, the export fails with
+`No export template found at the expected path`.
+
+This machine currently has only `4.7.2.stable.mono`, so `tools/build_apk.ps1`
+skips `C:\Tools\godot-4.7.2` and exports with the .NET build on the Desktop.
+To export with the standard editor instead, install its templates once:
+**Editor → Manage Export Templates → Download and Install** (about 1 GB), or
+download the `4.7.2` `.tpz` and unzip it into
+`%APPDATA%\Godot\export_templates\4.7.2.stable\` so that `android_debug.apk`
+sits directly inside that folder.
+
+Exporting a GDScript project with the .NET editor works; it only prints the
+`Exporting to Android when using C#/.NET is experimental` warning.
+
 Prerequisites are the ones in sections 1–3: Android SDK path set in the editor
 settings, JDK 17+ on `PATH` for Gradle builds, and the debug keystore. A debug
 APK installs over a debug APK; switching between debug and release needs
