@@ -474,7 +474,8 @@ per-row evidence: `docs/QA_REPORT.md`.
 - [x] 720×1280 via `wm size` / `wm density` overrides: menu, battle HUD and tab
       bar fit (`docs/qa/device_menu_720x1280.png`).
 - [ ] Call interruption (no call was placed) and 1080×2400 / tablet.
-- [ ] Tutorial step-1 card is oversized at 1220×2712 — logged in `docs/BACKLOG.md`.
+- [x] Tutorial step-1 card: fixed (label measured at its card width); verified
+      on the 1220×2712 phone, the card now sits above the highlighted pad.
 
 ### Release
 

@@ -76,13 +76,3 @@ See `docs/BALANCE_REPORT.md` for the numbers behind every item.
   found. docs/BUILD_ANDROID.md documents the manual command.
 - **Re-install the rebuilt AAB on a device** once Play Protect allows it (or via
   the Play closed track) and re-run rows 6, 7, 11 and 20 of the QA matrix.
-
-## UI on tall screens
-
-- **Tutorial step 1 card renders as a full-height panel** over the playfield on
-  the 1220×2712 test phone: the card is a `PanelContainer` with a fixed
-  680×280 design size, but on this aspect it paints ~1060 design px tall and
-  covers the pads it points at. Steps 2 and 3 render at the intended size.
-  Reproduced from the build sheet and from an idle battle; not fixed in this
-  pass. Next step: size the card through a wrapper `Control` and clamp its rect
-  after layout, then re-check `1220×2712`, `720×1280` and `1080×1920`.
