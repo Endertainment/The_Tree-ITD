@@ -150,18 +150,27 @@ func _load_directory(path: String) -> Dictionary:
 		push_warning("[ConfigDB] missing data directory: %s" % path)
 		return result
 	for file_name: String in DirAccess.get_files_at(path):
-		if not (file_name.ends_with(".tres") or file_name.ends_with(".res")):
+		# An exported build lists `foo.tres.remap` instead of `foo.tres`; the
+		# remap file points at the packed resource, and `load()` on the original
+		# path resolves it. Without this strip every data bucket is empty in a
+		# release APK/AAB (stage-8 device test: no towers, waves or upgrades).
+		var source := file_name
+		if source.ends_with(".remap"):
+			source = source.trim_suffix(".remap")
+		if not (source.ends_with(".tres") or source.ends_with(".res")):
 			continue
-		var resource: Resource = load(path.path_join(file_name))
+		var resource: Resource = load(path.path_join(source))
 		if resource == null:
-			push_warning("[ConfigDB] failed to load %s/%s" % [path, file_name])
+			push_warning("[ConfigDB] failed to load %s/%s" % [path, source])
 			continue
 		var id := str(resource.get("id"))
 		if id.is_empty():
-			push_warning("[ConfigDB] resource without an id: %s/%s" % [path, file_name])
+			push_warning("[ConfigDB] resource without an id: %s/%s" % [path, source])
 			continue
 		if result.has(id):
 			push_warning("[ConfigDB] duplicate id '%s' in %s" % [id, path])
 			continue
 		result[id] = resource
+	if result.is_empty():
+		push_warning("[ConfigDB] no resources found in %s" % path)
 	return result

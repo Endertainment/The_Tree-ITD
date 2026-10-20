@@ -30,6 +30,15 @@ device; nothing is charged and no real ad is shown.
 - **Polish** — localization (EN/UK), placeholder art and synthesized audio,
   haptics, screen shake, particles, first-run tutorial, quality switch.
 
+### Fixed in this build
+
+- **Exported builds loaded no data.** Godot lists `*.tres.remap` in an exported
+  project, and `ConfigDB` skipped those files, so the first signed AAB ran with
+  no towers, waves, upgrades, cards, missions or shop items. The loader now
+  resolves the remap name and warns when a data directory comes back empty.
+- **Wave 11 difficulty cliff.** Authored waves ran at x1.0 and procedural wave
+  11 jumped to `1.16^10` (~4.4x); the scaling curves now start at the authored
+  band.
 ### Known limitations
 
 - Placeholder art and audio; the tree, orcs, towers and UI are drawn in code or

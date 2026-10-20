@@ -66,3 +66,13 @@ See `docs/BALANCE_REPORT.md` for the numbers behind every item.
 - **No UMP consent flow.** Required before any real ad request in the EEA.
 - **Restore is untested against a real store.** The fake provider reports owned
   products; Play Billing restore needs a licensed tester account.
+
+## Export fidelity
+
+- **The exported build was not exercised before stage 8.** The first device run
+  showed ConfigDB loading nothing because an export lists *.tres.remap; fixed
+  and verified on a packed PCK. Add a post-export smoke step to CI: run the
+  exported PCK headless and fail if the log contains [ConfigDB] no resources
+  found. docs/BUILD_ANDROID.md documents the manual command.
+- **Re-install the rebuilt AAB on a device** once Play Protect allows it (or via
+  the Play closed track) and re-run rows 6, 7, 11 and 20 of the QA matrix.

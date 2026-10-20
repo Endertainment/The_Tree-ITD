@@ -27,6 +27,17 @@ strength of code reading alone.
 Every headless suite passes. The one `ERROR` printed in the release run is the
 deliberately simulated disk failure (row 13), not a defect.
 
+> **Critical device-only defect found and fixed.** The first signed AAB installed
+> and launched, but its data layer was empty: an exported build lists
+> `*.tres.remap` instead of `*.tres` and `ConfigDB` skipped those files. The
+> phone logged `[WaveManager] no authored wave table`, `missing track 'roots'` and
+> `unknown enemy id 'orc_runner'`, leaving the build sheet empty and every
+> upgrade/card/shop list blank. `ConfigDB._load_directory()` now strips `.remap`.
+> A packed-build A/B proves it: 9 `ConfigDB` warnings before the change, 0 after.
+> The fixed AAB was rebuilt, but Play Protect blocked reinstalling it on the test
+> phone, so the fix is verified at packed-PCK level rather than on the device.
+> Rows 4-12 below are source-level (headless) results.
+
 ## Test matrix
 
 | # | Area | Check | Result | Evidence |
@@ -82,7 +93,7 @@ menu flow.
 - Background 30 s → same process, `OnResume`, menu intact. No time jump observed
   in the HUD on resume.
 - Force-stop → relaunch: profile restored (Gold 0, Gems 5, Elf Lv 1), no crash.
-- Release build (universal APK built from the AAB): installed (Success), launched to the menu with a fresh profile (Gold 0, Gems 0), ersionCode 1, ersionName 0.1.0; no fatal logcat entry.
+- Release build (universal APK built from the AAB): installed (Success), launched to the menu with a fresh profile (Gold 0, Gems 0), versionCode 1, versionName 0.1.0; no fatal logcat entry.
 - Screenshot of the release build: docs/qa/device_release_menu_1220x2712.png.
 - Screenshot evidence: `docs/qa/device_menu_1220x2712.png`.
 
@@ -91,6 +102,7 @@ menu flow.
 | Defect | Fix |
 |---|---|
 | Wave 11 jumped to `1.16^10` (~4.4×) HP while wave 9 ran at ×1.0 — authored waves never received the master scaling. | `WaveRules.scaling_for_wave()` now offsets the curves to `authored_max + 1`; covered by `TestProgression`/`TestBattle` and documented in `DECISIONS.md`. |
+| Exported APK/AAB loaded **no data at all**: `ConfigDB` skipped `*.tres.remap` entries, so the build sheet was empty and waves, upgrades, cards, missions and shop fell back to nothing. | `ConfigDB._load_directory()` strips `.remap` before `load()`, and warns when a data directory yields zero resources. Packed-PCK A/B: 9 warnings -> 0. |
 | Balance model initially counted a wave that hit the 600 s cap as cleared, producing a bogus wave-50 run. | `tools/simulate_balance.gd` treats a timeout as a defeat and regenerates during preparation. Finding recorded in `BALANCE_REPORT.md`. |
 
 No defect was found in save, purchase, claim, ad, locale or results code paths

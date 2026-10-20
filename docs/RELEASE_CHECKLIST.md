@@ -19,7 +19,7 @@ project; `[ ]` = still required.
 - [x] AAB build preset `Android AAB` (Gradle, `export_format=1`) committed.
 - [x] `tools/export_android.ps1 -Preset "Android AAB"` injects the keystore from
       `THE_TREE_KEYSTORE` / `_ALIAS` / `_PASSWORD` and restores the preset file.
-- [x] A signed AAB installs and launches on a clean device: its universal APK installed over adb (`Success`) and booted to the menu as `0.1.0 (1)` on the Xiaomi test phone.
+- [ ] A signed AAB installs, launches **and carries its data** on a clean device. The first AAB installed as `0.1.0 (1)` but loaded no data (`ConfigDB` skipped `*.tres.remap`); the fix is in, the AAB is rebuilt, and re-installing on the test phone was blocked by Play Protect. Re-check on a device or through the Play closed track.
 
 ## Play Console
 

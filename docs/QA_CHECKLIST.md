@@ -467,8 +467,11 @@ per-row evidence: `docs/QA_REPORT.md`.
 - [x] Save files written on pause (`files/save.json`, `files/save.bak`).
 - [x] `force-stop` then relaunch restores the profile (Gold/Gems/Elf Level).
 - [x] 120 Hz panel reports ~119 FPS for the menu, 1.12 % janky frames.
-- [ ] Tap-driven checks (battle, towers, back spam, call interruption) — MIUI
-      rejects injected input (`INJECT_EVENTS` denial); reported BLOCKED.
+- [x] Tap injection enabled on the phone: BATTLE opened the battle and a pad opened
+      the build sheet, which is how the ConfigDB export bug below was found.
+- [ ] Re-run the tap path (build a tower, pause, back, quit) on the fixed build:
+      Play Protect blocked reinstalling it.
+- [ ] Call interruption and back-button spam on the device.
 
 ### Release
 
@@ -476,8 +479,13 @@ per-row evidence: `docs/QA_REPORT.md`.
       release keystore via `GODOT_ANDROID_KEYSTORE_RELEASE_*` env vars.
 - [x] AAB signature verifies; manifest is `com.endertainment.thetree`,
       `versionCode 1`, `versionName 0.1.0`.
-- [x] AAB install on a clean device: undletool build-apks --mode=universal then
-      db install → Success; the release build boots to the menu as  .1.0 (1).
+- [x] AAB built and installed on a clean device: `bundletool build-apks --mode=universal`
+      then `adb install` -> Success; the release build booted to the menu as `0.1.0 (1)`.
+- [x] Device-only defect found in that run: the exported build loaded no data
+      (`ConfigDB` skipped `*.tres.remap`). Fixed and proven with a packed-PCK A/B
+      (9 -> 0 warnings); the fixed AAB is rebuilt.
+- [ ] Re-install the fixed AAB on a device: Play Protect blocked the sideload on the
+      test phone.
 - [ ] Call interruption, 720×1280 / 1080×2400 / tablet, 70-enemy device FPS,
       audio by ear, real ad/billing sandboxes.
 
