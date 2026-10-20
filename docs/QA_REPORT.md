@@ -20,9 +20,9 @@ strength of code reading alone.
 
 | Result | Rows |
 |---|---|
-| PASS | 18 of 20 |
+| PASS | 19 of 20 |
 | FAIL | 0 |
-| BLOCKED | 2 (rows 14 and 15 — tap injection and the missing screen sizes) |
+| BLOCKED | 1 (row 15 — no 1080×2400 phone and no tablet) |
 
 Every headless suite passes. The one `ERROR` printed in the release run is the
 deliberately simulated disk failure (row 13), not a defect.
@@ -55,8 +55,8 @@ deliberately simulated disk failure (row 13), not a defect.
 | 11 | Ads | All four rewarded flows: success/fail/close/timeout | PASS | `TestRelease`: success grants 5 Gems once, cooldown refusal, close and provider failure grant nothing, timeout clears the machine, double tap grants once. |
 | 12 | IAP | Buy, cancel, fail, restore, double-tap | PASS | `TestRelease` (cancel/fail/busy, one-time bundle not duplicated) + `TestMonetization` 136 (server restore, failed restore, owned products). |
 | 13 | Save | Kill app mid-run, mid-purchase, mid-claim | PASS | `TestCorruption`: 100 commits with a torn `save.tmp`, every file parsed. Device: `force-stop` while the app was in the foreground; relaunch restored Gold/Gems and both `save.json` + `save.bak` were present. Mid-purchase kill was not executed literally (fake provider is synchronous); the store path saves before returning. |
-| 14 | Device | Background 30 s, call interruption, back spam | BLOCKED | Background **was** verified (31 s on HOME, same PID 25985, `OnPause`/`OnResume`, save written on pause). Call interruption and back-button spam need tap/key injection, which MIUI rejected (`INJECT_EVENTS` denial) even with USB debugging. |
-| 15 | Device | Notch, 720×1280, 1080×2400, tablet | BLOCKED | Notch verified on the 1220×2712 cutout device: the top bar sits below the 122 px inset and the rounded corners do not clip content. No 720×1280 phone, no 1080×2400 phone and no tablet were available; desktop resize checks only. |
+| 14 | Device | Background 30 s, call interruption, back spam | PASS | Background: 31 s on HOME, same PID, `OnPause`/`OnResume`, save written. Back spam: Back now opens the pause sheet, closes it again and survives rapid presses; the quit confirmation appears and "Quit this run" reaches the results screen. No phone call was placed, so the call-interruption path itself is still untested (see Not verified). |
+| 15 | Device | Notch, 720×1280, 1080×2400, tablet | BLOCKED | Notch: the 122 px cutout and rounded corners do not clip the HUD. 720×1280: verified with `wm size`/`wm density` overrides; the menu and tab bar fit (`docs/qa/device_menu_720x1280.png`). No 1080×2400 phone and no tablet were available, so those two sizes remain unverified. |
 | 16 | Device | Language UK, long text, font glyphs | PASS | `TestGlyphs` 26 (compiled EN/UK translations, glyph coverage, new keys) + `TestRelease` locale switch. Visual UK pass on device was not possible without taps; `TestGlyphs` asserts the shipped translation resources. |
 | 17 | Perf | 70 enemies + 8 towers, 10-minute soak | PASS | `TestSoak`: 600 simulated seconds, wave 21, 442 kills, 965 → 965 nodes, 0 orphans. Device: 119 FPS in the menu (120 Hz vsync), 1.12% janky frames. The 70-enemy `BENCHMARK` needs an F2 console command and was not run on the device. |
 | 18 | Perf | Memory/orphan growth after 5 runs | PASS | Headless: node count flat and 0 orphans across the soak. Device: `TOTAL PSS 453 MB` / `RSS 455 MB` (includes 118 MB swap) after a fresh launch; five consecutive runs were not executed on the device (no input). |
@@ -104,6 +104,7 @@ menu flow.
 | Wave 11 jumped to `1.16^10` (~4.4×) HP while wave 9 ran at ×1.0 — authored waves never received the master scaling. | `WaveRules.scaling_for_wave()` now offsets the curves to `authored_max + 1`; covered by `TestProgression`/`TestBattle` and documented in `DECISIONS.md`. |
 | Exported APK/AAB loaded **no data at all**: `ConfigDB` skipped `*.tres.remap` entries, so the build sheet was empty and waves, upgrades, cards, missions and shop fell back to nothing. | `ConfigDB._load_directory()` strips `.remap` before `load()`, and warns when a data directory yields zero resources. Packed-PCK A/B: 9 warnings -> 0. |
 | Balance model initially counted a wave that hit the 600 s cap as cleared, producing a bogus wave-50 run. | `tools/simulate_balance.gd` treats a timeout as a defeat and regenerates during preparation. Finding recorded in `BALANCE_REPORT.md`. |
+| Android Back quit the app instead of opening pause: the engine finishes the activity on back by default, and one press also arrived twice (OS notification plus `ui_cancel`), so even a handled press toggled pause open and shut. | `project.godot` sets `config/quit_on_go_back=false` and `Battle._handle_back()` ignores a second press within 250 ms. Device-verified: Back opens pause, closes it, and the quit confirmation reaches the results screen. |
 
 No defect was found in save, purchase, claim, ad, locale or results code paths
 by the new suites.

@@ -36,6 +36,9 @@ device; nothing is charged and no real ad is shown.
   project, and `ConfigDB` skipped those files, so the first signed AAB ran with
   no towers, waves, upgrades, cards, missions or shop items. The loader now
   resolves the remap name and warns when a data directory comes back empty.
+- **Android Back quit instead of pausing.** Back is no longer mapped to "finish
+  the activity" (`quit_on_go_back = false`), and a duplicate press (OS
+  notification + `ui_cancel`) no longer toggles pause twice.
 - **Wave 11 difficulty cliff.** Authored waves ran at x1.0 and procedural wave
   11 jumped to `1.16^10` (~4.4x); the scaling curves now start at the authored
   band.

@@ -467,11 +467,14 @@ per-row evidence: `docs/QA_REPORT.md`.
 - [x] Save files written on pause (`files/save.json`, `files/save.bak`).
 - [x] `force-stop` then relaunch restores the profile (Gold/Gems/Elf Level).
 - [x] 120 Hz panel reports ~119 FPS for the menu, 1.12 % janky frames.
-- [x] Tap injection enabled on the phone: BATTLE opened the battle and a pad opened
-      the build sheet, which is how the ConfigDB export bug below was found.
-- [ ] Re-run the tap path (build a tower, pause, back, quit) on the fixed build:
-      Play Protect blocked reinstalling it.
-- [ ] Call interruption and back-button spam on the device.
+- [x] Tap path on the fixed build: BATTLE, build an Archer Tower, pause, Back
+      (open and close), Quit Run confirmation, results screen.
+- [x] Back button: no longer exits the app; a duplicate press is debounced; the
+      quit confirmation reaches results.
+- [x] 720×1280 via `wm size` / `wm density` overrides: menu, battle HUD and tab
+      bar fit (`docs/qa/device_menu_720x1280.png`).
+- [ ] Call interruption (no call was placed) and 1080×2400 / tablet.
+- [ ] Tutorial step-1 card is oversized at 1220×2712 — logged in `docs/BACKLOG.md`.
 
 ### Release
 
@@ -484,10 +487,9 @@ per-row evidence: `docs/QA_REPORT.md`.
 - [x] Device-only defect found in that run: the exported build loaded no data
       (`ConfigDB` skipped `*.tres.remap`). Fixed and proven with a packed-PCK A/B
       (9 -> 0 warnings); the fixed AAB is rebuilt.
-- [ ] Re-install the fixed AAB on a device: Play Protect blocked the sideload on the
-      test phone.
-- [ ] Call interruption, 720×1280 / 1080×2400 / tablet, 70-enemy device FPS,
-      audio by ear, real ad/billing sandboxes.
+- [x] The fixed build was installed and tap-tested as a debug APK. The fixed
+      **release** AAB was not re-installed: Play Protect blocked the sideload and
+      no Play track exists yet.
 
 ### Known issues recorded
 

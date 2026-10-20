@@ -23,6 +23,10 @@ const BENCHMARK_SECONDS := 10.0
 const BENCHMARK_ENEMIES := 70
 const BENCHMARK_TOWERS := 8
 const HIT_SHAKE_PIXELS := 6.0
+## One Back press can arrive twice (OS notification plus ui_cancel).
+const BACK_DEBOUNCE_MS := 250
+
+var _last_back_msec := 0
 const CORE_SHAKE_PIXELS := 4.0
 
 ## Emitted when the player calls the next wave early.
@@ -512,6 +516,13 @@ func _handle_tap(screen_position: Vector2) -> bool:
 
 
 func _handle_back() -> void:
+	# Android delivers one Back press as both NOTIFICATION_WM_GO_BACK_REQUEST and
+	# a ui_cancel action, so without this guard the pause toggles open and shut in
+	# the same frame and Back appears to do nothing.
+	var now := Time.get_ticks_msec()
+	if now - _last_back_msec < BACK_DEBOUNCE_MS:
+		return
+	_last_back_msec = now
 	if hud.is_quit_confirm_visible() or hud.is_pause_visible():
 		hud.handle_back()
 		return
