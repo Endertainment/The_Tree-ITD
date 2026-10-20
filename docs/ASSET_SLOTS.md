@@ -18,18 +18,30 @@ the SFX slider never silences button feedback.
 
 | Slot | File | Length | Bus | Used for |
 |---|---|---|---|---|
-| `ui_tap` | `ui_tap.wav` | 0.08 s | UI | Every button press (`ui_click` aliases to this) |
-| `ui_confirm` | `ui_confirm.wav` | 0.14 s | UI | Confirmed purchase / positive action |
-| `error` | `error.wav` | 0.20 s | UI | Refused action, not enough Coins |
-| `build` | `build.wav` | 0.35 s | SFX | Tower built, boss summon thud |
-| `upgrade` | `upgrade.wav` | 0.36 s | SFX | Any upgrade purchased |
-| `arrow` | `arrow.wav` | 0.15 s | SFX | Archer shot, tower shot (`tower_fire` aliases here) |
-| `hit` | `hit.wav` | 0.10 s | SFX | Arrow / bolt impact |
-| `enemy_die` | `enemy_die.wav` | 0.30 s | SFX | Orc death |
+| `ui_tap` | `ui_tap.wav` | 0.08 s | UI | Every button press (`ui_click` aliases here) |
+| `ui_confirm` | `ui_confirm.wav` | 0.14 s | UI | Successful purchase, mission claim, upgrade |
+| `error` | `error.wav` | 0.20 s | UI | Refused action, not enough Gold or Coins |
+| `build` | `build.wav` | 0.35 s | SFX | Tower built |
+| `upgrade` | `upgrade.wav` | 0.36 s | SFX | Tower or meta upgrade purchased |
+| `tower_sell` | `tower_sell.wav` | 0.21 s | SFX | Tower sold |
+| `arrow` | `arrow.wav` | 0.15 s | SFX | Elf archer shot (`tower_fire` still aliases here) |
+| `tower_archer_shot` | `tower_archer_shot.wav` | 0.12 s | SFX | Archer Tower shot |
+| `tower_frost_shot` | `tower_frost_shot.wav` | 0.24 s | SFX | Frost Spire shot |
+| `tower_ballista_shot` | `tower_ballista_shot.wav` | 0.30 s | SFX | Ballista shot |
+| `hit` | `hit.wav` | 0.10 s | SFX | Arrow or bolt impact on an orc (throttled) |
+| `frost_burst` | `frost_burst.wav` | 0.32 s | SFX | Frost splash on impact (throttled) |
+| `enemy_die` | `enemy_die.wav` | 0.30 s | SFX | Orc death (throttled) |
 | `boss_roar` | `boss_roar.wav` | 0.60 s | SFX | Boss spawn and enrage |
-| `victory` | `victory.wav` | 0.44 s | SFX | Wave clear fanfare |
+| `boss_die` | `boss_die.wav` | 1.10 s | SFX | Boss death |
+| `tree_hit` | `tree_hit.wav` | 0.38 s | SFX | Tree takes damage (throttled) |
+| `wave_start` | `wave_start.wav` | 0.66 s | SFX | A wave begins (horn) |
+| `victory` | `victory.wav` | 0.44 s | SFX | Wave cleared |
 | `defeat` | `defeat.wav` | 0.48 s | SFX | Tree destroyed |
-| `coin` | `coin.wav` | 0.10 s | SFX | Coin reward sparkle |
+| `revive` | `revive.wav` | 0.40 s | SFX | Rewarded revive accepted |
+| `coin` | `coin.wav` | 0.10 s | SFX | Coin reward sparkle (throttled) |
+
+Mass events go through `AudioManager.play_sfx_throttled(id, seconds)` so the
+12-voice SFX pool never machine-guns when a whole wave dies at once.
 
 Regenerate them all:
 
@@ -53,20 +65,24 @@ silence at the head.
 Directory: `assets/audio/music/`
 Bus: **Music**, crossfade 0.4 s, ducks -6 dB while paused.
 
-Music is **menu-only**: `MainMenu._ready()` calls `AudioManager.play_menu_music()`
-and `Battle._ready()` stops it with a 0.8 s fade, so a run and the results screen
-are SFX-only. Nothing else starts music at boot.
+Music is **scene-owned**: `MainMenu._ready()` calls
+`AudioManager.play_menu_music()` and `Battle._ready()` calls
+`AudioManager.play_battle_music()`, so each scene brings its own track.
+`Battle.end_run()` fades the battle theme out under the results transition, so
+the results screen is SFX-only. Nothing starts music at boot.
 
 | Slot | File | Length | Status |
 |---|---|---|---|
-| `menu_theme` | `menu_theme.ogg` (or `.wav` / `.mp3`) | any | **Your soundtrack.** Missing file → falls back to `grove_loop`. |
-| `grove_loop` | `grove_loop.wav` | 30.00 s | Generated placeholder loop (Am–F–C–G pad with a bell arpeggio), now only a fallback |
+| `menu_theme` | `menu_theme.mp3` (or `.ogg` / `.wav`) | any | Menu soundtrack. Missing file → falls back to `grove_loop`. |
+| `battle_theme` | `battle_theme.mp3` (or `.ogg` / `.wav`) | any | Battle soundtrack. Missing file → a run stays silent (SFX only). |
+| `grove_loop` | `grove_loop.wav` | 30.00 s | Generated placeholder loop, menu fallback only |
 
-**Adding your own menu track:** drop the file into `assets/audio/music/`, name it
-`menu_theme.<ext>`, and reopen the project — the folder is scanned once at
-startup. Looping is forced in code for WAV, Ogg and MP3, so no import-dock setup
-is required; for Ogg, **Loop → Forward** in the import dock is still the cleanest
-option. Keep the theme around 0.5 peak so the SFX sit on top of it.
+**Adding a track:** drop the file into `assets/audio/music/`, name it
+`menu_theme.<ext>` or `battle_theme.<ext>`, and reopen the project — the folder is
+scanned once at startup. Looping is forced in code for WAV, Ogg and MP3, so no
+import-dock setup is required. If two files share a basename (`battle_theme.wav`
+and `battle_theme.mp3`), the more compressed one wins (ogg > mp3 > wav). Keep the
+themes around 0.5 peak so the SFX sit on top of them.
 
 **This is the one intentional deviation from the stage spec**: the slot is
 documented as `grove_loop.ogg`, but GDScript has no Vorbis encoder and this

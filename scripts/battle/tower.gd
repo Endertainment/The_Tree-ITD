@@ -241,7 +241,13 @@ func _fire(stats: TowerLevel) -> void:
 	_projectiles.spawn(global_position, _target, kind, stats, data.accent_color)
 	_cooldown = maxf(0.1, stats.interval)
 	_recoil = 1.0
-	AudioManager.play_sfx("tower_fire")
+	match kind:
+		TowerProjectile.Kind.FROST_BOLT:
+			AudioManager.play_sfx("tower_frost_shot")
+		TowerProjectile.Kind.BALLISTA_BOLT:
+			AudioManager.play_sfx("tower_ballista_shot")
+		_:
+			AudioManager.play_sfx("tower_archer_shot")
 	queue_redraw()
 
 

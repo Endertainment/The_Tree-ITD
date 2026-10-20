@@ -127,6 +127,11 @@ func _turn_rate() -> float:
 
 
 func _impact(enemy: Enemy, impact_position: Vector2) -> void:
+	if kind == Kind.FROST_BOLT:
+		AudioManager.play_sfx_throttled("frost_burst", 0.05)
+	else:
+		AudioManager.play_sfx_throttled("hit", 0.04)
+
 	if enemy != null:
 		enemy.take_damage(_damage, _ignore_armor)
 

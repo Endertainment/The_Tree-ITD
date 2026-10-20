@@ -109,6 +109,7 @@ func _fire() -> void:
 		return
 	var muzzle := global_position + Vector2(20.0, 0.0).rotated(rotation)
 	_projectiles.spawn(muzzle, _target, damage, projectile_speed, false)
+	AudioManager.play_sfx("arrow")
 
 
 func _draw() -> void:

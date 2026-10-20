@@ -88,6 +88,7 @@ func _physics_process(delta: float) -> void:
 		var enemy := hit.get("collider") as Enemy
 		if enemy != null:
 			enemy.take_damage(_damage, _ignore_armor)
+		AudioManager.play_sfx_throttled("hit", 0.04)
 		if _pool != null:
 			_pool.on_hit(hit.get("position", next_position))
 		_finish()

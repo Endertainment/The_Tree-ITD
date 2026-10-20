@@ -201,6 +201,7 @@ func die() -> void:
 	var reward := maxi(1, roundi(float(data.coin_value) * coin_mult))
 	if _battle != null:
 		_battle.add_coins(reward)
+	AudioManager.play_sfx_throttled("enemy_die", 0.05)
 	EventBus.enemy_died.emit(data.id, reward, global_position)
 
 	if not GameState.is_low_quality():

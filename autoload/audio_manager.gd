@@ -11,16 +11,20 @@ const SFX_BUS := "SFX"
 const UI_BUS := "UI"
 const BUS_NAMES := [MUSIC_BUS, SFX_BUS, UI_BUS]
 const SILENCE_DB := -60.0
-const SFX_VOICES := 8
+const SFX_VOICES := 12
 const UI_VOICES := 4
 const DUCK_DB := -6.0
 const CROSSFADE_SECONDS := 0.4
 const SFX_DIR := "res://assets/audio/sfx"
 const MUSIC_DIR := "res://assets/audio/music"
-## Menu-only track. Drop `menu_theme.ogg` (or .wav/.mp3) into
+## Menu track. Drop `menu_theme.ogg` (or .wav/.mp3) into
 ## `assets/audio/music/`; `grove_loop` is the placeholder fallback.
 const MENU_MUSIC := "menu_theme"
+## Battle track. Optional: without the file a run stays SFX-only.
+const BATTLE_MUSIC := "battle_theme"
 const DEFAULT_MUSIC := "grove_loop"
+## When two files share a basename, the most compressed one wins.
+const MUSIC_PRIORITY := {"ogg": 3, "mp3": 2, "wav": 1}
 ## Names used by earlier stages mapped onto the generated placeholder set.
 const ALIASES := {
 	"ui_click": "ui_tap",
@@ -41,6 +45,8 @@ var _sfx_cursor := 0
 var _ui_cursor := 0
 var _music_tween: Tween
 var _ducked := false
+## Last play time per throttled SFX id, in milliseconds.
+var _last_sfx_msec: Dictionary = {}
 
 
 func _ready() -> void:
@@ -136,8 +142,8 @@ func play_default_music(fade := CROSSFADE_SECONDS) -> void:
 	play_music(stream, fade)
 
 
-## Starts the menu soundtrack. Called by `MainMenu` only, so the music never
-## leaks into the battle or the results screen.
+## Starts the menu soundtrack. Called by `MainMenu`, so menu music never leaks
+## into the battle or the results screen.
 ## Falls back to the placeholder `grove_loop` while `menu_theme` is missing.
 func play_menu_music(fade := 1.0) -> void:
 	var stream: AudioStream = _music_library.get(MENU_MUSIC, null)
@@ -145,6 +151,17 @@ func play_menu_music(fade := 1.0) -> void:
 		stream = _music_library.get(DEFAULT_MUSIC, null)
 	if stream == null:
 		push_warning("[AudioManager] no music in %s" % MUSIC_DIR)
+		return
+	play_music(stream, fade)
+
+
+## Starts the battle soundtrack. Called by `Battle` when a run begins.
+## Without a `battle_theme` file the run stays SFX-only, so any menu music
+## still playing is stopped instead.
+func play_battle_music(fade := 1.0) -> void:
+	var stream: AudioStream = _music_library.get(BATTLE_MUSIC, null)
+	if stream == null:
+		stop_music(fade)
 		return
 	play_music(stream, fade)
 
@@ -170,6 +187,17 @@ func play_sfx(source: Variant) -> void:
 		return
 	_play_on(_sfx_voices, stream, _sfx_cursor)
 	_sfx_cursor = (_sfx_cursor + 1) % maxi(1, _sfx_voices.size())
+
+
+## Plays `id` at most once per `min_interval` seconds. Mass events (enemy
+## deaths, impacts, coins) use this so the voice pool never machine-guns.
+func play_sfx_throttled(id: String, min_interval := 0.06) -> void:
+	var now := Time.get_ticks_msec()
+	var last := int(_last_sfx_msec.get(id, -1000000))
+	if now - last < int(min_interval * 1000.0):
+		return
+	_last_sfx_msec[id] = now
+	play_sfx(id)
 
 
 ## Plays a UI sound from an id or a stream on the UI bus.
@@ -266,7 +294,11 @@ func _load_libraries() -> void:
 	if music_dir == null:
 		push_warning("[AudioManager] missing %s" % MUSIC_DIR)
 		return
-	for file_name: String in music_dir.get_files():
+	var music_files := Array(music_dir.get_files())
+	# ogg > mp3 > wav when two files share a basename, so a compressed
+	# replacement always wins over an older placeholder.
+	music_files.sort_custom(_sort_music_by_priority)
+	for file_name: String in music_files:
 		var extension := file_name.get_extension().to_lower()
 		if extension != "wav" and extension != "ogg" and extension != "mp3":
 			continue
@@ -275,6 +307,12 @@ func _load_libraries() -> void:
 			continue
 		_enable_loop(music)
 		_music_library[file_name.get_basename()] = music
+
+
+## Sort key: lower priority first, so the best format loads last and wins.
+func _sort_music_by_priority(a: String, b: String) -> bool:
+	return int(MUSIC_PRIORITY.get(a.get_extension().to_lower(), 0)) \
+		< int(MUSIC_PRIORITY.get(b.get_extension().to_lower(), 0))
 
 
 ## Forces gapless looping on any supported music format (WAV / Ogg / MP3).

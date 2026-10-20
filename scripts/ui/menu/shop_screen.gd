@@ -102,16 +102,20 @@ func _on_purchase_finished(product: ShopProduct, outcome: StringName) -> void:
 	(_cards[product.id] as ShopProductCard).set_busy(false)
 	match outcome:
 		&"success":
+			AudioManager.play_ui("ui_confirm")
 			main_menu.show_toast(Loc.t_key("SHOP_SUCCESS"))
 		&"owned":
 			main_menu.show_toast(Loc.t_key("SHOP_ALREADY"))
 		&"cancelled":
+			AudioManager.play_ui("error")
 			main_menu.show_toast(Loc.t_key("SHOP_CANCELLED"))
 		&"no_consent":
+			AudioManager.play_ui("error")
 			main_menu.show_toast(Loc.t_key("SHOP_NO_CONSENT"))
 		&"busy":
 			pass
 		_:
+			AudioManager.play_ui("error")
 			main_menu.show_toast(Loc.t_key("SHOP_FAILED"))
 	refresh()
 

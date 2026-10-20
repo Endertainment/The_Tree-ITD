@@ -62,6 +62,43 @@ func _initialize() -> void:
 		PackedFloat32Array([1318.5, 1760.0]), 0.05, 0.45, 22.0
 	))
 
+	# --- Battle feedback --------------------------------------------------
+	_write_sfx("tower_archer_shot", _tone(0.12, 760.0, 1120.0, "sine", 0.55, 18.0, 0.25))
+	_write_sfx("tower_frost_shot", _mix(
+		_tone(0.24, 1500.0, 900.0, "sine", 0.35, 10.0, 0.18),
+		_tone(0.24, 2100.0, 1500.0, "sine", 0.18, 14.0),
+		0.8
+	))
+	_write_sfx("tower_ballista_shot", _mix(
+		_tone(0.30, 190.0, 90.0, "saw", 0.55, 9.0),
+		_tone(0.14, 950.0, 420.0, "sine", 0.30, 20.0, 0.45),
+		0.9
+	))
+	_write_sfx("frost_burst", _mix(
+		_tone(0.32, 2400.0, 850.0, "sine", 0.30, 9.0, 0.25),
+		_tone(0.32, 620.0, 300.0, "sine", 0.18, 7.0),
+		0.8
+	))
+	_write_sfx("tower_sell", _arpeggio(PackedFloat32Array([880.0, 660.0, 440.0]), 0.07, 0.5, 14.0))
+	_write_sfx("tree_hit", _mix(
+		_tone(0.38, 110.0, 60.0, "sine", 0.80, 8.0),
+		_tone(0.16, 420.0, 170.0, "sine", 0.25, 16.0, 0.30),
+		1.0
+	))
+	_write_sfx("boss_die", _mix(
+		_tone(1.10, 120.0, 38.0, "saw", 0.55, 2.0, 0.10),
+		_tone(1.10, 90.0, 55.0, "sine", 0.40, 1.6),
+		0.8
+	))
+	_write_sfx("wave_start", _mix(
+		_tone(0.75, 196.0, 220.0, "saw", 0.35, 2.2, 0.0, 0.02, 5.0),
+		_tone(0.75, 294.0, 330.0, "sine", 0.22, 2.0),
+		0.8
+	))
+	_write_sfx("revive", _arpeggio(
+		PackedFloat32Array([392.0, 523.25, 659.25, 783.99]), 0.10, 0.5, 5.0
+	))
+
 	# --- Music bus --------------------------------------------------------
 	_write_wav(MUSIC_DIR + "/grove_loop.wav", _grove_loop(), true, MUSIC_PEAK)
 

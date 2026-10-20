@@ -104,6 +104,7 @@ func build(pad: BuildPad, tower_id: String) -> bool:
 
 	_rebuild_obstacles()
 	_update_affordability()
+	AudioManager.play_sfx("build")
 	EventBus.tower_built.emit(tower_id)
 	Analytics.log_event("tower_built", {"tower": tower_id, "price": price})
 	return true
@@ -120,6 +121,7 @@ func upgrade(tower: Tower) -> bool:
 	if not _battle.spend_coins(cost):
 		return false
 	tower.upgrade(cost)
+	AudioManager.play_sfx("upgrade")
 	EventBus.upgrade_purchased.emit("tower:%s" % tower.data.id, tower.level)
 	Analytics.log_event("tower_upgraded", {"tower": tower.data.id, "level": tower.level})
 	return true
@@ -137,6 +139,7 @@ func sell(tower: Tower) -> int:
 	tower.queue_free()
 	if _battle != null:
 		_battle.add_coins(refund)
+	AudioManager.play_sfx("tower_sell")
 	_rebuild_obstacles()
 	_update_affordability()
 	hide_range()

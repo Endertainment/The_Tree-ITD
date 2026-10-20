@@ -34,11 +34,13 @@ func _on_purchase_requested(track_id: String) -> void:
 		return
 	var cost := track.cost_for_level(level)
 	if not GameState.spend_gold(cost):
+		AudioManager.play_ui("error")
 		main_menu.show_toast(Loc.t_key("META_NOT_ENOUGH", {
 			"cost": Loc.format_number(cost - GameState.get_gold()),
 		}))
 		return
 	GameState.set_upgrade_level(track_id, level + 1)
+	AudioManager.play_ui("ui_confirm")
 	SaveManager.save_now(GameState.to_dict())
 	Analytics.log_event("meta_upgrade", {"track": track_id, "level": level + 1, "cost": cost})
 	main_menu.show_toast(Loc.t_key("META_PURCHASED", {

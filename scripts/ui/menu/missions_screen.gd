@@ -95,7 +95,7 @@ func _update_countdown() -> void:
 func _on_claim_requested(mission: MissionData) -> void:
 	if not GameState.missions.claim(mission.id):
 		return
-	AudioManager.play_ui("ui_click")
+	AudioManager.play_ui("ui_confirm")
 	main_menu.show_toast(Loc.t_key("MISSIONS_CLAIM_TOAST", {
 		"gold": Loc.format_number(mission.reward_gold),
 		"gems": Loc.format_number(mission.reward_gems),

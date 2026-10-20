@@ -88,8 +88,9 @@ var _speed_before_defeat := 1.0
 
 
 func _ready() -> void:
-	# The soundtrack belongs to the menu; a run is SFX only.
-	AudioManager.stop_music(0.8)
+	# A run has its own track; without `battle_theme` the menu music stops and
+	# the run stays SFX-only.
+	AudioManager.play_battle_music(0.8)
 	rng.randomize()
 	_archer_scene = load(ARCHER_SCENE_PATH) as PackedScene
 	enemy_pool.setup(self)
@@ -321,6 +322,7 @@ func purchase_run_upgrade(track_id: String) -> bool:
 ## Called by WaveManager when a wave is cleared. The reward is already added.
 func on_wave_cleared(wave: int, reward: int, time_taken: float) -> void:
 	add_coins(reward)
+	AudioManager.play_sfx("victory")
 	EventBus.wave_cleared.emit(wave, time_taken)
 	hud.show_wave_cleared(wave, reward)
 
@@ -330,6 +332,7 @@ func on_boss_spawned(boss: Boss) -> void:
 	if boss == null:
 		return
 	Haptics.boss_spawn()
+	AudioManager.play_sfx("boss_roar")
 	hud.show_boss(boss)
 
 
@@ -381,6 +384,8 @@ func end_run(reason: StringName) -> void:
 
 	get_tree().paused = false
 	SpeedService.reset()
+	# Fade the battle track out under the results transition.
+	AudioManager.stop_music(1.2)
 	if auto_route_results:
 		SceneRouter.goto_with_payload(RESULTS_SCENE, summary)
 
@@ -619,6 +624,7 @@ func _on_enemy_died(_enemy_id: String, coin_value: int, position: Vector2) -> vo
 	kills += 1
 	floating_layer.add_popup("+%d" % coin_value, position)
 	vfx.coin_sparkle(position)
+	AudioManager.play_sfx_throttled("coin", 0.08)
 
 
 func _on_call_wave() -> void:
@@ -632,6 +638,7 @@ func _on_core_hit(amount: float) -> void:
 	if amount <= 0.0 or _ended or _ending:
 		return
 	Haptics.core_damage()
+	AudioManager.play_sfx_throttled("tree_hit", 0.12)
 	request_shake(CORE_SHAKE_PIXELS)
 	vfx.leaf_burst(core.global_position)
 	hud.pulse_damage()
@@ -711,6 +718,7 @@ func _finish_defeat() -> void:
 	if _ended:
 		return
 	_ending = true
+	AudioManager.play_sfx("defeat")
 	close_sheet()
 	hud.hide_revive_prompt()
 	wave_manager.stop()
@@ -742,6 +750,7 @@ func _on_revive_ad_result(success: bool) -> void:
 	_revive_used = true
 	_reviving = true
 	Analytics.log_event("revive_used", {})
+	AudioManager.play_sfx("revive")
 	core.revive(0.5)
 	_clear_enemies_near_core(250.0)
 	core.grant_invulnerability(3.0)
@@ -784,6 +793,7 @@ func _clear_enemies_near_core(radius: float) -> int:
 func _on_boss_died(_boss_index: int) -> void:
 	if summary != null:
 		summary.bosses_killed += 1
+	AudioManager.play_sfx("boss_die")
 	hud.hide_boss()
 	if _reviving or _ended or _ending or _boss_slow_mo:
 		return
@@ -796,6 +806,7 @@ func _on_boss_died(_boss_index: int) -> void:
 
 
 func _on_wave_announced(wave: int, modifier: int) -> void:
+	AudioManager.play_sfx("wave_start")
 	hud.show_wave_modifier(wave, modifier)
 
 
