@@ -17,6 +17,8 @@ var level := 1
 var invested := 0
 var target_mode := TargetMode.NEAREST
 var pad: BuildPad
+## Optional painted body for the current level; null keeps the procedural tower.
+var _body_texture: Texture2D
 
 var _battle: Battle
 var _enemy_pool: EnemyPool
@@ -54,6 +56,7 @@ func setup(
 	_projectiles = projectiles
 	invested = maxi(0, price)
 	level = 1
+	_body_texture = ArtLibrary.tower(data.id, level)
 	_target = null
 	_retarget_timer = 0.0
 	_recoil = 0.0
@@ -122,6 +125,7 @@ func upgrade(paid_cost: int) -> void:
 	if is_max_level():
 		return
 	level += 1
+	_body_texture = ArtLibrary.tower(data.id, level)
 	invested += maxi(0, paid_cost)
 	if _snow != null:
 		_snow.emitting = level >= 3 and data.silhouette == "frost" and not GameState.is_low_quality()
@@ -257,6 +261,12 @@ func _draw() -> void:
 	var radius := data.body_radius
 	var base := data.base_color
 	var accent := data.accent_color
+
+	if _body_texture != null:
+		ArtLibrary.draw_fitted_height(self, _body_texture, Vector2(0.0, -radius * 0.6), radius * 4.2)
+		if _selected:
+			draw_arc(Vector2.ZERO, radius + 10.0, 0.0, TAU, 40, Color("#f2c14e"), 3.0, true)
+		return
 
 	draw_circle(Vector2(0.0, 10.0), radius + 3.0, Color(0.02, 0.03, 0.02, 0.4))
 	draw_circle(Vector2.ZERO, radius, base.darkened(0.25))

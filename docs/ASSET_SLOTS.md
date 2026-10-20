@@ -96,18 +96,40 @@ Monochrome (themed) icon: the preset leaves
 `launcher_icons/adaptive_monochrome_432x432` empty. Add a single-colour mark and
 point the preset at it if you want Android 13 themed icons.
 
-### Battle ground
+### Battle art
 
-| Slot | File | Size | Notes |
+Every file is optional and loaded by path through `ArtLibrary`
+(`scripts/core/art_library.gd`). Delete a file and that object draws itself
+procedurally again; add it and no code or scene change is needed. Sizes are at
+the 1080×1920 design scale — export at 1.5–2× and power-of-two.
+
+| Slot | File | Suggested | Notes |
 |---|---|---|---|
-| Arena ground | `assets/art/battle/arena_ground.png` | 1024×1024 | Top-down arena, mapped into the 500 px playfield circle. Any square PNG works: the code takes the centre square and cuts the corners with a 96-segment fan, so no square edge shows. |
+| Arena ground | `battle/arena_ground.png` | 1024² | mapped into the 500 px playfield circle |
+| Tree | `tree/tree_body.png` | 512² | pivot at the trunk base; `art_offset` on Core (default `(0,-96)`) |
+| Orcs | `enemies/orc_grunt.png`, `orc_runner.png`, `orc_brute.png`, `orc_warlord.png` | 128²–384² | drawn 2.8× the body radius, centred on the body |
+| Towers | `towers/<id>_l<level>.png` (e.g. `archer_tower_l2.png`) or `towers/<id>.png` | 192×256 | drawn 4.2× body radius tall, pivot at the pad centre |
+| Archer | `archers/archer.png` | 128² | faces +x, drawn 46 px |
+| Build pad | `battle/build_pad.png` | 128² | drawn 2.3× `BODY_RADIUS` |
+| Projectiles | `projectiles/arrow.png`, `frost_bolt.png`, `ballista_bolt.png` | 64² | rotates with the node |
 
-`scripts/battle/arena.gd` loads this file from a fixed path at `_ready()`. There
-is nothing to wire in the editor: **replace the PNG and re-import**; delete the
-file and the procedural grass, roots and stones come back. `@export var
-ground_texture` on the `Arena` node overrides the path for a one-off variant.
+### UI art
 
-| Tree | `assets/art/tree/tree_body.png` | 512×512 | Pivot at the trunk base; `art_offset` on the `Core` node (default `(0, -96)`) shifts the artwork onto the node origin. Missing file → procedural tree. |
+`UISkin` (`scripts/ui/ui_skin.gd`) applies these to `ui/theme.tres` once at boot.
+Every file is optional; a missing one keeps the current flat style.
+
+| Slot | File | Notes |
+|---|---|---|
+| Buttons | `ui/button_normal.png`, `_hover`, `_pressed`, `_disabled` | 9-patch, 36 px corners |
+| Primary CTA | `ui/button_primary_<state>.png` | overrides `PrimaryButton` |
+| Danger | `ui/button_danger_<state>.png` | overrides `DangerButton` |
+| Tabs | `ui/tab_<state>.png` | overrides `TabButton` |
+| Panels | `ui/panel.png` | 9-patch for `PanelCard` |
+| HP bars | `ui/hp_bar_bg.png`, `ui/hp_bar_fill.png` | stretched, not 9-patch |
+| Menu background | `ui/menu_background.png` | full-screen, behind every tab |
+
+9-patch panels: keep the corner detail inside the outer 36 px and let the middle
+stretch; import with mipmaps off and lossless compression.
 
 Recommended import settings once the artwork is final: **VRAM Compressed**
 (ETC2/ASTC on Android) with **mipmaps on**, filter linear. The current

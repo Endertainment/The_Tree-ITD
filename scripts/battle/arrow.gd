@@ -107,6 +107,11 @@ func _finish() -> void:
 
 
 func _draw() -> void:
+	var texture := ArtLibrary.projectile("arrow")
+	if texture != null:
+		ArtLibrary.draw_centered(self, texture, Vector2.ZERO, Vector2(40.0, 40.0))
+		return
+
 	draw_line(Vector2(-12.0, 0.0), Vector2(10.0, 0.0), Color("#e8d9a8"), 2.0)
 	draw_colored_polygon(
 		PackedVector2Array([Vector2(10.0, 0.0), Vector2(2.0, -5.0), Vector2(2.0, 5.0)]),

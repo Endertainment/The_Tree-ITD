@@ -125,6 +125,11 @@ func _draw() -> void:
 		var pulse := 0.5 + 0.5 * sin(_aura * 7.0)
 		draw_circle(Vector2.ZERO, radius + 16.0 + pulse * 6.0, Color(0.85, 0.2, 0.15, 0.14 + pulse * 0.1))
 
+	var boss_texture := ArtLibrary.unit(data.id)
+	if boss_texture != null:
+		ArtLibrary.draw_centered(self, boss_texture, Vector2.ZERO, Vector2(radius, radius) * 3.2, body)
+		return
+
 	draw_circle(Vector2(0.0, 12.0), radius + 2.0, Color(0.02, 0.03, 0.02, 0.45))
 	draw_circle(Vector2.ZERO, radius, body)
 	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 40, accent, 6.0, true)

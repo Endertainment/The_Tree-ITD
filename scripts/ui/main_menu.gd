@@ -44,6 +44,8 @@ var _debug_panel
 
 
 func _ready() -> void:
+	UISkin.ensure_applied()
+	_apply_menu_background()
 	_battle_shortcut.pressed.connect(_on_battle_pressed)
 	for child in _tab_bar.get_children():
 		if child is Button:
@@ -306,3 +308,25 @@ func _show_exit_confirm() -> void:
 		func() -> void:
 			get_tree().quit()
 	)
+
+const MENU_BACKGROUND_PATH := "res://assets/art/ui/menu_background.png"
+
+
+## Paints an optional full-bleed menu background behind every tab. Delete the
+## file and the themed flat colour returns.
+func _apply_menu_background() -> void:
+	var texture := ArtLibrary.texture(MENU_BACKGROUND_PATH)
+	if texture == null:
+		return
+	var background := TextureRect.new()
+	background.name = "ArtBackground"
+	background.texture = texture
+	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(background)
+	move_child(background, 0)
+	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var flat := get_node_or_null("Background") as ColorRect
+	if flat != null:
+		flat.visible = false

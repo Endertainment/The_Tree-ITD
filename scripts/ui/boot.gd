@@ -17,6 +17,7 @@ var _starting := false
 
 
 func _ready() -> void:
+	UISkin.ensure_applied()
 	if _starting:
 		return
 	_starting = true

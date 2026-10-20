@@ -17,6 +17,8 @@ const SLOW_FLASH_SECONDS := 0.3
 const HIT_FLASH_SECONDS := 0.06
 
 var data: EnemyData
+## Optional painted body; null keeps the procedural orc.
+var _body_texture: Texture2D
 var speed := 0.0
 var radius := 22.0
 var coin_mult := 1.0
@@ -79,6 +81,7 @@ func configure(pool: EnemyPool, battle: Battle) -> void:
 ## `spawn_delay`, `modifier` ("armored" / "swift" / "swarm") and `boss_index`.
 func setup(enemy_data: EnemyData, modifiers: Dictionary) -> void:
 	data = enemy_data
+	_body_texture = ArtLibrary.unit(data.id)
 	var scale_mult := maxf(0.2, float(modifiers.get("scale", 1.0)))
 	radius = data.radius * scale_mult
 	_base_speed = maxf(1.0, data.speed * float(modifiers.get("speed_mult", 1.0)))
@@ -384,6 +387,9 @@ func _draw() -> void:
 			body = body.lerp(Color("#e0c34a"), 0.3)
 	var accent := data.accent_color.darkened(0.35)
 	var offset := Vector2(radius * 0.3 * _lunge, 0.0)
+	if _body_texture != null:
+		ArtLibrary.draw_centered(self, _body_texture, offset, Vector2(radius, radius) * 2.8, body)
+		return
 	var low := GameState.is_low_quality()
 
 	# Low quality keeps only the silhouette and its outline: one enemy drops

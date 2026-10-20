@@ -19,6 +19,8 @@ var _retarget_timer := 0.0
 var _cooldown := 0.0
 var _draw_timer := 0.0
 var _sway := 0.0
+## Optional painted archer; null keeps the procedural elf.
+var _body_texture: Texture2D
 
 
 ## Injects the pools and the archer's stats for this run.
@@ -32,6 +34,7 @@ func setup(
 ) -> void:
 	_enemy_pool = enemy_pool
 	_projectiles = projectiles
+	_body_texture = ArtLibrary.file("archers", "archer")
 	damage = archer_damage
 	attack_interval = interval
 	attack_range = range_px
@@ -109,6 +112,10 @@ func _fire() -> void:
 
 
 func _draw() -> void:
+	if _body_texture != null:
+		ArtLibrary.draw_centered(self, _body_texture, Vector2.ZERO, Vector2(46.0, 46.0))
+		return
+
 	var skin := Color("#d8e6b0")
 	var leather := Color("#7a4a2b")
 	var gold := Color("#f2c14e")

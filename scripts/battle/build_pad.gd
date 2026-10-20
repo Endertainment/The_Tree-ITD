@@ -15,12 +15,15 @@ var tower: Tower
 
 var _selected := false
 var _affordable := true
+## Optional painted pad; null keeps the procedural stone.
+var _pad_texture: Texture2D
 var _pulse := 0.0
 var _clock := 0.0
 
 
 func _ready() -> void:
 	_pulse = float(index) * 0.7
+	_pad_texture = ArtLibrary.file("battle", "build_pad")
 	queue_redraw()
 
 
@@ -88,9 +91,14 @@ func _draw() -> void:
 	var stone := Color("#55604c")
 	var glow := Color(0.949, 0.757, 0.306, 0.28 + 0.18 * sin(_pulse))
 
-	draw_circle(Vector2(0.0, 6.0), BODY_RADIUS + 4.0, Color(0.02, 0.03, 0.02, 0.35))
-	draw_circle(Vector2.ZERO, BODY_RADIUS, stone.darkened(0.35))
-	draw_circle(Vector2.ZERO, BODY_RADIUS - 6.0, stone)
+	if _pad_texture != null:
+		ArtLibrary.draw_centered(
+			self, _pad_texture, Vector2.ZERO, Vector2(BODY_RADIUS, BODY_RADIUS) * 2.3
+		)
+	else:
+		draw_circle(Vector2(0.0, 6.0), BODY_RADIUS + 4.0, Color(0.02, 0.03, 0.02, 0.35))
+		draw_circle(Vector2.ZERO, BODY_RADIUS, stone.darkened(0.35))
+		draw_circle(Vector2.ZERO, BODY_RADIUS - 6.0, stone)
 
 	if _affordable and not has_tower():
 		draw_arc(Vector2.ZERO, BODY_RADIUS + 5.0, 0.0, TAU, 36, glow, 4.0, true)

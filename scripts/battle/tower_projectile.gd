@@ -160,7 +160,23 @@ func _finish() -> void:
 		_pool.release(self)
 
 
+## File-name form of the current kind, used for the optional projectile art.
+func _kind_name() -> String:
+	match kind:
+		Kind.FROST_BOLT:
+			return "frost_bolt"
+		Kind.BALLISTA_BOLT:
+			return "ballista_bolt"
+		_:
+			return "arrow"
+
+
 func _draw() -> void:
+	var texture := ArtLibrary.projectile(_kind_name())
+	if texture != null:
+		ArtLibrary.draw_centered(self, texture, Vector2.ZERO, Vector2(48.0, 48.0), _tint)
+		return
+
 	match kind:
 		Kind.FROST_BOLT:
 			draw_line(Vector2(-26.0, 0.0), Vector2(-6.0, 0.0), Color(_tint.r, _tint.g, _tint.b, 0.45), 6.0)

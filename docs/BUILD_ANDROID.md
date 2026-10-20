@@ -280,3 +280,47 @@ java -jar bundletool.jar build-apks --bundle build/the-tree-release.aab `
 Installing the resulting universal APK over USB can be refused by MIUI with
 `INSTALL_FAILED_USER_RESTRICTED`; that is the phone's "Install via USB" policy,
 not a build problem. Test through the Play closed track instead.
+
+---
+
+## 10. Building an APK (one command)
+
+`tools/build_apk.ps1` wraps the export, checks the result and can install it.
+`tools/build_apk.cmd` is a double-click wrapper that keeps the window open.
+
+```powershell
+# Debug APK -> build/the-tree-debug.apk
+pwsh -ExecutionPolicy Bypass -File tools/build_apk.ps1
+
+# Release APK, signed with the release keystore
+pwsh -ExecutionPolicy Bypass -File tools/build_apk.ps1 -Release
+
+# Build and install on the attached phone
+pwsh -ExecutionPolicy Bypass -File tools/build_apk.ps1 -Install
+```
+
+| Flag | Meaning |
+|---|---|
+| `-Release` | `--export-release` instead of `--export-debug` |
+| `-Install` | `adb install -r` the file it just built |
+| `-Godot <path>` | Godot executable when it is not on `PATH` |
+| `-Out <path>` | output file (default `build/the-tree-debug.apk` / `-release.apk`) |
+
+Release signing: the script reads `GODOT_ANDROID_KEYSTORE_RELEASE_PATH`,
+`_USER` and `_PASSWORD` from the environment; if they are unset it falls back to
+`%USERPROFILE%\.the-tree\release-keystore.txt` and exports the three variables
+from it. Nothing secret is written into `export_presets.cfg`.
+
+The raw command is the same export the script runs:
+
+```powershell
+godot --headless --path . --export-debug "Android" build/the-tree-debug.apk
+godot --headless --path . --export-release "Android" build/the-tree-release.apk
+```
+
+Prerequisites are the ones in sections 1–3: Android SDK path set in the editor
+settings, JDK 17+ on `PATH` for Gradle builds, and the debug keystore. A debug
+APK installs over a debug APK; switching between debug and release needs
+`adb uninstall com.endertainment.thetree` first (different signatures).
+
+AAB (Play upload) is section 9.
