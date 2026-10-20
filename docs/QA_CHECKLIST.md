@@ -446,10 +446,12 @@ per-row evidence: `docs/QA_REPORT.md`.
 
 - [x] 12 suites + the flow test pass headless: Save 46, Migrations 25, Battle 42,
       Towers 74, Progression 120, Menu 112, Monetization 136, Polish 54,
-      Glyphs 26, Soak 5, Corruption 28 (new), Release 43 (new) — 711 checks.
+      Glyphs 26, Soak 5, Corruption 28 (new), Release 43 (new), Revive 16 (new) — 727 checks.
 - [x] `TestCorruption`: truncated JSON recovers from `save.bak` and keeps
       `save.corrupt`; wrong types, missing keys, unknown keys, nulls and a v99
       save all load without losing data; 100 commits survive a torn `save.tmp`.
+- [x] `TestRevive`: give-up releases the pause and ends the run; a successful revive
+      restores HP and resumes.
 - [x] `TestRelease`: rewarded success/close/fail/timeout, double-tap grant once,
       purchase cancel/fail/busy, one-time bundle not duplicated, claim
       idempotency, exact/over/zero Gold spends, failed save write, EN↔UK switch.

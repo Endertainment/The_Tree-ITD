@@ -82,6 +82,7 @@ var _archer_scene: PackedScene
 var _boss_slow_mo := false
 var _starting_run := false
 var _revive_used := false
+var _revive_offered := false
 var _reviving := false
 var _speed_before_defeat := 1.0
 
@@ -137,6 +138,7 @@ func start_run(modifiers: RunModifiers = null) -> void:
 	_ending = false
 	_boss_slow_mo = false
 	_revive_used = false
+	_revive_offered = false
 	_reviving = false
 	_speed_before_defeat = 1.0
 	close_sheet()
@@ -353,6 +355,7 @@ func end_run(reason: StringName) -> void:
 	if _ended:
 		return
 	_ended = true
+	_revive_offered = false
 	close_sheet()
 	hud.hide_revive_prompt()
 	tutorial.dismiss()
@@ -688,6 +691,7 @@ func _on_core_died() -> void:
 ## chooses, and the wave state is left untouched so a revive resumes it.
 func _offer_revive() -> void:
 	_ending = true
+	_revive_offered = true
 	close_sheet()
 	hud.set_pause_enabled(false)
 	hud.hide_boss()
@@ -718,13 +722,13 @@ func _finish_defeat() -> void:
 
 
 func _on_revive_requested() -> void:
-	if not hud.is_revive_visible() or _revive_used:
+	if not _revive_offered or _revive_used:
 		return
 	Monetization.show_rewarded(AdPolicy.P_REVIVE, _on_revive_ad_result)
 
 
 func _on_revive_ad_result(success: bool) -> void:
-	if not hud.is_revive_visible():
+	if not _revive_offered:
 		return
 	if not success:
 		_toast.show_message(Loc.t_key("REVIVE_FAILED"))
@@ -732,6 +736,7 @@ func _on_revive_ad_result(success: bool) -> void:
 		return
 	hud.hide_revive_prompt()
 	get_tree().paused = false
+	_revive_offered = false
 	_revive_used = true
 	_reviving = true
 	Analytics.log_event("revive_used", {})
@@ -747,12 +752,13 @@ func _on_revive_ad_result(success: bool) -> void:
 
 
 func _on_revive_give_up() -> void:
-	if not hud.is_revive_visible() or _revive_used:
+	if not _revive_offered or _revive_used:
 		return
 	_close_revive_prompt_and_end()
 
 
 func _close_revive_prompt_and_end() -> void:
+	_revive_offered = false
 	hud.hide_revive_prompt()
 	get_tree().paused = false
 	_ending = false

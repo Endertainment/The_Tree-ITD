@@ -14,13 +14,9 @@ config/name="The Tree - IDLE TOWER DEFENSE"
 config/description="Wave-based tower defense. Defend the Life Tree against the orc horde."
 config/version="0.1.0"
 run/main_scene="res://scenes/boot/Boot.tscn"
+config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
-config/quit_on_go_back=false
-
-[audio]
-
-buses/default_bus_layout="res://default_bus_layout.tres"
 
 [autoload]
 
@@ -61,12 +57,8 @@ pointing/emulate_touch_from_mouse=true
 2d_physics/layer_4="pads"
 2d_physics/layer_5="towers"
 
-[physics]
-
-common/physics_ticks_per_second=60
-
 [rendering]
 
+rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
-rendering_device/driver.windows="d3d12"

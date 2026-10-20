@@ -79,9 +79,10 @@ deliberately simulated disk failure (row 13), not a defect.
 | `TestSoak` | 5 | PASS |
 | `TestCorruption` (new) | 28 | PASS |
 | `TestRelease` (new) | 43 | PASS |
+| `TestRevive` (new) | 16 | PASS |
 | `TestFlow` | flow | PASS |
 
-711 checks across 12 counted suites plus the menu → battle → quit → results →
+727 checks across 13 counted suites plus the menu → battle → quit → results →
 menu flow.
 
 ## Device session
@@ -105,6 +106,7 @@ menu flow.
 | Exported APK/AAB loaded **no data at all**: `ConfigDB` skipped `*.tres.remap` entries, so the build sheet was empty and waves, upgrades, cards, missions and shop fell back to nothing. | `ConfigDB._load_directory()` strips `.remap` before `load()`, and warns when a data directory yields zero resources. Packed-PCK A/B: 9 warnings -> 0. |
 | Balance model initially counted a wave that hit the 600 s cap as cleared, producing a bogus wave-50 run. | `tools/simulate_balance.gd` treats a timeout as a defeat and regenerates during preparation. Finding recorded in `BALANCE_REPORT.md`. |
 | Android Back quit the app instead of opening pause: the engine finishes the activity on back by default, and one press also arrived twice (OS notification plus `ui_cancel`), so even a handled press toggled pause open and shut. | `project.godot` sets `config/quit_on_go_back=false` and `Battle._handle_back()` ignores a second press within 250 ms. Device-verified: Back opens pause, closes it, and the quit confirmation reaches the results screen. |
+| "Give up" on the defeat prompt left the game paused with no UI: the prompt hid itself before emitting `give_up_requested`, so `Battle` failed its `is_revive_visible()` guard and returned without unpausing or routing to results. | The prompt no longer closes itself (Battle owns its lifetime) and `Battle` tracks its own `_revive_offered` flag instead of reading UI visibility. New `TestRevive` suite (16 checks) pins both give-up and revive; device-verified: give up now shows "THE TREE HAS FALLEN" with the payout. |
 
 No defect was found in save, purchase, claim, ad, locale or results code paths
 by the new suites.

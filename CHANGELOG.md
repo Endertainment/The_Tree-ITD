@@ -39,6 +39,10 @@ device; nothing is charged and no real ad is shown.
 - **Android Back quit instead of pausing.** Back is no longer mapped to "finish
   the activity" (`quit_on_go_back = false`), and a duplicate press (OS
   notification + `ui_cancel`) no longer toggles pause twice.
+- **"Give up" froze the game.** The defeat prompt hid itself before telling the
+  battle, which then bailed on a visibility check and left the run paused with
+  no UI. The battle now owns the prompt lifetime and its own revive-offered
+  flag; `TestRevive` covers both give-up and revive.
 - **Oversized tutorial card.** The first hint measured its label before the card
   had a width, so on tall phones it painted as a full-height panel over the
   playfield. The label now has a fixed measurement width.

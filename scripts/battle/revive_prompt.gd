@@ -69,5 +69,7 @@ func _on_revive_pressed() -> void:
 
 func _on_give_up_pressed() -> void:
 	AudioManager.play_ui("ui_click")
-	close()
+	# Battle owns the prompt lifetime: it closes the prompt and releases the pause
+	# in one step. Closing here first made Battle see a hidden prompt and bail,
+	# leaving the run paused with no UI.
 	give_up_requested.emit()
