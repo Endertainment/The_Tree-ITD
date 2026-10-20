@@ -46,6 +46,7 @@ var _debug_panel
 func _ready() -> void:
 	UISkin.ensure_applied()
 	_apply_menu_background()
+	AudioManager.play_menu_music()
 	_battle_shortcut.pressed.connect(_on_battle_pressed)
 	for child in _tab_bar.get_children():
 		if child is Button:

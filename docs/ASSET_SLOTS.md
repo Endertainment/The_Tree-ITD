@@ -53,9 +53,20 @@ silence at the head.
 Directory: `assets/audio/music/`
 Bus: **Music**, crossfade 0.4 s, ducks -6 dB while paused.
 
+Music is **menu-only**: `MainMenu._ready()` calls `AudioManager.play_menu_music()`
+and `Battle._ready()` stops it with a 0.8 s fade, so a run and the results screen
+are SFX-only. Nothing else starts music at boot.
+
 | Slot | File | Length | Status |
 |---|---|---|---|
-| `grove_loop` | `grove_loop.wav` | 30.00 s | Generated placeholder loop (Am–F–C–G pad with a bell arpeggio) |
+| `menu_theme` | `menu_theme.ogg` (or `.wav` / `.mp3`) | any | **Your soundtrack.** Missing file → falls back to `grove_loop`. |
+| `grove_loop` | `grove_loop.wav` | 30.00 s | Generated placeholder loop (Am–F–C–G pad with a bell arpeggio), now only a fallback |
+
+**Adding your own menu track:** drop the file into `assets/audio/music/`, name it
+`menu_theme.<ext>`, and reopen the project — the folder is scanned once at
+startup. Looping is forced in code for WAV, Ogg and MP3, so no import-dock setup
+is required; for Ogg, **Loop → Forward** in the import dock is still the cleanest
+option. Keep the theme around 0.5 peak so the SFX sit on top of it.
 
 **This is the one intentional deviation from the stage spec**: the slot is
 documented as `grove_loop.ogg`, but GDScript has no Vorbis encoder and this

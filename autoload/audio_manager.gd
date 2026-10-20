@@ -17,6 +17,9 @@ const DUCK_DB := -6.0
 const CROSSFADE_SECONDS := 0.4
 const SFX_DIR := "res://assets/audio/sfx"
 const MUSIC_DIR := "res://assets/audio/music"
+## Menu-only track. Drop `menu_theme.ogg` (or .wav/.mp3) into
+## `assets/audio/music/`; `grove_loop` is the placeholder fallback.
+const MENU_MUSIC := "menu_theme"
 const DEFAULT_MUSIC := "grove_loop"
 ## Names used by earlier stages mapped onto the generated placeholder set.
 const ALIASES := {
@@ -53,7 +56,6 @@ func _ready() -> void:
 		_ui_voices.append(_make_voice("UiVoice%d" % index, UI_BUS))
 	_load_libraries()
 	apply_settings()
-	play_default_music(0.0)
 
 
 func _process(_delta: float) -> void:
@@ -130,6 +132,19 @@ func play_music(stream: AudioStream, fade := CROSSFADE_SECONDS) -> void:
 func play_default_music(fade := CROSSFADE_SECONDS) -> void:
 	var stream: AudioStream = _music_library.get(DEFAULT_MUSIC, null)
 	if stream == null:
+		return
+	play_music(stream, fade)
+
+
+## Starts the menu soundtrack. Called by `MainMenu` only, so the music never
+## leaks into the battle or the results screen.
+## Falls back to the placeholder `grove_loop` while `menu_theme` is missing.
+func play_menu_music(fade := 1.0) -> void:
+	var stream: AudioStream = _music_library.get(MENU_MUSIC, null)
+	if stream == null:
+		stream = _music_library.get(DEFAULT_MUSIC, null)
+	if stream == null:
+		push_warning("[AudioManager] no music in %s" % MUSIC_DIR)
 		return
 	play_music(stream, fade)
 
@@ -253,7 +268,7 @@ func _load_libraries() -> void:
 		return
 	for file_name: String in music_dir.get_files():
 		var extension := file_name.get_extension().to_lower()
-		if extension != "wav" and extension != "ogg":
+		if extension != "wav" and extension != "ogg" and extension != "mp3":
 			continue
 		var music := load(MUSIC_DIR + "/" + file_name) as AudioStream
 		if music == null:
@@ -262,15 +277,29 @@ func _load_libraries() -> void:
 		_music_library[file_name.get_basename()] = music
 
 
+## Forces gapless looping on any supported music format (WAV / Ogg / MP3).
 func _enable_loop(stream: AudioStream) -> void:
+	if stream is AudioStreamOggVorbis:
+		(stream as AudioStreamOggVorbis).loop = true
+		return
+	if stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = true
+		return
 	if not stream is AudioStreamWAV:
 		return
 	var wav := stream as AudioStreamWAV
-	if wav.stereo or wav.format != AudioStreamWAV.FORMAT_16_BITS:
-		return
+	var bytes_per_sample := 2
+	match wav.format:
+		AudioStreamWAV.FORMAT_8_BITS:
+			bytes_per_sample = 1
+		AudioStreamWAV.FORMAT_16_BITS:
+			bytes_per_sample = 2
+		_:
+			return
+	var channels := 2 if wav.stereo else 1
 	wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
 	wav.loop_begin = 0
-	wav.loop_end = wav.data.size() / 2
+	wav.loop_end = wav.data.size() / (channels * bytes_per_sample)
 
 
 func _resolve_id(id: String) -> String:

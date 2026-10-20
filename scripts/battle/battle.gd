@@ -88,6 +88,8 @@ var _speed_before_defeat := 1.0
 
 
 func _ready() -> void:
+	# The soundtrack belongs to the menu; a run is SFX only.
+	AudioManager.stop_music(0.8)
 	rng.randomize()
 	_archer_scene = load(ARCHER_SCENE_PATH) as PackedScene
 	enemy_pool.setup(self)

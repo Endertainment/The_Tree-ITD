@@ -329,6 +329,8 @@ burst and a 4 px shake. Boss bolts go through
 maps legacy ids through `ALIASES` (`ui_click`, `tower_fire`, `boss_summon`), ducks the
 Music bus by `DUCK_DB` whenever `get_tree().paused` flips, and `SceneRouter.goto()`
 calls `stop_all_sfx()` before every scene change so no voice outlives its scene.
+Music itself is menu-only: `MainMenu` starts `menu_theme` (falling back to
+`grove_loop`) and `Battle` fades it out, so runs are SFX-only.
 
 **Localization.** `Loc` parses `localization/strings.csv` into runtime `Translation`
 objects (no import step), exposes `t_key`, `format_number`, `format_percent`,
