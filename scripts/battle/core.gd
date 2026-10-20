@@ -36,14 +36,21 @@ var _regen_tick := 0.0
 var _invuln := 0.0
 var _pulse := 0.0
 
+## Painted tree. Drop a PNG at this path and it replaces the painted canopy and
+## trunk; delete the file and the procedural tree comes back.
+const BODY_TEXTURE_PATH := "res://assets/art/tree/tree_body.png"
+
 @export var body_texture: Texture2D
-@export var art_offset := Vector2.ZERO   # trunk base is below the canopy
+## The artwork's pivot is the trunk base, which sits below this node's origin.
+@export var art_offset := Vector2(0.0, -96.0)
 @export var art_scale := 1.0
 
 
 func _ready() -> void:
 	_base_position = position
 	_display_hp = hp
+	if body_texture == null and ResourceLoader.exists(BODY_TEXTURE_PATH):
+		body_texture = load(BODY_TEXTURE_PATH) as Texture2D
 	queue_redraw()
 
 
@@ -214,6 +221,16 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	if body_texture != null:
+		var texture_size := body_texture.get_size() * art_scale
+		var rect := Rect2(art_offset - texture_size * 0.5, texture_size)
+		var tint := Color.WHITE.lerp(Color(1.0, 0.45, 0.35), _flash * 0.7)
+		draw_texture_rect(body_texture, rect, false, tint)
+		_draw_health_bar()
+		if _invuln > 0.0:
+			_draw_shield()
+		return
+
 	var leaf := Color("#3f7d3a").lerp(Color("#c0503a"), _flash * 0.6)
 	var leaf_light := leaf.lightened(0.12)
 	var leaf_dark := leaf.darkened(0.22)

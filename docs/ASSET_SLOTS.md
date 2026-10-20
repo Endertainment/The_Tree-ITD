@@ -107,6 +107,8 @@ is nothing to wire in the editor: **replace the PNG and re-import**; delete the
 file and the procedural grass, roots and stones come back. `@export var
 ground_texture` on the `Arena` node overrides the path for a one-off variant.
 
+| Tree | `assets/art/tree/tree_body.png` | 512×512 | Pivot at the trunk base; `art_offset` on the `Core` node (default `(0, -96)`) shifts the artwork onto the node origin. Missing file → procedural tree. |
+
 Recommended import settings once the artwork is final: **VRAM Compressed**
 (ETC2/ASTC on Android) with **mipmaps on**, filter linear. The current
 placeholder imports as lossless, which is fine while it is a flat colour.
