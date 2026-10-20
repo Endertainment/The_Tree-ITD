@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://s8puarmqn5ga"]
 
-[ext_resource type="Script" path="res://scripts/battle/archer.gd" id="1_archer"]
+[ext_resource type="Script" uid="uid://bpf8kceye6xo0" path="res://scripts/battle/archer.gd" id="1_archer"]
 
-[node name="Archer" type="Node2D"]
+[node name="Archer" type="Node2D" unique_id=977096885]
 script = ExtResource("1_archer")

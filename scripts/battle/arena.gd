@@ -15,20 +15,63 @@ const STONE_COUNT := 42
 const GRASS_COUNT := 90
 const SCENE_SEED := 20261019
 
+## Optional painted ground. Drop a PNG at this path (1024x1024 is the expected
+## canvas) and it replaces the painted grass, roots and stones; delete the file
+## and the procedural arena comes back. It is mapped into the 500 px playfield
+## circle, so the artwork should be authored as a full top-down arena.
+const GROUND_TEXTURE_PATH := "res://assets/art/battle/arena_ground.png"
+const GROUND_TEXTURE_SEGMENTS := 96
+
+## Assigned automatically from `GROUND_TEXTURE_PATH` when the file exists; the
+## export lets a different texture be set per instance in the inspector.
+@export var ground_texture: Texture2D
+
+
+func _ready() -> void:
+	if ground_texture == null and ResourceLoader.exists(GROUND_TEXTURE_PATH):
+		ground_texture = load(GROUND_TEXTURE_PATH) as Texture2D
+	queue_redraw()
+
 
 func _draw() -> void:
 	var view_size := get_viewport_rect().size
 	draw_rect(Rect2(Vector2.ZERO, view_size), BACKGROUND)
 
-	draw_circle(Battle.CENTER, Battle.ARENA_RADIUS, PLAYFIELD)
-	draw_circle(Battle.CENTER, Battle.ARENA_RADIUS - 58.0, PLAYFIELD_INNER)
+	if ground_texture != null:
+		_draw_ground_texture()
+	else:
+		draw_circle(Battle.CENTER, Battle.ARENA_RADIUS, PLAYFIELD)
+		draw_circle(Battle.CENTER, Battle.ARENA_RADIUS - 58.0, PLAYFIELD_INNER)
+		_draw_roots()
+		_draw_grass_and_stones()
 
 	_draw_vignette()
-	_draw_roots()
-	_draw_grass_and_stones()
 
 	draw_arc(Battle.CENTER, Battle.ARENA_RADIUS, 0.0, TAU, 96, BOUNDARY, 6.0, true)
 	draw_arc(Battle.CENTER, Battle.ARENA_RADIUS - 10.0, 0.0, TAU, 96, Color(0.95, 0.76, 0.31, 0.22), 2.0, true)
+
+
+## Maps the texture onto the playfield circle with a triangle fan, so square
+## artwork never shows its corners outside the arena.
+func _draw_ground_texture() -> void:
+	var texture_size := ground_texture.get_size()
+	var side := minf(texture_size.x, texture_size.y)
+	var uv_origin := (texture_size - Vector2(side, side)) * 0.5
+
+	var points := PackedVector2Array()
+	var uvs := PackedVector2Array()
+	points.resize(GROUND_TEXTURE_SEGMENTS)
+	uvs.resize(GROUND_TEXTURE_SEGMENTS)
+	for index in GROUND_TEXTURE_SEGMENTS:
+		var angle := TAU * float(index) / float(GROUND_TEXTURE_SEGMENTS)
+		var direction := Vector2(cos(angle), sin(angle))
+		points[index] = Battle.CENTER + direction * Battle.ARENA_RADIUS
+		uvs[index] = uv_origin + (direction * 0.5 + Vector2(0.5, 0.5)) * side
+
+	var colors := PackedColorArray()
+	colors.resize(GROUND_TEXTURE_SEGMENTS)
+	colors.fill(Color.WHITE)
+	draw_polygon(points, colors, uvs, ground_texture)
 
 
 func _draw_vignette() -> void:

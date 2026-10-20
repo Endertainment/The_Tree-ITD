@@ -1,18 +1,16 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://damwajf57slhi"]
 
-[ext_resource type="Script" path="res://resources/card_data.gd" id="1_card"]
-[ext_resource type="Script" path="res://resources/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Script" uid="uid://boodqw44meh78" path="res://resources/card_data.gd" id="1_card"]
+[ext_resource type="Script" uid="uid://bwfruejc443kn" path="res://resources/stat_modifier.gd" id="2_mod"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
 stat = "tree_hp_mult"
-op = "mult"
 value = 0.2
 
 [sub_resource type="Resource" id="Mod_2"]
 script = ExtResource("2_mod")
 stat = "archer_dmg_mult"
-op = "mult"
 value = -0.1
 
 [resource]
@@ -22,5 +20,4 @@ name_key = "CARD_HEARTWOOD_NAME"
 description_key = "CARD_HEARTWOOD_DESC"
 lore_key = "CARD_HEARTWOOD_LORE"
 unlock_cost = 150
-tint = Color(0.494118, 0.784314, 0.313726, 1)
 modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2")])

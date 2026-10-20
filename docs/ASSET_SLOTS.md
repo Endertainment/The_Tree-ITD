@@ -96,6 +96,22 @@ Monochrome (themed) icon: the preset leaves
 `launcher_icons/adaptive_monochrome_432x432` empty. Add a single-colour mark and
 point the preset at it if you want Android 13 themed icons.
 
+### Battle ground
+
+| Slot | File | Size | Notes |
+|---|---|---|---|
+| Arena ground | `assets/art/battle/arena_ground.png` | 1024×1024 | Top-down arena, mapped into the 500 px playfield circle. Any square PNG works: the code takes the centre square and cuts the corners with a 96-segment fan, so no square edge shows. |
+
+`scripts/battle/arena.gd` loads this file from a fixed path at `_ready()`. There
+is nothing to wire in the editor: **replace the PNG and re-import**; delete the
+file and the procedural grass, roots and stones come back. `@export var
+ground_texture` on the `Arena` node overrides the path for a one-off variant.
+
+Recommended import settings once the artwork is final: **VRAM Compressed**
+(ETC2/ASTC on Android) with **mipmaps on**, filter linear. The current
+placeholder imports as lossless, which is fine while it is a flat colour.
+
+
 ---
 
 ## 4. Fonts

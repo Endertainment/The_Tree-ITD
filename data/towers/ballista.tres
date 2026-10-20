@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="TowerData" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="TowerData" format=3 uid="uid://b7f8c0oues217"]
 
-[ext_resource type="Script" path="res://resources/tower_level.gd" id="1_level"]
-[ext_resource type="Script" path="res://resources/tower_data.gd" id="2_data"]
+[ext_resource type="Script" uid="uid://dxxumxfqmf3fn" path="res://resources/tower_level.gd" id="1_level"]
+[ext_resource type="Script" uid="uid://0y7qpl2hh22f" path="res://resources/tower_data.gd" id="2_data"]
 
 [sub_resource type="Resource" id="Level_1"]
 script = ExtResource("1_level")

@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://dwfxffh6e2gdo"]
 
-[ext_resource type="Script" path="res://scripts/ui/ad_spinner.gd" id="1_spinner"]
+[ext_resource type="Script" uid="uid://cbxsmouuut1va" path="res://scripts/ui/ad_spinner.gd" id="1_spinner"]
 
-[node name="AdSpinner" type="Control"]
+[node name="AdSpinner" type="Control" unique_id=401674723]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 3
 anchors_preset = 0

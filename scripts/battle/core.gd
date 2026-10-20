@@ -36,6 +36,10 @@ var _regen_tick := 0.0
 var _invuln := 0.0
 var _pulse := 0.0
 
+@export var body_texture: Texture2D
+@export var art_offset := Vector2.ZERO   # trunk base is below the canopy
+@export var art_scale := 1.0
+
 
 func _ready() -> void:
 	_base_position = position

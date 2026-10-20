@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://cebr15fey55na"]
 
-[ext_resource type="Script" path="res://resources/card_data.gd" id="1_card"]
-[ext_resource type="Script" path="res://resources/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Script" uid="uid://boodqw44meh78" path="res://resources/card_data.gd" id="1_card"]
+[ext_resource type="Script" uid="uid://bwfruejc443kn" path="res://resources/stat_modifier.gd" id="2_mod"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -12,7 +12,6 @@ value = 0.1
 [sub_resource type="Resource" id="Mod_2"]
 script = ExtResource("2_mod")
 stat = "tower_cost_mult"
-op = "mult"
 value = 0.1
 
 [resource]
