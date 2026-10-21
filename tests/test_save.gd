@@ -121,7 +121,7 @@ func _run() -> void:
 
 	_section("config db")
 	_check(ConfigDB.get_enemy("missing") == null, "unknown enemy returns null")
-	_check(ConfigDB.all_enemies().size() == 4, "four enemy archetypes load")
+	_check(ConfigDB.all_enemies().size() == 12, "twelve enemy archetypes load")
 	var grunt := ConfigDB.get_enemy("orc_grunt")
 	_check(grunt != null and is_equal_approx(grunt.max_hp, 60.0), "orc_grunt has 60 base HP")
 	var table := ConfigDB.get_wave_table("main")

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_data.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "orc_airship"
+display_name_key = "BOSS_AIRSHIP"
+max_hp = 2200.0
+speed = 45.0
+damage = 30.0
+armor = 4.0
+coin_value = 220
+radius = 60.0
+color = Color(0.29, 0.23, 0.16, 1)
+accent_color = Color(0.54, 0.18, 0.13, 1)
+separation_weight = 0.0
+weave_amplitude = 0.0
+weave_frequency = 2.2
+attack_cooldown = 1.6
+flying = true
+shape = "brute"

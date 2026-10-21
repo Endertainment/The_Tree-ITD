@@ -9,10 +9,13 @@ enum Modifier { NONE, ARMORED, SWIFT, SWARM }
 
 const BOSS_WAVE_INTERVAL := 10
 const BOSS_BASE_HP := 1500.0
+const AIRSHIP_BASE_HP := 2200.0
 const BOSS_HP_GROWTH := 1.35
 const BOSS_ESCORT_GRUNTS := 6
 const BOSS_ESCORT_BRUTES := 2
 const MODIFIER_START_WAVE := 8
+const WARLORD_ID := "orc_warlord"
+const AIRSHIP_ID := "orc_airship"
 
 ## Presentation keys for the 1.5 s wave banner.
 const BANNER_KEYS := {
@@ -42,6 +45,21 @@ static func boss_index_for_wave(wave: int) -> int:
 ## Boss HP before wave scaling: `1500 * 1.35^(index - 1)`.
 static func boss_hp(boss_index: int) -> float:
 	return BOSS_BASE_HP * pow(BOSS_HP_GROWTH, float(maxi(1, boss_index) - 1))
+
+
+## Airship HP: the second boss starts higher than the Warlord.
+static func airship_hp(boss_index: int) -> float:
+	return AIRSHIP_BASE_HP * pow(BOSS_HP_GROWTH, float(maxi(1, boss_index) - 1))
+
+
+## Odd bosses are the Warlord, even bosses are the airship.
+static func uses_airship(boss_index: int) -> bool:
+	return boss_index % 2 == 0
+
+
+## Enemy id for a boss index.
+static func boss_id_for(boss_index: int) -> String:
+	return AIRSHIP_ID if uses_airship(boss_index) else WARLORD_ID
 
 
 ## Deterministic modifier for one wave of one run. Boss waves and waves before
@@ -85,9 +103,10 @@ static func count_multiplier(modifier: Modifier) -> float:
 
 
 ## Boss-wave spawn groups. The boss spawns first; escorts follow over ~2 s.
-static func boss_wave_entries() -> Array[Dictionary]:
+## `boss_id` comes from `boss_id_for()` so later waves can host the airship.
+static func boss_wave_entries(boss_id := WARLORD_ID) -> Array[Dictionary]:
 	var entries: Array[Dictionary] = []
-	entries.append({"time": 0.0, "enemy_id": "orc_warlord", "is_boss": true})
+	entries.append({"time": 0.0, "enemy_id": boss_id, "is_boss": true})
 	for index in BOSS_ESCORT_GRUNTS:
 		entries.append({
 			"time": 1.0 + float(index) * 0.35,

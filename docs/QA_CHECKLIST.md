@@ -131,8 +131,8 @@ Verified with Godot `4.7.2.stable.official`, Windows 11, 540x960 window
       0.8 s / 500 range, max level disables the button (`TestTowers`).
 - [x] Sell refunds 60% of build + upgrades (310 invested â†’ 186), frees the pad
       and removes the obstacle (`TestTowers`).
-- [x] Archer tower damages a target in range; Frost Spire applies a 0.65 slow
-      multiplier; Ballista deals its full 55 damage to a 3-armor Brute
+- [x] Archer tower damages a target in range; Spirit Tower roots its target for
+      about 1.2 s; Ballista deals its full 55 damage to a 3-armor Brute
       (`TestTowers`, archers removed so only the tower can score the hit).
 - [x] Target modes NEAREST / STRONGEST / FIRST switch and expose label keys; the
       sheet highlights the active mode (screenshot `battle_tower_sheet.png`).

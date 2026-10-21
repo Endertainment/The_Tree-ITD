@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_data.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "orc_trebuchet"
+display_name_key = "ENEMY_ORC_TREBUCHET"
+max_hp = 260.0
+speed = 20.0
+damage = 45.0
+armor = 2.0
+coin_value = 30
+radius = 32.0
+color = Color(0.29, 0.23, 0.16, 1)
+accent_color = Color(0.54, 0.42, 0.23, 1)
+separation_weight = 0.2
+weave_amplitude = 0.0
+weave_frequency = 2.2
+attack_cooldown = 3.5
+attack_range = 560.0
+projectile = "stone"
+shape = "brute"

@@ -20,6 +20,9 @@ var separation_weight := 0.6
 ## How far ahead the avoidance probe looks, in design pixels.
 var lookahead := 70.0
 
+## Flyers turn this off so they can cross the arena in a straight line.
+var avoid_obstacles := true
+
 
 ## Returns the next velocity for one physics frame.
 func compute_velocity(
@@ -34,7 +37,8 @@ func compute_velocity(
 	if to_target.length_squared() > 0.0001:
 		desired = to_target.normalized() * max_speed
 	desired += _separation_force(pos, neighbors)
-	desired += _avoidance_force(pos, velocity, obstacles)
+	if avoid_obstacles:
+		desired += _avoidance_force(pos, velocity, obstacles)
 
 	var desired_length_sq := desired.length_squared()
 	if desired_length_sq > max_speed * max_speed:

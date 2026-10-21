@@ -35,5 +35,21 @@ extends Resource
 ## Seconds between contact hits once the enemy reaches the Tree.
 @export var attack_cooldown: float = 0.8
 
+## Ranged enemies stop this far from the Tree edge and fire `projectile`.
+## 0 keeps the melee contact behaviour.
+@export var attack_range: float = 0.0
+
+## Enemy projectile id: "spear", "curse_orb" or "stone". Empty = melee.
+@export var projectile: String = ""
+
+## Flyers ignore tower obstacles and steering separation.
+@export var flying: bool = false
+
+## Shaman support: heals the most wounded ally in `heal_range` every
+## `heal_interval` seconds instead of attacking.
+@export var heal_amount: float = 0.0
+@export var heal_interval: float = 1.5
+@export var heal_range: float = 260.0
+
 ## Placeholder body silhouette: grunt, runner or brute.
 @export_enum("grunt", "runner", "brute") var shape: String = "grunt"

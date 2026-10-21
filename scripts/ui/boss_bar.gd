@@ -23,7 +23,7 @@ func show_boss(boss: Boss) -> void:
 	if _boss == null:
 		visible = false
 		return
-	_name.text = "%s %s" % [Loc.t_key("BOSS_WARLORD"), _roman(_boss.boss_index)]
+	_name.text = "%s %s" % [Loc.t_key(_boss.data.display_name_key), _roman(_boss.boss_index)]
 	_bar.value = 100.0
 	_percent.text = "100%"
 	_pulse = 0.0

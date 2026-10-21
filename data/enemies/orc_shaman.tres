@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_data.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "orc_shaman"
+display_name_key = "ENEMY_ORC_SHAMAN"
+max_hp = 65.0
+speed = 40.0
+damage = 0.0
+armor = 0.0
+coin_value = 12
+radius = 22.0
+color = Color(0.25, 0.42, 0.29, 1)
+accent_color = Color(0.62, 0.84, 0.63, 1)
+separation_weight = 0.6
+weave_amplitude = 0.0
+weave_frequency = 2.2
+attack_cooldown = 1.5
+attack_range = 300.0
+heal_amount = 8.0
+heal_interval = 1.5
+heal_range = 260.0
+shape = "grunt"

@@ -45,7 +45,7 @@ const PREP_BETWEEN := 6.0
 const WAVE_TIME_CAP := 600.0
 
 const ENEMY_IDS: Array[String] = ["orc_grunt", "orc_runner", "orc_brute", "orc_warlord"]
-const TOWER_IDS: Array[String] = ["archer_tower", "frost_spire", "ballista"]
+const TOWER_IDS: Array[String] = ["archer_tower", "spirit_tower", "ballista"]
 const UPGRADE_IDS: Array[String] = [
 	"roots", "regrowth", "canopy_bows", "elven_haste", "far_sight", "extra_archer",
 ]
@@ -55,8 +55,8 @@ const META_IDS: Array[String] = [
 ]
 ## Build order used by the 15% "towers" slice of the spending heuristic.
 const BUILD_ORDER: Array[String] = [
-	"archer_tower", "archer_tower", "frost_spire", "archer_tower",
-	"ballista", "archer_tower", "frost_spire", "ballista",
+	"archer_tower", "archer_tower", "spirit_tower", "archer_tower",
+	"ballista", "archer_tower", "spirit_tower", "ballista",
 ]
 
 # Two spending profiles, so the report separates "the stage's example split"

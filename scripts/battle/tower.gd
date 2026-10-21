@@ -24,6 +24,8 @@ var _battle: Battle
 var _enemy_pool: EnemyPool
 var _projectiles: TowerProjectilePool
 var _target: Enemy
+var _skip_target: Enemy
+var _skip_timer := 0.0
 var _retarget_timer := 0.0
 var _cooldown := 0.0
 var _recoil := 0.0
@@ -179,6 +181,11 @@ func _physics_process(delta: float) -> void:
 	elif not _is_target_valid(stats.range):
 		_target = null
 
+	if _skip_timer > 0.0:
+		_skip_timer = maxf(0.0, _skip_timer - delta)
+		if _skip_timer <= 0.0:
+			_skip_target = null
+
 	if _target != null:
 		var wanted := (_target.global_position - global_position).angle()
 		_aim = lerp_angle(_aim, wanted, clampf(delta * 10.0, 0.0, 1.0))
@@ -209,6 +216,15 @@ func _is_target_valid(attack_range: float) -> bool:
 
 
 func _acquire_target(attack_range: float) -> Enemy:
+	# The spirit tower moves on to another enemy after every shot, so try to
+	# skip the one it just hit; fall back to it when nothing else is in range.
+	var best := _scan_targets(attack_range, true)
+	if best == null:
+		best = _scan_targets(attack_range, false)
+	return best
+
+
+func _scan_targets(attack_range: float, skip_recent: bool) -> Enemy:
 	if _enemy_pool == null:
 		return null
 	var radius_sq := attack_range * attack_range
@@ -216,6 +232,8 @@ func _acquire_target(attack_range: float) -> Enemy:
 	var best_score := INF
 	for enemy: Enemy in _enemy_pool.get_active():
 		if not enemy.is_targetable():
+			continue
+		if skip_recent and _skip_timer > 0.0 and enemy == _skip_target:
 			continue
 		var distance_sq := global_position.distance_squared_to(enemy.global_position)
 		if distance_sq > radius_sq:
@@ -238,11 +256,19 @@ func _fire(stats: TowerLevel) -> void:
 	if not _is_target_valid(stats.range):
 		return
 	var kind := _projectile_kind()
-	_projectiles.spawn(global_position, _target, kind, stats, data.accent_color)
+	var stun_bonus := 0.0
+	if _battle != null and _battle.run_stats != null:
+		# The frost-roots card now extends the spirit tower's root duration.
+		stun_bonus = _battle.run_stats.slow_strength
+	_projectiles.spawn(global_position, _target, kind, stats, data.accent_color, stun_bonus)
+	if kind == TowerProjectile.Kind.SPIRIT_BOLT:
+		# Root one enemy, then move on to a different one on the next shot.
+		_skip_target = _target
+		_skip_timer = 2.5
 	_cooldown = maxf(0.1, stats.interval)
 	_recoil = 1.0
 	match kind:
-		TowerProjectile.Kind.FROST_BOLT:
+		TowerProjectile.Kind.FROST_BOLT, TowerProjectile.Kind.SPIRIT_BOLT:
 			AudioManager.play_sfx("tower_frost_shot")
 		TowerProjectile.Kind.BALLISTA_BOLT:
 			AudioManager.play_sfx("tower_ballista_shot")
@@ -257,6 +283,8 @@ func _projectile_kind() -> int:
 			return TowerProjectile.Kind.FROST_BOLT
 		"ballista_bolt":
 			return TowerProjectile.Kind.BALLISTA_BOLT
+		"spirit_bolt":
+			return TowerProjectile.Kind.SPIRIT_BOLT
 		_:
 			return TowerProjectile.Kind.ARROW
 

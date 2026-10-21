@@ -7,7 +7,7 @@ extends Area2D
 ## arrow (homing, single target), frost bolt (small homing, splash slow),
 ## ballista bolt (barely homing, ignores armor, camera shake).
 
-enum Kind { ARROW, FROST_BOLT, BALLISTA_BOLT }
+enum Kind { ARROW, FROST_BOLT, BALLISTA_BOLT, SPIRIT_BOLT }
 
 const ENEMY_LAYER := 1
 const MAX_LIFETIME := 4.0
@@ -23,6 +23,7 @@ var _speed := 700.0
 var _splash_radius := 0.0
 var _slow_strength := 0.0
 var _slow_duration := 0.0
+var _stun_duration := 0.0
 var _ignore_armor := false
 var _tint := Color.WHITE
 var _life := 0.0
@@ -46,13 +47,17 @@ func configure(pool: TowerProjectilePool, enemies: EnemyPool) -> void:
 
 
 ## Starts a flight using the stats of the firing tower level.
-func begin(from: Vector2, target: Enemy, new_kind: int, stats: TowerLevel, tint: Color) -> void:
+func begin(
+	from: Vector2, target: Enemy, new_kind: int, stats: TowerLevel, tint: Color,
+	stun_bonus := 0.0
+) -> void:
 	kind = new_kind
 	_damage = stats.damage
 	_speed = maxf(120.0, stats.projectile_speed)
 	_splash_radius = stats.splash_radius
 	_slow_strength = stats.slow_strength
 	_slow_duration = stats.slow_duration
+	_stun_duration = stats.stun_duration + maxf(0.0, stun_bonus)
 	_ignore_armor = stats.ignores_armor
 	_tint = tint
 	_target = target
@@ -122,6 +127,8 @@ func _turn_rate() -> float:
 			return 1.0
 		Kind.FROST_BOLT:
 			return 3.0
+		Kind.SPIRIT_BOLT:
+			return 6.0
 		_:
 			return 9.0
 
@@ -134,6 +141,8 @@ func _impact(enemy: Enemy, impact_position: Vector2) -> void:
 
 	if enemy != null:
 		enemy.take_damage(_damage, _ignore_armor)
+		if _stun_duration > 0.0:
+			enemy.apply_stun(_stun_duration)
 
 	if _splash_radius > 0.0 and _slow_strength > 0.0:
 		_apply_splash_slow(impact_position)
@@ -172,6 +181,8 @@ func _kind_name() -> String:
 			return "frost_bolt"
 		Kind.BALLISTA_BOLT:
 			return "ballista_bolt"
+		Kind.SPIRIT_BOLT:
+			return "spirit_bolt"
 		_:
 			return "arrow"
 
@@ -187,6 +198,10 @@ func _draw() -> void:
 			draw_line(Vector2(-26.0, 0.0), Vector2(-6.0, 0.0), Color(_tint.r, _tint.g, _tint.b, 0.45), 6.0)
 			draw_circle(Vector2.ZERO, 9.0, _tint)
 			draw_circle(Vector2.ZERO, 4.0, Color(1.0, 1.0, 1.0, 0.92))
+		Kind.SPIRIT_BOLT:
+			draw_circle(Vector2.ZERO, 10.0, Color(_tint.r, _tint.g, _tint.b, 0.35))
+			draw_circle(Vector2.ZERO, 6.0, _tint)
+			draw_circle(Vector2.ZERO, 2.5, Color(1.0, 1.0, 1.0, 0.9))
 		Kind.BALLISTA_BOLT:
 			draw_line(Vector2(-30.0, 0.0), Vector2(10.0, 0.0), Color("#3a2a1c"), 9.0)
 			draw_line(Vector2(-30.0, 0.0), Vector2(-18.0, 0.0), Color("#7a4a2b"), 9.0)

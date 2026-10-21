@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="TowerData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://resources/tower_level.gd" id="1_level"]
+[ext_resource type="Script" path="res://resources/tower_data.gd" id="2_data"]
+
+[sub_resource type="Resource" id="Level_1"]
+script = ExtResource("1_level")
+damage = 4.0
+interval = 2.2
+range = 400.0
+projectile_speed = 520.0
+stun_duration = 1.2
+
+[sub_resource type="Resource" id="Level_2"]
+script = ExtResource("1_level")
+damage = 6.0
+interval = 2.0
+range = 420.0
+projectile_speed = 520.0
+stun_duration = 1.5
+
+[sub_resource type="Resource" id="Level_3"]
+script = ExtResource("1_level")
+damage = 8.0
+interval = 1.8
+range = 440.0
+projectile_speed = 520.0
+stun_duration = 1.8
+
+[resource]
+script = ExtResource("2_data")
+id = "spirit_tower"
+display_name_key = "TOWER_SPIRIT_NAME"
+role_key = "TOWER_SPIRIT_ROLE"
+cost = 90
+body_radius = 30.0
+silhouette = "frost"
+projectile = "spirit_bolt"
+base_color = Color(0.2, 0.35, 0.25, 1)
+accent_color = Color(0.55, 0.9, 0.5, 1)
+levels = Array[ExtResource("1_level")]([SubResource("Level_1"), SubResource("Level_2"), SubResource("Level_3")])

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_data.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "orc_raider"
+display_name_key = "ENEMY_ORC_RAIDER"
+max_hp = 120.0
+speed = 80.0
+damage = 25.0
+armor = 1.0
+coin_value = 14
+radius = 26.0
+color = Color(0.48, 0.29, 0.17, 1)
+accent_color = Color(0.78, 0.63, 0.42, 1)
+separation_weight = 0.5
+weave_amplitude = 0.0
+weave_frequency = 2.2
+attack_cooldown = 1.0
+shape = "runner"

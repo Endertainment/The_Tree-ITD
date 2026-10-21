@@ -84,13 +84,14 @@ func setup(enemies: EnemyPool, battle_ref: Battle) -> void:
 
 ## Fires one pooled projectile. Returns null when every slot is in flight.
 func spawn(
-	from: Vector2, target: Enemy, kind: int, stats: TowerLevel, tint: Color
+	from: Vector2, target: Enemy, kind: int, stats: TowerLevel, tint: Color,
+	stun_bonus := 0.0
 ) -> TowerProjectile:
 	if _free.is_empty() or stats == null:
 		return null
 	var projectile: TowerProjectile = _free.pop_back()
 	projectile.configure(self, _enemy_pool)
-	projectile.begin(from, target, kind, stats, tint)
+	projectile.begin(from, target, kind, stats, tint, stun_bonus)
 	_active.append(projectile)
 	return projectile
 
@@ -115,6 +116,8 @@ func on_impact(position: Vector2, kind: int, splash_radius: float) -> void:
 				battle.request_shake(6.0)
 		TowerProjectile.Kind.FROST_BOLT:
 			ring.play(position, Color(0.44, 0.85, 0.91), splash_radius, 4.0)
+		TowerProjectile.Kind.SPIRIT_BOLT:
+			ring.play(position, Color(0.55, 0.9, 0.5), 24.0, 4.0)
 		_:
 			ring.play(position, Color(0.91, 0.85, 0.66), 18.0, 3.0)
 

@@ -25,6 +25,9 @@ extends Resource
 @export_range(0.0, 0.9, 0.01) var slow_strength: float = 0.0
 @export var slow_duration: float = 0.0
 
+## Spirit tower only: seconds the target is rooted (cannot move or attack).
+@export var stun_duration: float = 0.0
+
 ## Ballista only: bypass the target's armor.
 @export var ignores_armor: bool = false
 

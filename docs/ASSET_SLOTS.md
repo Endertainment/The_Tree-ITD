@@ -26,7 +26,7 @@ the SFX slider never silences button feedback.
 | `tower_sell` | `tower_sell.wav` | 0.21 s | SFX | Tower sold |
 | `arrow` | `arrow.wav` | 0.15 s | SFX | Elf archer shot (`tower_fire` still aliases here) |
 | `tower_archer_shot` | `tower_archer_shot.wav` | 0.12 s | SFX | Archer Tower shot |
-| `tower_frost_shot` | `tower_frost_shot.wav` | 0.24 s | SFX | Frost Spire shot |
+| `tower_frost_shot` | `tower_frost_shot.wav` | 0.24 s | SFX | Spirit Tower shot |
 | `tower_ballista_shot` | `tower_ballista_shot.wav` | 0.30 s | SFX | Ballista shot |
 | `hit` | `hit.wav` | 0.10 s | SFX | Arrow or bolt impact on an orc (throttled) |
 | `frost_burst` | `frost_burst.wav` | 0.32 s | SFX | Frost splash on impact (throttled) |

@@ -56,6 +56,9 @@ var auto_route_results := true
 ## Same Array instance as `TowerManager.obstacles`; enemies read it directly.
 var obstacles: Array[Dictionary] = []
 
+## Enemy shots (spears, curse orbs, stones) aimed at the Tree.
+var _enemy_shots: EnemyProjectilePool
+
 @onready var core: Core = $Core
 @onready var enemy_pool: EnemyPool = $EnemyPool
 @onready var projectile_pool: ProjectilePool = $ProjectilePool
@@ -94,6 +97,10 @@ func _ready() -> void:
 	rng.randomize()
 	_archer_scene = load(ARCHER_SCENE_PATH) as PackedScene
 	enemy_pool.setup(self)
+	_enemy_shots = EnemyProjectilePool.new()
+	_enemy_shots.name = "EnemyShots"
+	add_child(_enemy_shots)
+	_enemy_shots.setup(self)
 	tower_projectile_pool.setup(enemy_pool, self)
 	tower_manager.setup(self, enemy_pool, tower_projectile_pool)
 	obstacles = tower_manager.obstacles
@@ -153,6 +160,8 @@ func start_run(modifiers: RunModifiers = null) -> void:
 	enemy_pool.despawn_all()
 	projectile_pool.clear_all()
 	tower_projectile_pool.clear_all()
+	if _enemy_shots != null:
+		_enemy_shots.clear_all()
 	tower_manager.reset()
 	floating_layer.clear_all()
 	coins = 0
@@ -223,6 +232,17 @@ func spend_coins(cost: int) -> bool:
 ## Multiplier applied to kill rewards by the `coin_gain` meta upgrade.
 func get_kill_coin_multiplier() -> float:
 	return run_stats.coin_mult if run_stats != null else 1.0
+
+
+## Spawns an enemy projectile aimed at the Tree. Called by ranged enemies.
+func spawn_enemy_shot(from: Vector2, kind: String, damage: float) -> void:
+	if _enemy_shots != null:
+		_enemy_shots.spawn(from, kind, damage)
+
+
+## Enemy projectiles currently in flight, for tests and the debug overlay.
+func get_active_enemy_shot_count() -> int:
+	return _enemy_shots.count_active() if _enemy_shots != null else 0
 
 
 ## Spawns the hit spark and, when enabled, a floating damage number.

@@ -20,10 +20,10 @@ open ground.
    missions plus eight achievements, Shop is a fake-IAP grid with restore and a
    free-Gems ad, and Settings covers audio, haptics, language, quality and reset.
 4. Press `BATTLE` for a run: 10 s preparation, then orc waves with two elf
-   archers. Tap one of the eight stone pads to build an Archer Tower, Frost
-   Spire or Ballista; tap a built tower to upgrade, retarget or sell it.
+   archers. Tap one of the eight stone pads to build an Archer Tower, Spirit
+   Tower or Ballista; tap a built tower to upgrade, retarget or sell it.
    `UPGRADES` opens the in-run panel (Tree / Archers / Towers). Every tenth
-   wave is a boss, wave modifiers start at wave 8, and the run ends on
+   wave is a boss (Warlord and airship alternate), wave modifiers start at wave 8, and the run ends on
    `Results` with Gold and Gems (the optional double-Gold ad is there). A defeat
    first offers one rewarded revive. `F3` toggles the debug overlay; `Esc` /
    Android back closes a sheet, then returns Home, then asks before exiting.
@@ -64,7 +64,7 @@ and the six-tab shell including modal/back behaviour and the debug 5-tap
 `TestBattle` exercises spawning, steering, arrows, armor, Coins, wave clear,
 contact damage, pause, quit confirmation and defeat (42 checks). `TestSoak`
 simulates ten minutes at fixed 60 FPS and checks orphan/node growth.
-`TestTowers` covers pads, build/upgrade/sell maths, tower combat, frost slow,
+`TestTowers` covers pads, build/upgrade/sell maths, tower combat, spirit root,
 ballista armor piercing, steering obstacles and sheet pause handling (74 checks).
 `TestProgression` covers upgrade costs/effects, boss thresholds and enrage, wave
 modifiers, results maths, persistence and the speed matrix (120 checks).

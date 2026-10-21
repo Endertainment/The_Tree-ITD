@@ -5,7 +5,7 @@ extends Node
 ##   godot --headless --path <project> --fixed-fps 60 res://tests/TestTowers.tscn
 ##
 ## Exits 0 when every check passes. It covers pad layout, building, upgrade and
-## sell maths, targeting modes, frost slow, ballista armor piercing, steering
+## sell maths, targeting modes, spirit root, ballista armor piercing, steering
 ## obstacles, sheet pause handling and node leaks.
 
 const BATTLE_SCENE := preload("res://scenes/battle/Battle.tscn")
@@ -51,7 +51,7 @@ func _run() -> void:
 	_section("build")
 	_check(_battle.coins == RunStats.BASE_COINS, "run starts with 120 Coins")
 	_check(_battle.get_tower_cost("archer_tower") == 60, "archer tower costs 60")
-	_check(_battle.get_tower_cost("frost_spire") == 90, "frost spire costs 90")
+	_check(_battle.get_tower_cost("spirit_tower") == 90, "spirit tower costs 90")
 	_check(_battle.get_tower_cost("ballista") == 140, "ballista costs 140")
 
 	var pad_a := _manager.get_pads()[0]
@@ -67,11 +67,11 @@ func _run() -> void:
 		not _manager.build(pad_a, "ballista"),
 		"a pad that already has a tower cannot be built on"
 	)
-	_check(not _manager.build(pad_b, "frost_spire"), "a tower costs more than the Coins left")
+	_check(not _manager.build(pad_b, "spirit_tower"), "a tower costs more than the Coins left")
 	_check(_battle.coins == 60 and _manager.get_towers().size() == 1, "a failed build changes nothing")
 
 	_battle.add_coins(260)
-	_check(_manager.build(pad_b, "frost_spire"), "frost spire builds after earning Coins")
+	_check(_manager.build(pad_b, "spirit_tower"), "spirit tower builds after earning Coins")
 	_check(_manager.build(pad_c, "ballista"), "ballista builds after earning Coins")
 	_check(_manager.get_towers().size() == 3, "three towers stand")
 	_check(_battle.obstacles.size() == 3, "three obstacles are published")
@@ -127,29 +127,26 @@ func _run() -> void:
 		await _simulate(1.4)
 		_check(target.get_health().hp < hp_before, "the archer tower damages an enemy in range")
 
-	_section("frost slow")
+	_section("spirit root")
 	await _reset_run()
 	_clear_archers()
 	_battle.add_coins(2000)
-	var frost_pad := _manager.get_pads()[0]
-	_manager.build(frost_pad, "frost_spire")
+	var spirit_pad := _manager.get_pads()[0]
+	_manager.build(spirit_pad, "spirit_tower")
 	var runner := ConfigDB.get_enemy("orc_runner")
 	var runner_enemy: Enemy = _battle.enemy_pool.spawn(
-		runner, frost_pad.global_position + Vector2(0.0, 140.0), {"spawn_delay": 0.0}
+		runner, spirit_pad.global_position + Vector2(0.0, 140.0), {"spawn_delay": 0.0}
 	)
-	var slowed := false
-	for _step in 240:
+	var rooted := false
+	for _step in 300:
 		await get_tree().physics_frame
-		if runner_enemy != null and runner_enemy.get_slow_multiplier() < 0.999:
-			slowed = true
+		if runner_enemy != null and runner_enemy.is_stunned():
+			rooted = true
 			break
-	_check(slowed, "the frost spire slows its target")
+	_check(rooted, "the spirit tower roots its target")
 	if runner_enemy != null:
-		_check(
-			runner_enemy.get_slow_multiplier() <= 0.66,
-			"level 1 slow is 35% (multiplier 0.65)"
-		)
-		_check(runner_enemy.is_targetable(), "slow does not kill the target")
+		_check(runner_enemy.get_stun_time() > 0.9, "level 1 root lasts about 1.2 s")
+		_check(runner_enemy.is_targetable(), "the root does not kill the target")
 
 	_section("ballista armor")
 	await _reset_run()
@@ -185,7 +182,7 @@ func _run() -> void:
 	_battle.add_coins(5000)
 	var pad_list := _manager.get_pads()
 	for index in pad_list.size():
-		var tower_id: String = ["archer_tower", "frost_spire", "ballista"][index % 3]
+		var tower_id: String = ["archer_tower", "spirit_tower", "ballista"][index % 3]
 		_manager.build(pad_list[index], tower_id)
 	_check(_manager.get_towers().size() == 8, "all eight pads can be built")
 	_check(_battle.obstacles.size() == 8, "eight obstacles are published")

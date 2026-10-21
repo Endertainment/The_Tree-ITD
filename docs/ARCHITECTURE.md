@@ -111,7 +111,9 @@ waves and Coins are all reset per run and never persisted.
   (`1500 * 1.35^(index-1)`). `Boss.tscn` inherits `Enemy.tscn`; it is spawned
   through `EnemyPool.spawn_custom()`, counts toward the 70-alive cap and is
   freed instead of pooled. It summons four runners at 70% and 40%, ignores slow
-  for 3 s and enrages below 30%. `Battle` plays the 0.3 s slow-mo on
+  for 3 s and enrages below 30%. Odd bosses are the Warlord; even bosses are the
+  airship (`Airship.tscn`), which flies over the Tree, bombs it and releases
+  wyvern riders. `Battle` plays the 0.3 s slow-mo on
   `EventBus.boss_died` and restores the selected speed with `SpeedService.reapply()`.
 - **Wave modifiers.** From wave 8, `WaveRules.modifier_for(wave, run_seed)` picks
   `Armored` / `Swift` / `Swarm` deterministically; `WaveManager` merges
@@ -269,7 +271,7 @@ Tower combat:
 ```
 Tower._physics_process (retarget 0.15 s) -> TowerProjectilePool.spawn()
   -> swept raycast on the enemies layer -> Enemy.take_damage()
-  -> frost: splash slow in 70 px -> Enemy.apply_slow() -> StatusComponent
+  -> spirit: root the target -> Enemy.apply_stun() -> StatusComponent
   -> impact ring (and Core.shake() for the Ballista)
 ```
 

@@ -1,4 +1,4 @@
-keys,en,uk
+﻿keys,en,uk
 BOOT_TITLE,The Tree,Дерево
 MENU_TITLE,The Tree,Дерево
 MENU_SUBTITLE,Idle Tower Defense,Захист Дерева
@@ -173,8 +173,8 @@ CARD_SWIFT_LEAVES_LORE,Wind teaches the canopy to move before it thinks.,"Віт
 CARD_MIDAS_BARK_NAME,Midas Bark,Кора Мідаса
 CARD_MIDAS_BARK_DESC,"More Coins, less life.","Більше монет, менше життя."
 CARD_MIDAS_BARK_LORE,Gold seeps through the bark like sap.,"Золото сочиться крізь кору, наче сік."
-CARD_FROST_ROOTS_NAME,Frost Roots,Морозне коріння
-CARD_FROST_ROOTS_DESC,"Stronger slows, pricier towers.","Сильніше сповільнення, дорожчі вежі."
+CARD_FROST_ROOTS_NAME,Spirit Roots,Коріння духа
+CARD_FROST_ROOTS_DESC,"Longer roots, pricier towers.","Довше знерухомлення, дорожчі вежі."
 CARD_FROST_ROOTS_LORE,"Winter sleeps beneath the grove, waiting.",Зима спить під гаєм і чекає.
 CARD_ELVEN_PRECISION_NAME,Elven Precision,Ельфійська точність
 CARD_ELVEN_PRECISION_DESC,"Harder hits and faster arrows, at a cost.",Сильніші удари й швидші стріли — але за ціну.
@@ -389,3 +389,13 @@ DEV_BENCH_BATTLE_ONLY,BENCHMARK runs in battle only,BENCHMARK працює ли�
 SET_DAMAGE_NUMBERS,Damage numbers,Числа ушкоджень
 SET_REPLAY_TOAST,Tutorial will replay in your next battle,Навчання повториться в наступному бою
 TOWER_TAB_LEVEL,{name}  L{level},{name}  {level} р.
+ENEMY_ORC_THROWER,Orc Thrower,Орк-стрілок
+ENEMY_ORC_MAGE,Orc Mage,Орк-маг
+ENEMY_ORC_SHAMAN,Orc Shaman,Орк-шаман
+ENEMY_ORC_RAIDER,Orc Raider,Орк-наїздник
+ENEMY_WYVERN_RIDER,Wyvern Rider,Вершник на віверні
+ENEMY_ORC_RAM,Orc Ram,Таран
+ENEMY_ORC_TREBUCHET,Orc Trebuchet,Требушет
+BOSS_AIRSHIP,Orc Airship,Орочий дирижабль
+TOWER_SPIRIT_NAME,Spirit Tower,Вежа духа
+TOWER_SPIRIT_ROLE,Roots enemies,Знерухомлює ворогів

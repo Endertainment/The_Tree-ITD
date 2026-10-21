@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_data.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = "orc_ram"
+display_name_key = "ENEMY_ORC_RAM"
+max_hp = 400.0
+speed = 28.0
+damage = 60.0
+armor = 5.0
+coin_value = 25
+radius = 34.0
+color = Color(0.36, 0.30, 0.22, 1)
+accent_color = Color(0.54, 0.46, 0.38, 1)
+separation_weight = 0.2
+weave_amplitude = 0.0
+weave_frequency = 2.2
+attack_cooldown = 1.4
+shape = "brute"

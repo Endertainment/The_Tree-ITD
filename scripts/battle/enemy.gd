@@ -123,6 +123,8 @@ func setup(enemy_data: EnemyData, modifiers: Dictionary) -> void:
 	_shape.set_deferred("disabled", _spawn_timer > 0.0)
 	_puff.color = data.color
 	_puff.emitting = false
+	_steering.avoid_obstacles = not data.flying
+	z_index = 6 if data.flying else 0
 	queue_redraw()
 
 ## Called by the pool after all state is set, immediately before use.
@@ -148,7 +150,8 @@ func set_obstacles(list: Array) -> void:
 	_obstacles = list
 
 
-## Applies a slow from a Frost Spire and flashes the snowflake marker.
+## Applies a slow and flashes the frost marker. Kept for bosses and tools;
+## the Spirit Tower uses `apply_stun` instead.
 ## The strongest slow wins and reapplication only refreshes the duration.
 func apply_slow(strength: float, duration: float) -> void:
 	if not is_targetable() or strength <= 0.0 or duration <= 0.0:
@@ -231,6 +234,37 @@ func get_health() -> HealthComponent:
 	return _health
 
 
+## Restores HP. Used by the shaman's support pulse.
+func heal(amount: float) -> void:
+	if not is_alive or is_dying:
+		return
+	_health.heal(amount)
+
+
+## True while a Spirit Tower has the enemy rooted.
+func is_stunned() -> bool:
+	return _status.is_stunned()
+
+
+## Roots the enemy for `duration` seconds (Spirit Tower hits).
+func apply_stun(duration: float) -> void:
+	if not is_alive or is_dying:
+		return
+	_status.apply_stun(duration)
+	_velocity = Vector2.ZERO
+	queue_redraw()
+
+
+## Remaining stun time in seconds, for tests and the debug overlay.
+func get_stun_time() -> float:
+	return _status.stun_time
+
+
+## Hook for subclasses that own their movement (the airship boss).
+func _custom_behaviour(_delta: float) -> bool:
+	return false
+
+
 func _physics_process(delta: float) -> void:
 	if is_dying:
 		_death_timer -= delta
@@ -251,6 +285,14 @@ func _physics_process(delta: float) -> void:
 		queue_redraw()
 
 	_status.tick(delta)
+
+	if _status.is_stunned():
+		_velocity = Vector2.ZERO
+		queue_redraw()
+		return
+
+	if _custom_behaviour(delta):
+		return
 
 	if _attacking:
 		_tick_attack(delta)
@@ -329,14 +371,17 @@ func _apply_weave(next_velocity: Vector2) -> Vector2:
 func _check_arrival() -> void:
 	var offset := global_position - Battle.CENTER
 	var distance := offset.length()
-	var contact := Battle.CORE_RADIUS + radius
-	if distance > contact:
+	# Ranged enemies stop at their firing distance; melee walks into contact.
+	var stop_distance := Battle.CORE_RADIUS + radius
+	if data != null and data.attack_range > 0.0:
+		stop_distance = Battle.CORE_RADIUS + data.attack_range
+	if distance > stop_distance:
 		return
 	if distance <= 0.0001:
 		offset = Vector2.RIGHT
 	_attacking = true
 	_velocity = Vector2.ZERO
-	global_position = Battle.CENTER + offset.normalized() * contact
+	global_position = Battle.CENTER + offset.normalized() * stop_distance
 	_attack_timer = ARRIVAL_HIT_DELAY
 	queue_redraw()
 
@@ -346,11 +391,40 @@ func _tick_attack(delta: float) -> void:
 	_attack_timer -= delta
 	if _attack_timer > 0.0:
 		return
+	if data.heal_amount > 0.0:
+		_attack_timer = data.heal_interval
+		_heal_ally()
+		return
 	_attack_timer = data.attack_cooldown
+	if data.projectile != "":
+		_lunge = 1.0
+		queue_redraw()
+		if _battle != null:
+			_battle.spawn_enemy_shot(global_position, data.projectile, data.damage)
+		return
 	_lunge = 1.0
 	queue_redraw()
 	if _battle != null and _battle.core != null and not _battle.core.is_dead():
 		_battle.core.take_damage(data.damage)
+
+
+## Shaman support: heals the most wounded ally in range. No attack.
+func _heal_ally() -> void:
+	if _pool == null or data == null:
+		return
+	var best: Enemy = null
+	var best_ratio := 0.995
+	for other: Enemy in _pool.get_active():
+		if other == self or not other.is_targetable():
+			continue
+		if global_position.distance_to(other.global_position) > data.heal_range:
+			continue
+		var ratio := other.get_health().ratio()
+		if ratio < best_ratio:
+			best_ratio = ratio
+			best = other
+	if best != null:
+		best.heal(data.heal_amount)
 
 
 func _process(delta: float) -> void:

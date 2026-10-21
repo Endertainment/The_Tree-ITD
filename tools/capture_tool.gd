@@ -135,7 +135,7 @@ func _ready() -> void:
 	# Build every pad, then capture the ring and both bottom sheets.
 	_battle.add_coins(10000)
 	var pad_list := _battle.tower_manager.get_pads()
-	var tower_ids: Array[String] = ["archer_tower", "frost_spire", "ballista"]
+	var tower_ids: Array[String] = ["archer_tower", "spirit_tower", "ballista"]
 	for index in pad_list.size():
 		_battle.tower_manager.build(pad_list[index], tower_ids[index % 3])
 	_battle.tower_manager.upgrade(pad_list[0].tower)

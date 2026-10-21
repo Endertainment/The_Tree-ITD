@@ -21,12 +21,15 @@ const BETWEEN_PREP_SECONDS := 6.0
 const MAX_ALIVE := 70
 const MAX_CALL_BONUS := 10
 const BOSS_ID := "orc_warlord"
+const AIRSHIP_ID := "orc_airship"
 ## Loaded in `setup()` instead of `preload`: WaveManager -> Boss -> Enemy ->
 ## Battle -> WaveManager is a script cycle, and a cyclic preload can yield an
 ## empty script when the battle scene is loaded outside the editor.
 const BOSS_SCENE_PATH := "res://scenes/battle/Boss.tscn"
+const AIRSHIP_SCENE_PATH := "res://scenes/battle/Airship.tscn"
 
 var _boss_scene: PackedScene
+var _airship_scene: PackedScene
 
 var _state := State.IDLE
 var _wave := 0
@@ -53,6 +56,7 @@ func setup(pool: EnemyPool, battle: Battle) -> void:
 	_pool = pool
 	_battle = battle
 	_boss_scene = load(BOSS_SCENE_PATH) as PackedScene
+	_airship_scene = load(AIRSHIP_SCENE_PATH) as PackedScene
 	_table = ConfigDB.get_wave_table("main")
 	if _table == null:
 		push_warning("[WaveManager] no authored wave table, using procedural waves")
@@ -241,7 +245,7 @@ func _build_procedural(wave: int) -> void:
 	for index in count:
 		_spawn_queue.append({
 			"time": float(index) * interval,
-			"enemy_id": _pick_enemy_id(),
+			"enemy_id": _pick_enemy_id(wave),
 			"hp_mult": scaling["hp_mult"],
 			"speed_mult": scaling["speed_mult"],
 			"coin_mult": scaling["coin_mult"],
@@ -253,7 +257,8 @@ func _build_boss_wave(wave: int) -> void:
 	_spawn_cursor = 0
 	_boss_index = WaveRules.boss_index_for_wave(wave)
 	var scaling := WaveRules.scaling_for_wave(wave, _authored_max)
-	for entry: Dictionary in WaveRules.boss_wave_entries():
+	var boss_id := WaveRules.boss_id_for(_boss_index)
+	for entry: Dictionary in WaveRules.boss_wave_entries(boss_id):
 		var is_boss := bool(entry.get("is_boss", false))
 		_spawn_queue.append({
 			"time": float(entry.get("time", 0.0)),
@@ -268,13 +273,63 @@ func _build_boss_wave(wave: int) -> void:
 	_spawn_queue.sort_custom(_sort_by_time)
 
 
-func _pick_enemy_id() -> String:
+func _pick_enemy_id(wave: int) -> String:
 	var roll := _rng.randf()
-	if roll < 0.15:
-		return "orc_brute"
-	if roll < 0.45:
+	# New archetypes join the procedural pool in tiers, so early waves stay
+	# readable and the late game mixes ranged, support and siege units.
+	if wave < 12:
+		if roll < 0.50:
+			return "orc_grunt"
+		if roll < 0.80:
+			return "orc_runner"
+		if roll < 0.92:
+			return "orc_brute"
+		return "orc_thrower"
+	if wave < 16:
+		if roll < 0.35:
+			return "orc_grunt"
+		if roll < 0.55:
+			return "orc_runner"
+		if roll < 0.68:
+			return "orc_brute"
+		if roll < 0.82:
+			return "orc_thrower"
+		if roll < 0.92:
+			return "orc_raider"
+		return "orc_mage"
+	if wave < 22:
+		if roll < 0.28:
+			return "orc_grunt"
+		if roll < 0.45:
+			return "orc_runner"
+		if roll < 0.56:
+			return "orc_brute"
+		if roll < 0.68:
+			return "orc_thrower"
+		if roll < 0.78:
+			return "orc_raider"
+		if roll < 0.88:
+			return "orc_mage"
+		return "orc_shaman"
+	if roll < 0.20:
+		return "orc_grunt"
+	if roll < 0.34:
 		return "orc_runner"
-	return "orc_grunt"
+	if roll < 0.44:
+		return "orc_brute"
+	if roll < 0.56:
+		return "orc_thrower"
+	if roll < 0.66:
+		return "orc_raider"
+	if roll < 0.74:
+		return "orc_mage"
+	if roll < 0.82:
+		return "orc_shaman"
+	if roll < 0.92:
+		return "wyvern_rider"
+	if roll < 0.97:
+		return "orc_ram"
+	return "orc_trebuchet"
 
 
 func _spawn_due() -> void:
@@ -311,8 +366,10 @@ func _spawn_entry(entry: Dictionary) -> void:
 func _spawn_boss(enemy_data: EnemyData, spawn_position: Vector2, entry: Dictionary) -> void:
 	if _pool == null:
 		return
-	_spawn_modifiers["boss_index"] = int(entry.get("boss_index", 1))
-	var boss := _pool.spawn_custom(_boss_scene, enemy_data, spawn_position, _spawn_modifiers) as Boss
+	var boss_index := int(entry.get("boss_index", 1))
+	_spawn_modifiers["boss_index"] = boss_index
+	var boss_scene := _airship_scene if WaveRules.uses_airship(boss_index) else _boss_scene
+	var boss := _pool.spawn_custom(boss_scene, enemy_data, spawn_position, _spawn_modifiers) as Boss
 	if boss == null:
 		push_warning("[WaveManager] boss spawn failed")
 		return
