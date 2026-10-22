@@ -1,6 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://bo82txkp7sksd"]
 
-[ext_resource type="Script" path="res://scripts/ui/toast.gd" id="1_toast"]
+[ext_resource type="Script" uid="uid://f8lp3coxrp3v" path="res://scripts/ui/toast.gd" id="1_toast"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toast"]
 content_margin_left = 28.0
@@ -18,11 +18,11 @@ corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 
-[node name="Toast" type="CanvasLayer"]
+[node name="Toast" type="CanvasLayer" unique_id=1394550386]
 layer = 64
 script = ExtResource("1_toast")
 
-[node name="Root" type="MarginContainer" parent="."]
+[node name="Root" type="MarginContainer" parent="." unique_id=2059858437]
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 40.0
@@ -32,16 +32,15 @@ offset_bottom = 340.0
 grow_horizontal = 2
 mouse_filter = 2
 
-[node name="Panel" type="PanelContainer" parent="Root"]
+[node name="Panel" type="PanelContainer" parent="Root" unique_id=810035750]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_toast")
 
-[node name="Message" type="Label" parent="Root/Panel"]
+[node name="Message" type="Label" parent="Root/Panel" unique_id=1956495725]
 unique_name_in_owner = true
 layout_mode = 2
-text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3

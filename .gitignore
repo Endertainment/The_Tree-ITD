@@ -2,6 +2,8 @@
 .godot/
 *.translation
 
+.vscode/
+
 # Editor / OS noise
 .DS_Store
 Thumbs.db

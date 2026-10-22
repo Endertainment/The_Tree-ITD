@@ -22,20 +22,32 @@ const SCENE_SEED := 20261019
 const GROUND_TEXTURE_PATH := "res://assets/art/battle/arena_ground.png"
 const GROUND_TEXTURE_SEGMENTS := 96
 
+## Optional full-screen battle backdrop drawn behind the arena (sky, distant
+## forest, ...). Any aspect ratio works: it is scaled to cover the viewport and
+## the overflow is cropped. Delete the file to get the flat dark background.
+const BACKGROUND_TEXTURE_PATH := "res://assets/art/battle/battle_background.png"
+
 ## Assigned automatically from `GROUND_TEXTURE_PATH` when the file exists; the
 ## export lets a different texture be set per instance in the inspector.
 @export var ground_texture: Texture2D
+## Assigned automatically from `BACKGROUND_TEXTURE_PATH` when it exists.
+@export var background_texture: Texture2D
 
 
 func _ready() -> void:
 	if ground_texture == null and ResourceLoader.exists(GROUND_TEXTURE_PATH):
 		ground_texture = load(GROUND_TEXTURE_PATH) as Texture2D
+	if background_texture == null and ResourceLoader.exists(BACKGROUND_TEXTURE_PATH):
+		background_texture = load(BACKGROUND_TEXTURE_PATH) as Texture2D
 	queue_redraw()
 
 
 func _draw() -> void:
 	var view_size := get_viewport_rect().size
-	draw_rect(Rect2(Vector2.ZERO, view_size), BACKGROUND)
+	if background_texture != null:
+		_draw_background_texture(view_size)
+	else:
+		draw_rect(Rect2(Vector2.ZERO, view_size), BACKGROUND)
 
 	if ground_texture != null:
 		_draw_ground_texture()
@@ -51,12 +63,24 @@ func _draw() -> void:
 	draw_arc(Battle.CENTER, Battle.ARENA_RADIUS - 10.0, 0.0, TAU, 96, Color(0.95, 0.76, 0.31, 0.22), 2.0, true)
 
 
+## Scales the backdrop to cover the viewport, centred, cropping the overflow.
+func _draw_background_texture(view_size: Vector2) -> void:
+	var texture_size := background_texture.get_size()
+	var scale := maxf(view_size.x / texture_size.x, view_size.y / texture_size.y)
+	var draw_size := texture_size * scale
+	var top_left := (view_size - draw_size) * 0.5
+	draw_texture_rect(background_texture, Rect2(top_left, draw_size), false)
+
+
 ## Maps the texture onto the playfield circle with a triangle fan, so square
 ## artwork never shows its corners outside the arena.
 func _draw_ground_texture() -> void:
 	var texture_size := ground_texture.get_size()
 	var side := minf(texture_size.x, texture_size.y)
-	var uv_origin := (texture_size - Vector2(side, side)) * 0.5
+	# `draw_polygon` UVs are normalised (0..1), not texture pixels. The centre
+	# square of a non-square image is mapped to the circle.
+	var uv_scale := Vector2(side, side) / texture_size
+	var uv_origin := (texture_size - Vector2(side, side)) * 0.5 / texture_size
 
 	var points := PackedVector2Array()
 	var uvs := PackedVector2Array()
@@ -66,7 +90,7 @@ func _draw_ground_texture() -> void:
 		var angle := TAU * float(index) / float(GROUND_TEXTURE_SEGMENTS)
 		var direction := Vector2(cos(angle), sin(angle))
 		points[index] = Battle.CENTER + direction * Battle.ARENA_RADIUS
-		uvs[index] = uv_origin + (direction * 0.5 + Vector2(0.5, 0.5)) * side
+		uvs[index] = uv_origin + (direction * 0.5 + Vector2(0.5, 0.5)) * uv_scale
 
 	var colors := PackedColorArray()
 	colors.resize(GROUND_TEXTURE_SEGMENTS)

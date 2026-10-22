@@ -1,17 +1,17 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene format=3 uid="uid://ca0sxbmov2ns6"]
 
-[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
-[ext_resource type="PackedScene" path="res://ui/Toast.tscn" id="2_toast"]
+[ext_resource type="Script" uid="uid://db6i7pjem54dr" path="res://scripts/ui/main_menu.gd" id="1_menu"]
+[ext_resource type="PackedScene" uid="uid://bo82txkp7sksd" path="res://ui/Toast.tscn" id="2_toast"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ModalSheet.tscn" id="3_modal"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/tab_home.svg" id="4_home"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/tab_upgrades.svg" id="5_upgrades"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/tab_cards.svg" id="6_cards"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/tab_missions.svg" id="7_missions"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/tab_shop.svg" id="8_shop"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/tab_settings.svg" id="9_settings"]
-[ext_resource type="Script" path="res://scripts/ui/safe_area.gd" id="10_safe"]
+[ext_resource type="Texture2D" uid="uid://eg0k66n6er68" path="res://assets/art/ui/tab_home.svg" id="4_home"]
+[ext_resource type="Texture2D" uid="uid://btrne3s66w4yr" path="res://assets/art/ui/tab_upgrades.svg" id="5_upgrades"]
+[ext_resource type="Texture2D" uid="uid://desq88v4hrls7" path="res://assets/art/ui/tab_cards.svg" id="6_cards"]
+[ext_resource type="Texture2D" uid="uid://fxsqrc13pyin" path="res://assets/art/ui/tab_missions.svg" id="7_missions"]
+[ext_resource type="Texture2D" uid="uid://bx06w8lq2jbk0" path="res://assets/art/ui/tab_shop.svg" id="8_shop"]
+[ext_resource type="Texture2D" uid="uid://c6bx5574jrne4" path="res://assets/art/ui/tab_settings.svg" id="9_settings"]
+[ext_resource type="Script" uid="uid://calgov0f502oc" path="res://scripts/ui/safe_area.gd" id="10_safe"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=408981448]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,7 +20,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_menu")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=42794674]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,9 +30,8 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.086275, 0.117647, 0.090196, 1)
 
-[node name="SafeArea" type="MarginContainer" parent="."]
+[node name="SafeArea" type="MarginContainer" parent="." unique_id=1529934721]
 unique_name_in_owner = true
-script = ExtResource("10_safe")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -43,49 +42,46 @@ theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 12
+script = ExtResource("10_safe")
 
-[node name="Column" type="VBoxContainer" parent="SafeArea"]
+[node name="Column" type="VBoxContainer" parent="SafeArea" unique_id=1673385314]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="TopBar" type="HBoxContainer" parent="SafeArea/Column"]
-layout_mode = 2
+[node name="TopBar" type="HBoxContainer" parent="SafeArea/Column" unique_id=254490337]
 custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="GoldLabel" type="Label" parent="SafeArea/Column/TopBar"]
+[node name="GoldLabel" type="Label" parent="SafeArea/Column/TopBar" unique_id=244449799]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = ""
 vertical_alignment = 1
 
-[node name="GemsLabel" type="Label" parent="SafeArea/Column/TopBar"]
+[node name="GemsLabel" type="Label" parent="SafeArea/Column/TopBar" unique_id=599899949]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = ""
 vertical_alignment = 1
 
-[node name="ElfLabel" type="Label" parent="SafeArea/Column/TopBar"]
+[node name="ElfLabel" type="Label" parent="SafeArea/Column/TopBar" unique_id=1339185113]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = ""
 vertical_alignment = 1
 
-[node name="BestLabel" type="Label" parent="SafeArea/Column/TopBar"]
+[node name="BestLabel" type="Label" parent="SafeArea/Column/TopBar" unique_id=1285174575]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
-text = ""
 vertical_alignment = 1
 
-[node name="Spacer" type="Control" parent="SafeArea/Column/TopBar"]
+[node name="Spacer" type="Control" parent="SafeArea/Column/TopBar" unique_id=1293635245]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BattleShortcut" type="Button" parent="SafeArea/Column/TopBar"]
+[node name="BattleShortcut" type="Button" parent="SafeArea/Column/TopBar" unique_id=1754933592]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(120, 88)
 layout_mode = 2
@@ -93,19 +89,19 @@ size_flags_vertical = 4
 theme_type_variation = &"RowButton"
 text = "MENU_BATTLE"
 
-[node name="ScreenHost" type="Control" parent="SafeArea/Column"]
+[node name="ScreenHost" type="Control" parent="SafeArea/Column" unique_id=1170276683]
 unique_name_in_owner = true
+clip_contents = true
 layout_mode = 2
 size_flags_vertical = 3
-clip_contents = true
 
-[node name="TabBar" type="HBoxContainer" parent="SafeArea/Column"]
+[node name="TabBar" type="HBoxContainer" parent="SafeArea/Column" unique_id=1870325291]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 112)
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="TabHome" type="Button" parent="SafeArea/Column/TabBar"]
+[node name="TabHome" type="Button" parent="SafeArea/Column/TabBar" unique_id=1352678193]
 custom_minimum_size = Vector2(0, 112)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -113,7 +109,7 @@ theme_type_variation = &"TabButton"
 toggle_mode = true
 button_pressed = true
 
-[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabHome"]
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabHome" unique_id=802164915]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -124,7 +120,7 @@ mouse_filter = 2
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabHome/Stack"]
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabHome/Stack" unique_id=1786012094]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -133,20 +129,20 @@ texture = ExtResource("4_home")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabHome/Stack"]
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabHome/Stack" unique_id=2107152419]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
 text = "TAB_HOME"
 horizontal_alignment = 1
 
-[node name="TabUpgrades" type="Button" parent="SafeArea/Column/TabBar"]
+[node name="TabUpgrades" type="Button" parent="SafeArea/Column/TabBar" unique_id=1228336949]
 custom_minimum_size = Vector2(0, 112)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TabButton"
 toggle_mode = true
 
-[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabUpgrades"]
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabUpgrades" unique_id=1919990011]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -157,7 +153,7 @@ mouse_filter = 2
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabUpgrades/Stack"]
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabUpgrades/Stack" unique_id=545670449]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -166,20 +162,20 @@ texture = ExtResource("5_upgrades")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabUpgrades/Stack"]
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabUpgrades/Stack" unique_id=72173438]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
 text = "HUD_UPGRADES"
 horizontal_alignment = 1
 
-[node name="TabCards" type="Button" parent="SafeArea/Column/TabBar"]
+[node name="TabCards" type="Button" parent="SafeArea/Column/TabBar" unique_id=960313998]
 custom_minimum_size = Vector2(0, 112)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TabButton"
 toggle_mode = true
 
-[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabCards"]
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabCards" unique_id=1319751309]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -190,7 +186,7 @@ mouse_filter = 2
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabCards/Stack"]
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabCards/Stack" unique_id=1196032]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -199,20 +195,20 @@ texture = ExtResource("6_cards")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabCards/Stack"]
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabCards/Stack" unique_id=460129417]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
 text = "TAB_CARDS"
 horizontal_alignment = 1
 
-[node name="TabMissions" type="Button" parent="SafeArea/Column/TabBar"]
+[node name="TabMissions" type="Button" parent="SafeArea/Column/TabBar" unique_id=813160061]
 custom_minimum_size = Vector2(0, 112)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TabButton"
 toggle_mode = true
 
-[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabMissions"]
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabMissions" unique_id=1407557776]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -223,7 +219,7 @@ mouse_filter = 2
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabMissions/Stack"]
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabMissions/Stack" unique_id=958093251]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -232,20 +228,20 @@ texture = ExtResource("7_missions")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabMissions/Stack"]
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabMissions/Stack" unique_id=741299126]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
 text = "TAB_MISSIONS"
 horizontal_alignment = 1
 
-[node name="TabShop" type="Button" parent="SafeArea/Column/TabBar"]
+[node name="TabShop" type="Button" parent="SafeArea/Column/TabBar" unique_id=1108101552]
 custom_minimum_size = Vector2(0, 112)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TabButton"
 toggle_mode = true
 
-[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabShop"]
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabShop" unique_id=1919289109]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -256,7 +252,7 @@ mouse_filter = 2
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabShop/Stack"]
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabShop/Stack" unique_id=825646913]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -265,20 +261,20 @@ texture = ExtResource("8_shop")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabShop/Stack"]
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabShop/Stack" unique_id=1899855771]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
 text = "TAB_SHOP"
 horizontal_alignment = 1
 
-[node name="TabSettings" type="Button" parent="SafeArea/Column/TabBar"]
+[node name="TabSettings" type="Button" parent="SafeArea/Column/TabBar" unique_id=805359927]
 custom_minimum_size = Vector2(0, 112)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TabButton"
 toggle_mode = true
 
-[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabSettings"]
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Column/TabBar/TabSettings" unique_id=29981679]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -289,7 +285,7 @@ mouse_filter = 2
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabSettings/Stack"]
+[node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabSettings/Stack" unique_id=1091441470]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -298,14 +294,15 @@ texture = ExtResource("9_settings")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabSettings/Stack"]
+[node name="Label" type="Label" parent="SafeArea/Column/TabBar/TabSettings/Stack" unique_id=1587762538]
 layout_mode = 2
 theme_type_variation = &"TabLabel"
 text = "PAUSE_SETTINGS"
 horizontal_alignment = 1
 
-[node name="Modal" parent="." instance=ExtResource("3_modal")]
+[node name="Modal" parent="." unique_id=429738403 instance=ExtResource("3_modal")]
 unique_name_in_owner = true
+layout_mode = 1
 
-[node name="Toast" parent="." instance=ExtResource("2_toast")]
+[node name="Toast" parent="." unique_id=19270023 instance=ExtResource("2_toast")]
 unique_name_in_owner = true

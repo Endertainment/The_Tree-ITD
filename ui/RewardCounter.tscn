@@ -1,22 +1,21 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://cqihkhvscpek4"]
 
-[ext_resource type="Script" path="res://scripts/ui/reward_counter.gd" id="1_counter"]
+[ext_resource type="Script" uid="uid://bfk5freilmnci" path="res://scripts/ui/reward_counter.gd" id="1_counter"]
 
-[node name="RewardCounter" type="VBoxContainer"]
+[node name="RewardCounter" type="VBoxContainer" unique_id=879110414]
 size_flags_horizontal = 3
 theme_override_constants/separation = 2
 script = ExtResource("1_counter")
 
-[node name="Caption" type="Label" parent="."]
+[node name="Caption" type="Label" parent="." unique_id=372791582]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudSmall"
 text = "CURRENCY_GOLD"
 horizontal_alignment = 1
 
-[node name="Value" type="Label" parent="."]
+[node name="Value" type="Label" parent="." unique_id=1019078150]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HudValue"
-text = ""
 horizontal_alignment = 1

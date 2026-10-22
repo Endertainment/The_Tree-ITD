@@ -91,8 +91,10 @@ var _speed_before_defeat := 1.0
 
 
 func _ready() -> void:
+	_apply_battle_background()
 	# A run has its own track; without `battle_theme` the menu music stops and
 	# the run stays SFX-only.
+
 	AudioManager.play_battle_music(0.8)
 	rng.randomize()
 	_archer_scene = load(ARCHER_SCENE_PATH) as PackedScene
@@ -893,3 +895,24 @@ func _on_tower_focus_requested(tower: Tower) -> void:
 
 func _on_tower_built(_tower_id: String) -> void:
 	_refresh_tower_hud()
+
+const BATTLE_BACKGROUND_PATH := "res://assets/art/battle/battle_background.png"
+
+func _apply_battle_background() -> void:	
+	var texture := ArtLibrary.texture(BATTLE_BACKGROUND_PATH)
+	if texture == null:
+		return
+	var background := TextureRect.new()
+	background.name = "ArtBackground"
+	background.texture = texture
+	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(background)
+	move_child(background, 0)
+	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var flat := get_node_or_null("Background") as ColorRect
+	
+	if flat != null:
+		flat.visible = false
+	

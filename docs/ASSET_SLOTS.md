@@ -132,6 +132,7 @@ the 1080×1920 design scale — export at 1.5–2× and power-of-two.
 
 | Slot | File | Suggested | Notes |
 |---|---|---|---|
+| Battle background | `battle/battle_background.png` | 1080×1920 | full-screen backdrop behind the arena; scaled to cover, cropped if the aspect differs |
 | Arena ground | `battle/arena_ground.png` | 1024² | mapped into the 500 px playfield circle |
 | Tree | `tree/tree_body.png` | 512² | pivot at the trunk base; `art_offset` on Core (default `(0,-96)`) |
 | Orcs | `enemies/orc_grunt.png`, `orc_runner.png`, `orc_brute.png`, `orc_warlord.png` | 128²–384² | drawn 2.8× the body radius, centred on the body |
