@@ -76,6 +76,13 @@ theme_type_variation = &"HudSmall"
 text = ""
 horizontal_alignment = 1
 
+[node name="WaveUnitsLabel" type="Label" parent="TopSafe/TopBar/CenterBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudSmall"
+text = ""
+horizontal_alignment = 1
+
 [node name="RightBox" type="HBoxContainer" parent="TopSafe/TopBar"]
 layout_mode = 2
 theme_override_constants/separation = 12

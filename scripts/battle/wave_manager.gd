@@ -33,6 +33,8 @@ var _airship_scene: PackedScene
 
 var _state := State.IDLE
 var _wave := 0
+## Planned enemy count of the current wave, for the HUD counter.
+var _wave_total := 0
 var _cleared := 0
 var _prep_remaining := 0.0
 var _wave_time := 0.0
@@ -129,6 +131,19 @@ func get_wave() -> int:
 	return _wave
 
 
+## Enemies planned for the current wave: boss and escorts included.
+func get_wave_total() -> int:
+	return _wave_total
+
+
+## Enemies still to kill: queued plus alive. Boss summons can push this above
+## the planned total, so clamp it when displaying.
+func get_wave_remaining() -> int:
+	var queued := maxi(0, _spawn_queue.size() - _spawn_cursor)
+	var alive := _pool.count_present() if _pool != null else 0
+	return queued + alive
+
+
 ## Number of fully cleared waves.
 func get_cleared_waves() -> int:
 	return _cleared
@@ -195,6 +210,7 @@ func _begin_wave() -> void:
 		_build_boss_wave(_wave)
 	else:
 		_build_queue(_wave)
+	_wave_total = _spawn_queue.size()
 	_set_state(State.SPAWNING)
 	EventBus.wave_started.emit(_wave)
 	wave_announced.emit(_wave, _wave_modifier)

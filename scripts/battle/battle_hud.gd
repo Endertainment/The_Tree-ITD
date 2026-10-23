@@ -29,6 +29,7 @@ const DEBUG_REFRESH_SECONDS := 0.25
 @onready var _hp_bar: ProgressBar = %HpBar
 @onready var _wave_label: Label = %WaveLabel
 @onready var _timer_label: Label = %TimerLabel
+@onready var _wave_units: Label = %WaveUnitsLabel
 @onready var _coins_caption: Label = %CoinsCaption
 @onready var _coins_label: Label = %CoinsLabel
 @onready var _speed_button: SpeedButton = %SpeedButton
@@ -65,6 +66,7 @@ var _vignette_tween: Tween
 var _last_state := -1
 var _last_prep_second := -1
 var _last_bonus := -1
+var _last_units_text := ""
 var _debug_accum := 0.0
 var _banner_tween: Tween
 var _coin_tween: Tween
@@ -301,6 +303,18 @@ func _process(delta: float) -> void:
 		if bonus != _last_bonus:
 			_last_bonus = bonus
 			_call_button.text = Loc.t_key("HUD_CALL_WAVE_BONUS", {"bonus": bonus})
+
+	# Live "remaining / total" counter for the current wave.
+	if _waves.is_preparing():
+		_wave_units.visible = false
+	else:
+		var total := _waves.get_wave_total()
+		var remaining := mini(_waves.get_wave_remaining(), total)
+		var units := "%d / %d" % [remaining, total]
+		if units != _last_units_text:
+			_last_units_text = units
+			_wave_units.text = units
+		_wave_units.visible = total > 0
 
 
 func _refresh_wave_state() -> void:

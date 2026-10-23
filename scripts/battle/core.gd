@@ -12,9 +12,6 @@ signal died
 signal damage_taken(amount: float)
 
 const BODY_RADIUS := 90.0
-const HP_BAR_WIDTH := 240.0
-const HP_BAR_HEIGHT := 20.0
-const HP_BAR_TOP := Vector2(-120.0, -232.0)
 const SHAKE_SECONDS := 0.12
 const SHAKE_DISTANCE := 4.0
 const REGEN_TICK := 0.25
@@ -226,7 +223,6 @@ func _draw() -> void:
 		var rect := Rect2(art_offset - texture_size * 0.5, texture_size)
 		var tint := Color.WHITE.lerp(Color(1.0, 0.45, 0.35), _flash * 0.7)
 		draw_texture_rect(body_texture, rect, false, tint)
-		_draw_health_bar()
 		if _invuln > 0.0:
 			_draw_shield()
 		return
@@ -257,7 +253,6 @@ func _draw() -> void:
 	draw_circle(Vector2(44.0, -128.0), 13.0, leaf_light.lightened(0.14))
 	draw_circle(Vector2(6.0, -78.0), 11.0, leaf_light.lightened(0.2))
 
-	_draw_health_bar()
 	if _invuln > 0.0:
 		_draw_shield()
 
@@ -277,21 +272,3 @@ func _draw_shield() -> void:
 	)
 
 
-func _draw_health_bar() -> void:
-	var ratio := 0.0
-	if max_hp > 0.0:
-		ratio = clampf(_display_hp / max_hp, 0.0, 1.0)
-
-	draw_rect(Rect2(HP_BAR_TOP, Vector2(HP_BAR_WIDTH, HP_BAR_HEIGHT)), Color(0.04, 0.06, 0.04, 0.85))
-	if ratio > 0.0:
-		var fill_color := Color("#7ec850").lerp(Color("#d95c4a"), 1.0 - ratio)
-		draw_rect(
-			Rect2(HP_BAR_TOP + Vector2(3.0, 3.0), Vector2((HP_BAR_WIDTH - 6.0) * ratio, HP_BAR_HEIGHT - 6.0)),
-			fill_color
-		)
-	draw_rect(
-		Rect2(HP_BAR_TOP, Vector2(HP_BAR_WIDTH, HP_BAR_HEIGHT)),
-		Color("#e8d9a8"),
-		false,
-		2.0
-	)

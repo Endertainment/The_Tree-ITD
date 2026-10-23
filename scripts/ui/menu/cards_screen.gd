@@ -62,7 +62,7 @@ func _confirm_unlock(card: CardData) -> void:
 			"name": Loc.t_key(card.name_key),
 			"cost": Loc.format_number(cost),
 		}),
-		"CARDS_UNLOCK",
+		Loc.t_key("CARDS_UNLOCK", {"cost": Loc.format_number(cost)}),
 		"COMMON_CANCEL",
 		func() -> void:
 			if not GameState.spend_gems(cost):

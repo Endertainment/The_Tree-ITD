@@ -57,6 +57,12 @@ func _ready() -> void:
 	_tab_buttons[1].pressed.connect(_on_tab_pressed.bind(TAB_ARCHERS))
 	_tab_buttons[2].pressed.connect(_on_tab_pressed.bind(TAB_TOWERS))
 	_build_rows()
+	# The tower list lives inside the scroll area, so building towers scrolls
+	# instead of making the sheet taller.
+	var rows := $Panel/Column/Scroll/Rows as VBoxContainer
+	if rows != null:
+		_towers_box.reparent(rows)
+		_towers_empty.reparent(rows)
 
 
 ## Shows the sheet for the current run.
