@@ -39,16 +39,40 @@ func _ready() -> void:
 		ground_texture = load(GROUND_TEXTURE_PATH) as Texture2D
 	if background_texture == null and ResourceLoader.exists(BACKGROUND_TEXTURE_PATH):
 		background_texture = load(BACKGROUND_TEXTURE_PATH) as Texture2D
+	_build_background_layer()
 	queue_redraw()
 
 
-func _draw() -> void:
-	var view_size := get_viewport_rect().size
-	if background_texture != null:
-		_draw_background_texture(view_size)
-	else:
-		draw_rect(Rect2(Vector2.ZERO, view_size), BACKGROUND)
+## The battle camera sits at (540, 960), so a world-space backdrop starting at
+## y = 0 leaves the top strip uncovered. The backdrop therefore lives on its own
+## CanvasLayer behind everything and always fills the screen.
+func _build_background_layer() -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "BackgroundLayer"
+	layer.layer = -1
+	add_child(layer)
 
+	var backdrop := ColorRect.new()
+	backdrop.name = "Backdrop"
+	backdrop.color = BACKGROUND
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(backdrop)
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	if background_texture == null:
+		return
+	var image := TextureRect.new()
+	image.name = "BackgroundImage"
+	image.texture = background_texture
+	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(image)
+	image.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+
+func _draw() -> void:
+	# The backdrop is a screen-space CanvasLayer (see `_build_background_layer`).
 	if ground_texture != null:
 		_draw_ground_texture()
 	else:
@@ -62,14 +86,6 @@ func _draw() -> void:
 	draw_arc(Battle.CENTER, Battle.ARENA_RADIUS, 0.0, TAU, 96, BOUNDARY, 6.0, true)
 	draw_arc(Battle.CENTER, Battle.ARENA_RADIUS - 10.0, 0.0, TAU, 96, Color(0.95, 0.76, 0.31, 0.22), 2.0, true)
 
-
-## Scales the backdrop to cover the viewport, centred, cropping the overflow.
-func _draw_background_texture(view_size: Vector2) -> void:
-	var texture_size := background_texture.get_size()
-	var scale := maxf(view_size.x / texture_size.x, view_size.y / texture_size.y)
-	var draw_size := texture_size * scale
-	var top_left := (view_size - draw_size) * 0.5
-	draw_texture_rect(background_texture, Rect2(top_left, draw_size), false)
 
 
 ## Maps the texture onto the playfield circle with a triangle fan, so square

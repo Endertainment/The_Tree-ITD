@@ -126,22 +126,17 @@ func _result_tab_state() -> void:
 	_fit_panel_height()
 
 
-## Sizes the sheet to its content: two rows for TREE, four for ARCHERS, the
-## scroll cap for TOWERS. Keeps the sheet from floating with a large empty area.
+## Every tab uses the same sheet height, so switching between TREE, ARCHERS and
+## TOWERS never makes the panel jump. The scroll area takes the rest.
+const TAB_SCROLL_HEIGHT := 620.0
+
+
 func _fit_panel_height() -> void:
 	if not is_node_ready():
 		return
-	var visible_rows := 0
-	for row: UpgradeRow in _rows:
-		if row.visible:
-			visible_rows += 1
-	var rows_height := 320.0
-	if _tab == TAB_TOWERS:
-		rows_height = 620.0
-	elif visible_rows > 0:
-		rows_height = clampf(float(visible_rows) * 158.0 + 16.0, 320.0, 620.0)
-	_scroll.custom_minimum_size.y = rows_height
-	_panel.offset_top = -(rows_height + 400.0)
+	_scroll.custom_minimum_size.y = TAB_SCROLL_HEIGHT
+	_panel.offset_top = -(TAB_SCROLL_HEIGHT + 400.0)
+	ScrollFix.apply(self)
 
 
 func _tab_id(index: int) -> String:

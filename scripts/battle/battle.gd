@@ -18,6 +18,7 @@ const DEFEAT_SLOW_MO_SECONDS := 0.4
 const BOSS_SLOW_MO := 0.25
 const BOSS_SLOW_MO_SECONDS := 0.3
 const RESULTS_SCENE := "res://scenes/battle/Results.tscn"
+const SETTINGS_SCENE_PATH := "res://scenes/menu/SettingsScreen.tscn"
 
 const BENCHMARK_SECONDS := 10.0
 const BENCHMARK_ENEMIES := 70
@@ -88,10 +89,11 @@ var _revive_used := false
 var _revive_offered := false
 var _reviving := false
 var _speed_before_defeat := 1.0
+var _settings_overlay: Control = null
 
 
 func _ready() -> void:
-	_apply_battle_background()
+	#_apply_battle_background()
 	# A run has its own track; without `battle_theme` the menu music stops and
 	# the run stays SFX-only.
 
@@ -382,6 +384,7 @@ func end_run(reason: StringName) -> void:
 	if _ended:
 		return
 	_ended = true
+	_close_settings()
 	_revive_offered = false
 	close_sheet()
 	hud.hide_revive_prompt()
@@ -555,6 +558,9 @@ func _handle_back() -> void:
 	if now - _last_back_msec < BACK_DEBOUNCE_MS:
 		return
 	_last_back_msec = now
+	if _settings_overlay != null and _settings_overlay.visible:
+		_close_settings()
+		return
 	if hud.is_quit_confirm_visible() or hud.is_pause_visible():
 		hud.handle_back()
 		return
@@ -705,8 +711,79 @@ func _on_upgrades() -> void:
 	open_upgrades()
 
 
+## Opens the real settings screen over the paused battle. The menu-only actions
+## (reset progress, privacy link, replay tutorial) are hidden inside a run.
 func _on_settings() -> void:
-	_toast.show_message(Loc.t_key("PAUSE_SETTINGS_SOON"))
+	if _settings_overlay == null:
+		_build_settings_overlay()
+	if _settings_overlay == null:
+		_toast.show_message(Loc.t_key("PAUSE_SETTINGS_SOON"))
+		return
+	_settings_overlay.visible = true
+	if _settings_overlay.has_method("refresh"):
+		_settings_overlay.refresh()
+	ScrollFix.apply(_settings_overlay)
+
+
+func _build_settings_overlay() -> void:
+	var packed := load(SETTINGS_SCENE_PATH) as PackedScene
+	if packed == null:
+		return
+	var overlay := packed.instantiate() as Control
+	if overlay == null:
+		return
+	overlay.name = "BattleSettings"
+	overlay.process_mode = Node.PROCESS_MODE_ALWAYS
+	hud.add_child(overlay)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	# The menu shell normally supplies the background; here the battle would
+	# show through, so paint an opaque backdrop and keep the notch clear.
+	var backdrop := ColorRect.new()
+	backdrop.color = Color("#101a12")
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.add_child(backdrop)
+	overlay.move_child(backdrop, 0)
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.offset_top = _safe_top_padding()
+
+	# Actions that need the menu shell (reset, privacy, replay) are hidden;
+	# their cards would otherwise stay as empty boxes.
+	for card_name: String in ["TutorialCard", "ProgressCard"]:
+		var card := overlay.find_child(card_name, true, false) as Control
+		if card != null:
+			card.visible = false
+	var privacy := overlay.find_child("PrivacyButton", true, false) as Control
+	if privacy != null:
+		privacy.visible = false
+
+	var close := Button.new()
+	close.name = "BattleSettingsClose"
+	close.text = Loc.t_key("ICON_CLOSE")
+	close.custom_minimum_size = Vector2(88.0, 88.0)
+	overlay.add_child(close)
+	close.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	close.offset_left = -112.0
+	close.offset_top = 32.0
+	close.offset_right = -24.0
+	close.offset_bottom = 120.0
+	close.pressed.connect(_close_settings)
+	_settings_overlay = overlay
+
+
+## Safe-area top inset in canvas units (the notch on tall phones).
+func _safe_top_padding() -> float:
+	var window_size := DisplayServer.window_get_size()
+	if window_size.y <= 0:
+		return 0.0
+	var safe := DisplayServer.get_display_safe_area()
+	var canvas_height := get_viewport_rect().size.y
+	return maxf(0.0, float(safe.position.y) / float(window_size.y) * canvas_height)
+
+
+func _close_settings() -> void:
+	if _settings_overlay != null:
+		_settings_overlay.visible = false
 
 
 func _on_core_died() -> void:
@@ -896,23 +973,23 @@ func _on_tower_focus_requested(tower: Tower) -> void:
 func _on_tower_built(_tower_id: String) -> void:
 	_refresh_tower_hud()
 
-const BATTLE_BACKGROUND_PATH := "res://assets/art/battle/battle_background.png"
+#const BATTLE_BACKGROUND_PATH := "res://assets/art/battle/battle_background.png"
 
-func _apply_battle_background() -> void:	
-	var texture := ArtLibrary.texture(BATTLE_BACKGROUND_PATH)
-	if texture == null:
-		return
-	var background := TextureRect.new()
-	background.name = "ArtBackground"
-	background.texture = texture
-	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(background)
-	move_child(background, 0)
-	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var flat := get_node_or_null("Background") as ColorRect
+# func _apply_battle_background() -> void:	
+# 	var texture := ArtLibrary.texture(BATTLE_BACKGROUND_PATH)
+# 	if texture == null:
+# 		return
+# 	var background := TextureRect.new()
+# 	background.name = "ArtBackground"
+# 	background.texture = texture
+# 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+# 	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+# 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+# 	add_child(background)
+# 	move_child(background, 0)
+# 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+# 	var flat := get_node_or_null("Background") as ColorRect
 	
-	if flat != null:
-		flat.visible = false
+# 	if flat != null:
+# 		flat.visible = false
 	

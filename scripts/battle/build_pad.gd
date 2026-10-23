@@ -89,7 +89,7 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var stone := Color("#55604c")
-	var glow := Color(0.949, 0.757, 0.306, 0.28 + 0.18 * sin(_pulse))
+	var glow := Color(0.949, 0.757, 0.306, 0.1)#0.28 + 0.18 * sin(_pulse))
 
 	if _pad_texture != null:
 		ArtLibrary.draw_centered(
@@ -103,8 +103,8 @@ func _draw() -> void:
 	if _affordable and not has_tower():
 		draw_arc(Vector2.ZERO, BODY_RADIUS + 5.0, 0.0, TAU, 36, glow, 4.0, true)
 	if not has_tower():
-		draw_line(Vector2(-18.0, 0.0), Vector2(18.0, 0.0), Color("#e8d9a8"), 5.0)
-		draw_line(Vector2(0.0, -18.0), Vector2(0.0, 18.0), Color("#e8d9a8"), 5.0)
+		draw_line(Vector2(-18.0, 0.0), Vector2(18.0, 0.0), Color("e8d9a828"), 5.0)
+		draw_line(Vector2(0.0, -18.0), Vector2(0.0, 18.0), Color("e8d9a828"), 5.0)
 
 	if _selected:
-		draw_arc(Vector2.ZERO, BODY_RADIUS + 10.0, 0.0, TAU, 40, Color("#f2c14e"), 3.0, true)
+		draw_arc(Vector2.ZERO, BODY_RADIUS + 10.0, 0.0, TAU, 40, Color("f2c14ea9"), 3.0, true)

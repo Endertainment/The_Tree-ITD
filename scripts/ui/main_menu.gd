@@ -88,6 +88,7 @@ func select_tab(tab_id: String) -> void:
 	screen.modulate.a = 0.0
 	create_tween().tween_property(screen, "modulate:a", 1.0, FADE_SECONDS)
 	screen.refresh()
+	ScrollFix.apply(screen)
 
 
 ## Shows a non-blocking toast above the tab bar.
@@ -268,6 +269,7 @@ func _on_language_changed(_locale: String) -> void:
 func _refresh_active_screen() -> void:
 	if _active_screen != null:
 		_active_screen.refresh()
+		ScrollFix.apply(_active_screen)
 
 
 func _on_modal_closed() -> void:
