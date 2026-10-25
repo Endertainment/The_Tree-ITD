@@ -256,8 +256,8 @@ func _build_authored(wave: int) -> void:
 
 func _build_procedural(wave: int) -> void:
 	var scaling := WaveRules.scaling_for_wave(wave, _authored_max)
-	var count := maxi(1, roundi((6.0 + float(wave) * 1.4) * _count_multiplier()))
-	var interval := maxf(0.25, 1.1 - 0.02 * float(wave))
+	var count := maxi(1, roundi((5.0 + float(wave) * 1.0) * _count_multiplier()))
+	var interval := maxf(0.55, 1.1 - 0.02 * float(wave))
 	for index in count:
 		_spawn_queue.append({
 			"time": float(index) * interval,
@@ -291,8 +291,9 @@ func _build_boss_wave(wave: int) -> void:
 
 func _pick_enemy_id(wave: int) -> String:
 	var roll := _rng.randf()
-	# New archetypes join the procedural pool in tiers, so early waves stay
-	# readable and the late game mixes ranged, support and siege units.
+	# Archetypes join in tiers; the late units (wyvern, ram, trebuchet) now
+	# appear at 16/18/20 instead of 22+, so a run that passes the old wall
+	# actually meets them.
 	if wave < 12:
 		if roll < 0.50:
 			return "orc_grunt"
@@ -313,7 +314,7 @@ func _pick_enemy_id(wave: int) -> String:
 		if roll < 0.92:
 			return "orc_raider"
 		return "orc_mage"
-	if wave < 22:
+	if wave < 18:
 		if roll < 0.28:
 			return "orc_grunt"
 		if roll < 0.45:
@@ -324,26 +325,46 @@ func _pick_enemy_id(wave: int) -> String:
 			return "orc_thrower"
 		if roll < 0.78:
 			return "orc_raider"
-		if roll < 0.88:
+		if roll < 0.87:
 			return "orc_mage"
-		return "orc_shaman"
+		if roll < 0.94:
+			return "orc_shaman"
+		return "wyvern_rider"
+	if wave < 20:
+		if roll < 0.25:
+			return "orc_grunt"
+		if roll < 0.40:
+			return "orc_runner"
+		if roll < 0.50:
+			return "orc_brute"
+		if roll < 0.61:
+			return "orc_thrower"
+		if roll < 0.71:
+			return "orc_raider"
+		if roll < 0.80:
+			return "orc_mage"
+		if roll < 0.88:
+			return "orc_shaman"
+		if roll < 0.94:
+			return "wyvern_rider"
+		return "orc_ram"
 	if roll < 0.20:
 		return "orc_grunt"
 	if roll < 0.34:
 		return "orc_runner"
-	if roll < 0.44:
+	if roll < 0.43:
 		return "orc_brute"
-	if roll < 0.56:
+	if roll < 0.54:
 		return "orc_thrower"
-	if roll < 0.66:
+	if roll < 0.63:
 		return "orc_raider"
-	if roll < 0.74:
+	if roll < 0.71:
 		return "orc_mage"
-	if roll < 0.82:
+	if roll < 0.78:
 		return "orc_shaman"
-	if roll < 0.92:
+	if roll < 0.86:
 		return "wyvern_rider"
-	if roll < 0.97:
+	if roll < 0.93:
 		return "orc_ram"
 	return "orc_trebuchet"
 

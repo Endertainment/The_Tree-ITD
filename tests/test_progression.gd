@@ -86,18 +86,18 @@ func _run() -> void:
 	upgrades["gold_gain"] = 2
 	upgrades["coin_gain"] = 1
 	var meta_mods := RunModifiers.build(meta)
-	_check(is_equal_approx(meta_mods.tree_hp_mult, 1.1), "tree_hp level 2 is +10%")
-	_check(meta_mods.start_coins_add == 20, "start_coins level 1 adds 20 Coins")
-	_check(is_equal_approx(meta_mods.archer_dmg_mult, 1.2), "archer_dmg level 5 is +20%")
+	_check(is_equal_approx(meta_mods.tree_hp_mult, 1.16), "tree_hp level 2 is +16%")
+	_check(meta_mods.start_coins_add == 30, "start_coins level 1 adds 30 Coins")
+	_check(is_equal_approx(meta_mods.archer_dmg_mult, 1.35), "archer_dmg level 5 is +35%")
 	_check(is_equal_approx(meta_mods.tower_cost_mult, 0.9), "tower_discount level 5 is -10%")
-	_check(is_equal_approx(meta_mods.gold_mult, 1.08), "gold_gain level 2 is +8%")
+	_check(is_equal_approx(meta_mods.gold_mult, 1.12), "gold_gain level 2 is +12%")
 	_check(is_equal_approx(meta_mods.coin_mult, 1.03), "coin_gain level 1 is +3%")
 
 	var meta_stats := RunStats.new()
 	meta_stats.setup(meta_mods)
-	_check(is_equal_approx(meta_stats.max_hp, 1100.0), "meta HP applies before in-run upgrades")
-	_check(meta_stats.start_coins == 140, "meta start Coins apply")
-	_check(is_equal_approx(meta_stats.archer_damage, 14.4), "meta damage applies")
+	_check(is_equal_approx(meta_stats.max_hp, 1160.0), "meta HP applies before in-run upgrades")
+	_check(meta_stats.start_coins == 150, "meta start Coins apply")
+	_check(is_equal_approx(meta_stats.archer_damage, 16.2), "meta damage applies")
 
 	var card := CardData.new()
 	var hp_modifier := StatModifier.new()
@@ -166,7 +166,7 @@ func _run() -> void:
 	_check(is_equal_approx(float(swift.get("speed_mult", 0.0)), 1.25), "swift adds 25% speed")
 	var swarm := WaveRules.spawn_modifiers(WaveRules.Modifier.SWARM)
 	_check(is_equal_approx(float(swarm.get("hp_mult", 0.0)), 0.8), "swarm removes 20% HP")
-	_check(is_equal_approx(WaveRules.count_multiplier(WaveRules.Modifier.SWARM), 1.4), "swarm adds 40% count")
+	_check(is_equal_approx(WaveRules.count_multiplier(WaveRules.Modifier.SWARM), 1.25), "swarm adds 25% count")
 
 	var armored_enemy := _battle.enemy_pool.spawn(
 		ConfigDB.get_enemy("orc_brute"),

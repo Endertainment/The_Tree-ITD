@@ -13,5 +13,5 @@ value_per_level = 0.5
 unit = "flat"
 max_level = 10
 base_cost = 180
-cost_growth = 1.55
+cost_growth = 1.4
 order = 2

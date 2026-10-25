@@ -18,6 +18,6 @@ separation_weight = 0.6
 weave_amplitude = 0.0
 weave_frequency = 2.2
 attack_cooldown = 2.2
-attack_range = 340.0
+attack_range = 320.0
 projectile = "curse_orb"
 shape = "grunt"

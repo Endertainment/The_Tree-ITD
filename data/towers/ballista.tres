@@ -27,6 +27,14 @@ range = 590.0
 projectile_speed = 520.0
 ignores_armor = true
 
+[sub_resource type="Resource" id="Level_4"]
+script = ExtResource("1_level")
+damage = 190.0
+interval = 2.0
+range = 630.0
+projectile_speed = 540.0
+ignores_armor = true
+
 [resource]
 script = ExtResource("2_data")
 id = "ballista"
@@ -38,4 +46,4 @@ silhouette = "ballista"
 projectile = "ballista_bolt"
 base_color = Color(0.419608, 0.290196, 0.168627, 1)
 accent_color = Color(0.721569, 0.752941, 0.784314, 1)
-levels = Array[ExtResource("1_level")]([SubResource("Level_1"), SubResource("Level_2"), SubResource("Level_3")])
+levels = Array[ExtResource("1_level")]([SubResource("Level_1"), SubResource("Level_2"), SubResource("Level_3"), SubResource("Level_4")])

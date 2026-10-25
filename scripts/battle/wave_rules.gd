@@ -97,9 +97,9 @@ static func spawn_modifiers(modifier: Modifier) -> Dictionary:
 			return {}
 
 
-## Extra count multiplier for the wave (Swarm adds 40%).
+## Extra count multiplier for the wave (Swarm adds 25%).
 static func count_multiplier(modifier: Modifier) -> float:
-	return 1.4 if modifier == Modifier.SWARM else 1.0
+	return 1.25 if modifier == Modifier.SWARM else 1.0
 
 
 ## Boss-wave spawn groups. The boss spawns first; escorts follow over ~2 s.
@@ -125,14 +125,15 @@ static func boss_wave_entries(boss_id := WARLORD_ID) -> Array[Dictionary]:
 ## Master scaling for a wave, applied on top of authored/procedural stats.
 ##
 ## Waves 1-`authored_max` are authored and already carry their difficulty, so
-## they get no multiplier. The `1.16`/`1.02`/`1.06` curves then start from the
-## authored strength at wave `authored_max + 1` instead of from wave 1. Without
-## that offset wave 11 jumped straight to `1.16^10` (~4.4x) over wave 9 while
-## player power had grown by a few percent - see `docs/BALANCE_REPORT.md`.
+## they get no multiplier. The `1.12`/`1.02`/`1.08` curves then start from the
+## authored strength at wave `authored_max + 1` instead of from wave 1. The HP
+## slope was 1.16 until the 2026-10-25 autoplay pass: 20 real runs peaked at
+## wave 19 and 15 of them died on 17-18, so the curve outran every tower and
+## meta upgrade the player could buy.
 static func scaling_for_wave(wave: int, authored_max: int = 10) -> Dictionary:
 	var step := maxi(0, wave - authored_max - 1)
 	return {
-		"hp_mult": pow(1.16, float(step)),
+		"hp_mult": pow(1.12, float(step)),
 		"speed_mult": minf(1.4, pow(1.02, float(step))),
-		"coin_mult": pow(1.06, float(step)),
+		"coin_mult": pow(1.08, float(step)),
 	}

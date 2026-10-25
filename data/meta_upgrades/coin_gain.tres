@@ -13,5 +13,5 @@ value_per_level = 0.03
 unit = "percent"
 max_level = 10
 base_cost = 240
-cost_growth = 1.55
+cost_growth = 1.4
 order = 7

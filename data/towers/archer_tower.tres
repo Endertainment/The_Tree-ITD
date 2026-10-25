@@ -23,6 +23,13 @@ interval = 0.8
 range = 500.0
 projectile_speed = 900.0
 
+[sub_resource type="Resource" id="Level_4"]
+script = ExtResource("1_level")
+damage = 50.0
+interval = 0.7
+range = 540.0
+projectile_speed = 900.0
+
 [resource]
 script = ExtResource("2_data")
 id = "archer_tower"
@@ -30,4 +37,4 @@ display_name_key = "TOWER_ARCHER_NAME"
 role_key = "TOWER_ARCHER_ROLE"
 base_color = Color(0.478431, 0.290196, 0.168627, 1)
 accent_color = Color(0.494118, 0.784314, 0.313726, 1)
-levels = Array[ExtResource("1_level")]([SubResource("Level_1"), SubResource("Level_2"), SubResource("Level_3")])
+levels = Array[ExtResource("1_level")]([SubResource("Level_1"), SubResource("Level_2"), SubResource("Level_3"), SubResource("Level_4")])

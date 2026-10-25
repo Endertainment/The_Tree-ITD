@@ -34,7 +34,7 @@ func _run() -> void:
 	_check(tree_hp != null, "tree_hp track loads")
 	if tree_hp != null:
 		_check(tree_hp.cost_for_level(0) == 150, "tree_hp level 1 costs 150")
-		_check(tree_hp.cost_for_level(1) == 235, "tree_hp level 2 costs 235 after rounding")
+		_check(tree_hp.cost_for_level(1) == 210, "tree_hp level 2 costs 210 after rounding")
 		_check(tree_hp.max_level == 10, "tree_hp caps at 10")
 	_check(ConfigDB.get_card("heartwood") != null, "heartwood card loads")
 	_check(ConfigDB.get_mission("daily_kill_orcs") != null, "daily mission loads")
@@ -49,10 +49,10 @@ func _run() -> void:
 		GameState.set_upgrade_level("tree_hp", level + 1)
 	_check(GameState.get_upgrade_level("tree_hp") == 3, "tree_hp reaches level 3")
 	var meta_modifiers := RunModifiers.build(GameState.to_dict())
-	_check(is_equal_approx(meta_modifiers.tree_hp_mult, 1.15), "tree_hp level 3 is +15% HP")
+	_check(is_equal_approx(meta_modifiers.tree_hp_mult, 1.24), "tree_hp level 3 is +24% HP")
 	var meta_stats := RunStats.new()
 	meta_stats.setup(meta_modifiers)
-	_check(is_equal_approx(meta_stats.max_hp, 1150.0), "the next run starts at 1150 Tree HP")
+	_check(is_equal_approx(meta_stats.max_hp, 1240.0), "the next run starts at 1240 Tree HP")
 
 	_section("cards")
 	GameState.from_dict(SaveDefaults.create())
