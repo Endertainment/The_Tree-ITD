@@ -270,5 +270,3 @@ func _draw_shield() -> void:
 		6.0,
 		true
 	)
-
-
