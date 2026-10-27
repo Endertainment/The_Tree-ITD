@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/ui/menu/home_screen.gd" id="1_home"]
 [ext_resource type="PackedScene" path="res://scenes/menu/PreBattle.tscn" id="2_pre"]
+[ext_resource type="Script" path="res://scripts/ui/texture_bar.gd" id="9_tbar"]
 
 [node name="HomeScreen" type="Control"]
 layout_mode = 3
@@ -74,6 +75,8 @@ theme_type_variation = &"HudSmall"
 text = ""
 
 [node name="ElfBar" type="ProgressBar" parent="Scroll/Margin/Content/BestCard/Values"]
+script = ExtResource("9_tbar")
+slot = "profile"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 22)
 layout_mode = 2

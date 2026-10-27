@@ -191,3 +191,17 @@ no texture is larger than 1080×1920.
 When final art arrives: keep textures power-of-two where practical, enable
 **VRAM Compressed** in the import dock, and never ship an uncompressed 4K
 sheet (master §8.3).
+### UI panel, icon and bar slots (stage 9)
+
+| Slot | File | Notes |
+|---|---|---|
+| Panels per context | `ui/panel_<slot>.png` | slots: `card`, `sheet`, `pause`, `results`, `modal`, `toast`, `tower_card`; falls back to `ui/panel.png` |
+| Pause / speed / close icons | `ui/icon_pause.png`, `ui/icon_speed.png`, `ui/icon_close.png` | applied to the pause button, sheets' close buttons |
+| Currency icons | `ui/icon_gold.png`, `ui/icon_gems.png` | shown before the Gold/Gems labels in the menu top bar |
+| Check boxes / switches | `ui/check_on.png`, `ui/check_off.png` | CheckBox and CheckButton, on/off |
+| Slider | `ui/slider_bg.png`, `ui/slider_fill.png`, `ui/slider_grabber.png` | HSlider background, filled part, handle |
+| Bars per context | `ui/bar_<slot>_bg.png`, `ui/bar_<slot>_fill.png` | slots: `hp`, `profile`, `boss`, `mission`, `wave`; falls back to `hp_bar_bg/fill` |
+
+Bars are drawn by `TextureBar` (`scripts/ui/texture_bar.gd`): the fill is **cut** at
+the current ratio, never squeezed. A bar with no art falls back to the themed
+ProgressBar (or a flat bar for the wave bar).

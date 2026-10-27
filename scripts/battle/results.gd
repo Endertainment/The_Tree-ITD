@@ -40,6 +40,7 @@ var _actions_busy := false
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().paused = false
+	UISkin.apply_panel($SafeArea/Center/Card as Control, "results")
 	SpeedService.reset()
 	summary = SceneRouter.consume_payload() as RunSummary
 	if summary == null:

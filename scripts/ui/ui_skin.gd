@@ -1,17 +1,22 @@
 class_name UISkin
 extends RefCounted
-## Optional 9-patch skin for the UI theme.
+## Optional skin for the UI theme.
 ##
 ## Every file is optional: a missing texture leaves the themed `StyleBoxFlat`
 ## in place, so the UI keeps working while art arrives one piece at a time.
 ##
 ## Files live in `res://assets/art/ui/`:
-##   button_<state>.png          all buttons          (normal/hover/pressed/disabled)
+##   button_<state>.png          all buttons (normal/hover/pressed/disabled)
 ##   button_primary_<state>.png  PrimaryButton override (the yellow CTA)
 ##   button_danger_<state>.png   DangerButton override
 ##   tab_<state>.png             bottom tab buttons
-##   panel.png                   9-patch for PanelCard
-##   hp_bar_bg.png, hp_bar_fill.png
+##   panel.png                   default 9-patch panel
+##   panel_<slot>.png            per-context panel: card, sheet, pause, results,
+##                               modal, toast, tower_card (fallback: panel.png)
+##   icon_pause.png, icon_speed.png, icon_close.png
+##   check_on.png, check_off.png (CheckButton/CheckBox)
+##   slider_bg.png, slider_fill.png, slider_grabber.png
+##   bar_<slot>_bg.png, bar_<slot>_fill.png (hp, profile, boss, mission, wave)
 ##   menu_background.png         handled by `main_menu.gd`
 ##
 ## A 9-patch texture needs a corner margin; `MARGIN` is expressed in texture
@@ -38,9 +43,81 @@ static func ensure_applied() -> void:
 		return
 	for type: String in BUTTON_TYPES:
 		_apply_button(theme, type)
-	_apply_panel(theme, "PanelCard")
-	_apply_panel(theme, "Panel")
-	_apply_bar(theme)
+	_apply_panel_slots(theme)
+	_apply_toggles(theme)
+	_apply_slider(theme)
+
+
+## Applies a per-context panel texture to one node. Falls back to
+## `panel_<slot>.png`, then `panel.png`, then the themed flat style.
+static func apply_panel(panel: Control, slot: String) -> void:
+	if panel == null:
+		return
+	var texture := ArtLibrary.file("ui", "panel_%s" % slot)
+	if texture == null:
+		texture = ArtLibrary.file("ui", "panel")
+	if texture == null:
+		return
+	panel.add_theme_stylebox_override("panel", _nine_patch(texture))
+
+
+## Puts an optional texture icon on a button (keeps its text).
+static func apply_icon(button: Button, slot: String) -> void:
+	if button == null:
+		return
+	var texture := ArtLibrary.file("ui", "icon_%s" % slot)
+	if texture == null:
+		return
+	button.icon = texture
+	button.add_theme_constant_override("icon_max_width", int(texture.get_width()))
+
+
+static func _apply_panel_slots(theme: Theme) -> void:
+	# `PanelCard` is the base variation used by menu cards; other slots are
+	# applied per node through `apply_panel()`.
+	var texture := ArtLibrary.file("ui", "panel_card")
+	if texture == null:
+		texture = ArtLibrary.file("ui", "panel")
+	if texture != null:
+		theme.set_stylebox("panel", "PanelCard", _nine_patch(texture))
+		theme.set_stylebox("panel", "Panel", _nine_patch(texture))
+		theme.set_stylebox("panel", "PanelContainer", _nine_patch(texture))
+
+
+static func _apply_toggles(theme: Theme) -> void:
+	var on := ArtLibrary.file("ui", "check_on")
+	var off := ArtLibrary.file("ui", "check_off")
+	if on == null and off == null:
+		return
+	for type: String in ["CheckBox", "CheckButton"]:
+		if on != null:
+			theme.set_icon("checked", type, on)
+			theme.set_icon("checked_disabled", type, on)
+		if off != null:
+			theme.set_icon("unchecked", type, off)
+			theme.set_icon("unchecked_disabled", type, off)
+		# The check textures are the whole control, so no extra label icon.
+		theme.set_constant("h_separation", type, 12)
+
+
+static func _apply_slider(theme: Theme) -> void:
+	var background := ArtLibrary.file("ui", "slider_bg")
+	var fill := ArtLibrary.file("ui", "slider_fill")
+	var grabber := ArtLibrary.file("ui", "slider_grabber")
+	if background != null:
+		var style := StyleBoxTexture.new()
+		style.texture = background
+		style.content_margin_top = 10.0
+		style.content_margin_bottom = 10.0
+		theme.set_stylebox("slider", "HSlider", style)
+	if fill != null:
+		var style := StyleBoxTexture.new()
+		style.texture = fill
+		theme.set_stylebox("grabber_area", "HSlider", style)
+		theme.set_stylebox("grabber_area_highlight", "HSlider", style)
+	if grabber != null:
+		theme.set_icon("grabber", "HSlider", grabber)
+		theme.set_icon("grabber_highlight", "HSlider", grabber)
 
 
 static func _apply_button(theme: Theme, type: String) -> void:
@@ -51,27 +128,15 @@ static func _apply_button(theme: Theme, type: String) -> void:
 			texture = ArtLibrary.file("ui", "button_%s" % state)
 		if texture == null:
 			continue
-		theme.set_stylebox(state, type, _nine_patch(texture))
-
-
-static func _apply_panel(theme: Theme, type: String) -> void:
-	var texture := ArtLibrary.file("ui", "panel")
-	if texture == null:
-		return
-	theme.set_stylebox("panel", type, _nine_patch(texture))
-
-
-static func _apply_bar(theme: Theme) -> void:
-	var background := ArtLibrary.file("ui", "hp_bar_bg")
-	var fill := ArtLibrary.file("ui", "hp_bar_fill")
-	if background != null:
-		var style := StyleBoxTexture.new()
-		style.texture = background
-		theme.set_stylebox("background", "HpBar", style)
-	if fill != null:
-		var style := StyleBoxTexture.new()
-		style.texture = fill
-		theme.set_stylebox("fill", "HpBar", style)
+		var style := _nine_patch(texture)
+		# The artwork itself stays put; the label moves up on hover and down
+		# when the button is held, which is what reads as "pressed".
+		match state:
+			"hover":
+				style.content_margin_bottom = 6.0
+			"pressed":
+				style.content_margin_top = 6.0
+		theme.set_stylebox(state, type, style)
 
 
 static func _button_prefix(type: String) -> String:

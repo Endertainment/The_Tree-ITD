@@ -1,4 +1,4 @@
-﻿keys,en,uk
+keys,en,uk
 BOOT_TITLE,The Tree,Дерево
 MENU_TITLE,The Tree,Дерево
 MENU_SUBTITLE,Idle Tower Defense,Захист Дерева
@@ -399,3 +399,4 @@ ENEMY_ORC_TREBUCHET,Orc Trebuchet,Требушет
 BOSS_AIRSHIP,Orc Airship,Орочий дирижабль
 TOWER_SPIRIT_NAME,Spirit Tower,Вежа духа
 TOWER_SPIRIT_ROLE,Roots enemies,Знерухомлює ворогів
+SET_FREEZE_SHEET,Freeze game while building,Зупиняти гру під час будівництва

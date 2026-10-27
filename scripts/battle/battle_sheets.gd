@@ -66,6 +66,11 @@ func active_pad() -> BuildPad:
 	return _active_pad
 
 
+## Sheets freeze the battle only when the player asks for it (default: off).
+func _freeze_on_sheet() -> bool:
+	return bool(GameState.get_setting("freeze_on_sheet", false))
+
+
 ## Opens the build sheet for `pad`, or the tower sheet when it is occupied.
 func open_pad(pad: BuildPad) -> void:
 	if pad == null or _open or _battle == null or _battle.is_over():
@@ -73,7 +78,7 @@ func open_pad(pad: BuildPad) -> void:
 	_open = true
 	_active_pad = pad
 	_tower_manager.select(pad)
-	get_tree().paused = true
+	get_tree().paused = _freeze_on_sheet()
 	_hud.set_sheet_mode(true)
 
 	var inset := _hud.get_bottom_inset()
@@ -90,7 +95,7 @@ func open_upgrades() -> void:
 	if _open or _battle == null or _battle.is_over() or _battle.run_stats == null:
 		return
 	_open = true
-	get_tree().paused = true
+	get_tree().paused = _freeze_on_sheet()
 	_hud.set_sheet_mode(true)
 	_upgrade_panel.set_bottom_inset(_hud.get_bottom_inset())
 	_upgrade_panel.open(_battle.run_stats, _battle.coins, _tower_manager.get_towers())
@@ -115,7 +120,7 @@ func close() -> void:
 	_hud.set_sheet_mode(false)
 	_tower_manager.select(null)
 	_active_pad = null
-	if _battle != null and not _battle.is_over() and not _hud.is_pause_visible():
+	if _freeze_on_sheet() and _battle != null and not _battle.is_over() and not _hud.is_pause_visible():
 		get_tree().paused = false
 
 

@@ -30,6 +30,8 @@ const VERSION_SETTING := "application/config/version"
 @onready var _credits: Label = %Credits
 
 var _updating := false
+var _freeze_label: Label
+var _freeze_toggle: CheckButton
 
 
 func _ready() -> void:
@@ -43,6 +45,7 @@ func _ready() -> void:
 	_quality_option.item_selected.connect(_on_quality_selected)
 	_reset_button.pressed.connect(_on_reset_pressed)
 	_privacy_button.pressed.connect(_on_privacy_pressed)
+	_build_freeze_row()
 
 
 func refresh() -> void:
@@ -74,6 +77,11 @@ func refresh() -> void:
 	_focus_toggle.set_pressed_no_signal(bool(GameState.get_setting("mute_on_focus_loss", true)))
 	_populate_languages()
 	_populate_quality()
+	if _freeze_label != null:
+		_freeze_label.text = Loc.t_key("SET_FREEZE_SHEET")
+		_freeze_toggle.set_pressed_no_signal(
+			bool(GameState.get_setting("freeze_on_sheet", false))
+		)
 	_updating = false
 
 
@@ -130,6 +138,28 @@ func _on_focus_mute_toggled(pressed: bool) -> void:
 		return
 	GameState.set_setting("mute_on_focus_loss", pressed)
 	AudioManager.apply_settings()
+
+
+## Adds the "freeze while building" row under the audio card at runtime.
+func _build_freeze_row() -> void:
+	var values := _haptics_toggle.get_parent().get_parent()
+	if values == null:
+		return
+	var row := HBoxContainer.new()
+	row.name = "FreezeRow"
+	_freeze_label = Label.new()
+	_freeze_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_freeze_toggle = CheckButton.new()
+	row.add_child(_freeze_label)
+	row.add_child(_freeze_toggle)
+	values.add_child(row)
+	_freeze_toggle.toggled.connect(_on_freeze_toggled)
+
+
+func _on_freeze_toggled(pressed: bool) -> void:
+	if _updating:
+		return
+	GameState.set_setting("freeze_on_sheet", pressed)
 
 
 ## Clears the tutorial flag; the hints return on the next battle.

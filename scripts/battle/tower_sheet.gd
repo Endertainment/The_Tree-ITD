@@ -35,6 +35,8 @@ var _target_buttons: Array[Button] = []
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	UISkin.apply_panel(_panel, "sheet")
+	UISkin.apply_icon(_close_button, "close")
 	visible = false
 	_target_buttons = [%TargetNearest, %TargetStrongest, %TargetFirst]
 	_close_button.pressed.connect(_on_close_pressed)

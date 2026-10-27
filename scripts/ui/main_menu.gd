@@ -46,6 +46,7 @@ var _debug_panel
 func _ready() -> void:
 	UISkin.ensure_applied()
 	_apply_menu_background()
+	_build_currency_icons()
 	AudioManager.play_menu_music()
 	_battle_shortcut.pressed.connect(_on_battle_pressed)
 	for child in _tab_bar.get_children():
@@ -313,6 +314,37 @@ func _show_exit_confirm() -> void:
 	)
 
 const MENU_BACKGROUND_PATH := "res://assets/art/ui/menu_background.png"
+
+
+## Adds optional coin/gem icons and a "+" shortcut that opens the Shop tab.
+func _build_currency_icons() -> void:
+	var top_bar := $SafeArea/Column/TopBar as HBoxContainer
+	if top_bar == null:
+		return
+	_add_currency_icon(top_bar, $SafeArea/Column/TopBar/GoldLabel as Control, "gold")
+	_add_currency_icon(top_bar, $SafeArea/Column/TopBar/GemsLabel as Control, "gems")
+
+	var shop_shortcut := Button.new()
+	shop_shortcut.name = "ShopShortcut"
+	shop_shortcut.text = "+"
+	shop_shortcut.custom_minimum_size = Vector2(64.0, 64.0)
+	shop_shortcut.theme_type_variation = &"SecondaryButton"
+	shop_shortcut.pressed.connect(func() -> void: select_tab("shop"))
+	top_bar.add_child(shop_shortcut)
+
+
+func _add_currency_icon(top_bar: HBoxContainer, label: Control, slot: String) -> void:
+	var texture := ArtLibrary.file("ui", "icon_%s" % slot)
+	if texture == null or label == null:
+		return
+	var icon := TextureRect.new()
+	icon.texture = texture
+	icon.custom_minimum_size = Vector2(40.0, 40.0)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top_bar.add_child(icon)
+	top_bar.move_child(icon, label.get_index())
 
 
 ## Paints an optional full-bleed menu background behind every tab. Delete the

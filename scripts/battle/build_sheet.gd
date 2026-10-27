@@ -26,6 +26,8 @@ var _cards: Array[TowerCard] = []
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	UISkin.apply_panel(_panel, "sheet")
+	UISkin.apply_icon(_close_button, "close")
 	visible = false
 	_close_button.pressed.connect(_on_close_pressed)
 

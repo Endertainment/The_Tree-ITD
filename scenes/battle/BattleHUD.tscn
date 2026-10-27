@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://ui/BossBar.tscn" id="3_boss"]
 [ext_resource type="PackedScene" path="res://ui/WaveBanner.tscn" id="4_banner"]
 [ext_resource type="PackedScene" path="res://scenes/battle/RevivePrompt.tscn" id="5_revive"]
+[ext_resource type="Script" path="res://scripts/ui/texture_bar.gd" id="9_tbar"]
 
 [node name="BattleHUD" type="CanvasLayer"]
 process_mode = 3
@@ -49,6 +50,8 @@ theme_type_variation = &"HudLabel"
 text = ""
 
 [node name="HpBar" type="ProgressBar" parent="TopSafe/TopBar/HpBox"]
+script = ExtResource("9_tbar")
+slot = "hp"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 20)
 layout_mode = 2

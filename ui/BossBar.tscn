@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cqtmlddrjq1sh"]
 
 [ext_resource type="Script" uid="uid://cqs1sblykw6pa" path="res://scripts/ui/boss_bar.gd" id="1_bossbar"]
+[ext_resource type="Script" path="res://scripts/ui/texture_bar.gd" id="9_tbar"]
 
 [node name="BossBar" type="Control" unique_id=1803330608]
 visible = false
@@ -41,6 +42,8 @@ theme_type_variation = &"HudLabel"
 horizontal_alignment = 2
 
 [node name="BossHpBar" type="ProgressBar" parent="Column" unique_id=270695600]
+script = ExtResource("9_tbar")
+slot = "boss"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2

@@ -51,6 +51,8 @@ var _bottom_inset := 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	UISkin.apply_panel(_panel, "sheet")
+	UISkin.apply_icon(_close_button, "close")
 	visible = false
 	_close_button.pressed.connect(_on_close_pressed)
 	_tab_buttons[0].pressed.connect(_on_tab_pressed.bind(TAB_TREE))

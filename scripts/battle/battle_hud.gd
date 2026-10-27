@@ -67,6 +67,8 @@ var _last_state := -1
 var _last_prep_second := -1
 var _last_bonus := -1
 var _last_units_text := ""
+var _wave_bar: TextureBar = null
+var _wave_bar_label: Label = null
 var _debug_accum := 0.0
 var _banner_tween: Tween
 var _coin_tween: Tween
@@ -101,6 +103,9 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_apply_safe_area)
 
 	_refresh_texts()
+	UISkin.apply_panel(get_node("PauseMenu/Center/PausePanel") as Control, "pause")
+	UISkin.apply_icon(_pause_button, "pause")
+	_build_wave_bar()
 	_apply_safe_area()
 	_hp_bar.max_value = 1000.0
 	_hp_bar.value = 1000.0
@@ -304,17 +309,42 @@ func _process(delta: float) -> void:
 			_last_bonus = bonus
 			_call_button.text = Loc.t_key("HUD_CALL_WAVE_BONUS", {"bonus": bonus})
 
-	# Live "remaining / total" counter for the current wave.
-	if _waves.is_preparing():
-		_wave_units.visible = false
+	# During a wave the disabled "in progress" button is replaced by a bar.
+	_wave_units.visible = false
+	var total := _waves.get_wave_total()
+	if _waves.is_preparing() or total <= 0:
+		_call_button.visible = true
+		if _wave_bar != null:
+			_wave_bar.visible = false
 	else:
-		var total := _waves.get_wave_total()
-		var remaining := mini(_waves.get_wave_remaining(), total)
-		var units := "%d / %d" % [remaining, total]
-		if units != _last_units_text:
-			_last_units_text = units
-			_wave_units.text = units
-		_wave_units.visible = total > 0
+		_call_button.visible = false
+		if _wave_bar != null:
+			var remaining := mini(_waves.get_wave_remaining(), total)
+			_wave_bar.visible = true
+			_wave_bar.max_value = maxi(1, total)
+			_wave_bar.value = remaining
+			_wave_bar_label.text = "%d / %d" % [remaining, total]
+
+
+## Builds the wave progress bar that takes the call button's place in a wave.
+func _build_wave_bar() -> void:
+	_wave_bar = TextureBar.new()
+	_wave_bar.slot = "wave"
+	_wave_bar.draw_fallback = true
+	_wave_bar.visible = false
+	_wave_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_wave_bar.custom_minimum_size = Vector2(0.0, _call_button.custom_minimum_size.y)
+	var parent := _call_button.get_parent()
+	parent.add_child(_wave_bar)
+	parent.move_child(_wave_bar, _call_button.get_index())
+
+	_wave_bar_label = Label.new()
+	_wave_bar_label.theme_type_variation = &"HudValue"
+	_wave_bar_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_wave_bar_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_wave_bar_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_wave_bar.add_child(_wave_bar_label)
+	_wave_bar_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
 func _refresh_wave_state() -> void:
