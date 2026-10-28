@@ -138,7 +138,7 @@ static func _apply_button(theme: Theme, type: String) -> void:
 		# when the button is held, which is what reads as "pressed".
 		match state:
 			"hover":
-				style.content_margin_top = 6.0
+				style.content_margin_top = 30
 			"pressed":
 				style.content_margin_bottom = 6.0
 		theme.set_stylebox(state, type, style)
