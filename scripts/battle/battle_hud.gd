@@ -105,6 +105,9 @@ func _ready() -> void:
 	_refresh_texts()
 	UISkin.apply_panel(get_node("PauseMenu/Center/PausePanel") as Control, "pause")
 	UISkin.apply_icon(_pause_button, "pause")
+	_pause_button.flat = true
+	_speed_button.flat = true
+	UISkin.limit_widths(get_node("PauseMenu/Center/PausePanel"))
 	_build_wave_bar()
 	_apply_safe_area()
 	_hp_bar.max_value = 1000.0

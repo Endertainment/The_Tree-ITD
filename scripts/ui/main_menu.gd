@@ -46,7 +46,8 @@ var _debug_panel
 func _ready() -> void:
 	UISkin.ensure_applied()
 	_apply_menu_background()
-	_build_currency_icons()
+	_build_currency_pills()
+	UISkin.limit_widths(self)
 	AudioManager.play_menu_music()
 	_battle_shortcut.pressed.connect(_on_battle_pressed)
 	for child in _tab_bar.get_children():
@@ -81,7 +82,6 @@ func select_tab(tab_id: String) -> void:
 	_active_id = tab_id
 	_active_screen = screen
 	screen.visible = true
-	_battle_shortcut.visible = tab_id != "home"
 	for id: String in _tab_buttons:
 		var button := _tab_buttons[id] as Button
 		button.button_pressed = id == tab_id
@@ -90,6 +90,7 @@ func select_tab(tab_id: String) -> void:
 	create_tween().tween_property(screen, "modulate:a", 1.0, FADE_SECONDS)
 	screen.refresh()
 	ScrollFix.apply(screen)
+	UISkin.limit_widths(screen)
 
 
 ## Shows a non-blocking toast above the tab bar.
@@ -271,6 +272,7 @@ func _refresh_active_screen() -> void:
 	if _active_screen != null:
 		_active_screen.refresh()
 		ScrollFix.apply(_active_screen)
+		UISkin.limit_widths(_active_screen)
 
 
 func _on_modal_closed() -> void:
@@ -317,35 +319,61 @@ const MENU_BACKGROUND_PATH := "res://assets/art/ui/menu_background.png"
 
 
 ## Adds optional coin/gem icons and a "+" shortcut that opens the Shop tab.
-func _build_currency_icons() -> void:
+## Builds the coin/gem pills: icon, value and a "+" that opens the Shop tab.
+func _build_currency_pills() -> void:
 	var top_bar := $SafeArea/Column/TopBar as HBoxContainer
 	if top_bar == null:
 		return
-	_add_currency_icon(top_bar, $SafeArea/Column/TopBar/GoldLabel as Control, "gold")
-	_add_currency_icon(top_bar, $SafeArea/Column/TopBar/GemsLabel as Control, "gems")
+	for hidden_name: String in ["ElfLabel", "BestLabel"]:
+		var hidden := top_bar.get_node_or_null(hidden_name) as Control
+		if hidden != null:
+			hidden.visible = false
+	if _battle_shortcut != null:
+		_battle_shortcut.visible = false
 
-	var shop_shortcut := Button.new()
-	shop_shortcut.name = "ShopShortcut"
-	shop_shortcut.text = "+"
-	shop_shortcut.custom_minimum_size = Vector2(64.0, 64.0)
-	shop_shortcut.theme_type_variation = &"SecondaryButton"
-	shop_shortcut.pressed.connect(func() -> void: select_tab("shop"))
-	top_bar.add_child(shop_shortcut)
+	_build_currency_pill(top_bar, $SafeArea/Column/TopBar/GoldLabel as Label, "gold")
+	_build_currency_pill(top_bar, $SafeArea/Column/TopBar/GemsLabel as Label, "gems")
 
 
-func _add_currency_icon(top_bar: HBoxContainer, label: Control, slot: String) -> void:
-	var texture := ArtLibrary.file("ui", "icon_%s" % slot)
-	if texture == null or label == null:
+func _build_currency_pill(top_bar: HBoxContainer, value_label: Label, slot: String) -> void:
+	if value_label == null:
 		return
-	var icon := TextureRect.new()
-	icon.texture = texture
-	icon.custom_minimum_size = Vector2(40.0, 40.0)
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	top_bar.add_child(icon)
-	top_bar.move_child(icon, label.get_index())
+	var index := value_label.get_index()
 
+	var pill := PanelContainer.new()
+	pill.theme_type_variation = &"PanelCard"
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+
+	var icon_texture := ArtLibrary.file("ui", "icon_%s" % slot)
+	if icon_texture != null:
+		var icon := TextureRect.new()
+		icon.texture = icon_texture
+		icon.custom_minimum_size = Vector2(36.0, 36.0)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_child(icon)
+
+	value_label.reparent(row)
+	row.add_child(value_label)
+
+	var plus := Button.new()
+	plus.name = "%sPlus" % slot.capitalize()
+	plus.text = "+"
+	plus.flat = true
+	plus.custom_minimum_size = Vector2(48.0, 48.0)
+	plus.pressed.connect(func() -> void: select_tab("shop"))
+	var plus_icon := ArtLibrary.file("ui", "icon_plus")
+	if plus_icon != null:
+		plus.icon = plus_icon
+		plus.text = ""
+	row.add_child(plus)
+
+	pill.add_child(row)
+	top_bar.add_child(pill)
+	top_bar.move_child(pill, index)
 
 ## Paints an optional full-bleed menu background behind every tab. Delete the
 ## file and the themed flat colour returns.

@@ -37,6 +37,8 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	UISkin.apply_panel(_panel, "sheet")
 	UISkin.apply_icon(_close_button, "close")
+	_close_button.flat = true
+	UISkin.limit_widths(_panel)
 	visible = false
 	_target_buttons = [%TargetNearest, %TargetStrongest, %TargetFirst]
 	_close_button.pressed.connect(_on_close_pressed)

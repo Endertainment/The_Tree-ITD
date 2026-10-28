@@ -22,6 +22,7 @@ func setup(data: TowerData, price: int, affordable: bool, reason: String) -> voi
 	if data == null:
 		return
 	tower_id = data.id
+	UISkin.apply_card_background(self, data.id)
 	_icon.setup(data.silhouette, 1, data.base_color, data.accent_color)
 	_name.text = Loc.t_key(data.display_name_key)
 	_cost.text = Loc.format_number(price)

@@ -97,12 +97,12 @@ size_flags_vertical = 3
 
 [node name="TabBar" type="HBoxContainer" parent="SafeArea/Column" unique_id=1870325291]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 112)
+custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="TabHome" type="Button" parent="SafeArea/Column/TabBar" unique_id=1352678193]
-custom_minimum_size = Vector2(0, 112)
+custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TabButton"
@@ -121,7 +121,7 @@ theme_override_constants/separation = 2
 alignment = 1
 
 [node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabHome/Stack" unique_id=1786012094]
-custom_minimum_size = Vector2(32, 32)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
@@ -136,7 +136,7 @@ text = "TAB_HOME"
 horizontal_alignment = 1
 
 [node name="TabUpgrades" type="Button" parent="SafeArea/Column/TabBar" unique_id=1228336949]
-custom_minimum_size = Vector2(0, 112)
+custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TabButton"
@@ -154,7 +154,7 @@ theme_override_constants/separation = 2
 alignment = 1
 
 [node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabUpgrades/Stack" unique_id=545670449]
-custom_minimum_size = Vector2(32, 32)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
@@ -169,7 +169,7 @@ text = "HUD_UPGRADES"
 horizontal_alignment = 1
 
 [node name="TabCards" type="Button" parent="SafeArea/Column/TabBar" unique_id=960313998]
-custom_minimum_size = Vector2(0, 112)
+custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TabButton"
@@ -187,7 +187,7 @@ theme_override_constants/separation = 2
 alignment = 1
 
 [node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabCards/Stack" unique_id=1196032]
-custom_minimum_size = Vector2(32, 32)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
@@ -202,7 +202,7 @@ text = "TAB_CARDS"
 horizontal_alignment = 1
 
 [node name="TabMissions" type="Button" parent="SafeArea/Column/TabBar" unique_id=813160061]
-custom_minimum_size = Vector2(0, 112)
+custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TabButton"
@@ -220,7 +220,7 @@ theme_override_constants/separation = 2
 alignment = 1
 
 [node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabMissions/Stack" unique_id=958093251]
-custom_minimum_size = Vector2(32, 32)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
@@ -235,7 +235,7 @@ text = "TAB_MISSIONS"
 horizontal_alignment = 1
 
 [node name="TabShop" type="Button" parent="SafeArea/Column/TabBar" unique_id=1108101552]
-custom_minimum_size = Vector2(0, 112)
+custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TabButton"
@@ -253,7 +253,7 @@ theme_override_constants/separation = 2
 alignment = 1
 
 [node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabShop/Stack" unique_id=825646913]
-custom_minimum_size = Vector2(32, 32)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
@@ -268,7 +268,7 @@ text = "TAB_SHOP"
 horizontal_alignment = 1
 
 [node name="TabSettings" type="Button" parent="SafeArea/Column/TabBar" unique_id=805359927]
-custom_minimum_size = Vector2(0, 112)
+custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TabButton"
@@ -286,7 +286,7 @@ theme_override_constants/separation = 2
 alignment = 1
 
 [node name="Icon" type="TextureRect" parent="SafeArea/Column/TabBar/TabSettings/Stack" unique_id=1091441470]
-custom_minimum_size = Vector2(32, 32)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2

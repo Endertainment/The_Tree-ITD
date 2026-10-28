@@ -133,10 +133,41 @@ static func _apply_button(theme: Theme, type: String) -> void:
 		# when the button is held, which is what reads as "pressed".
 		match state:
 			"hover":
-				style.content_margin_bottom = 6.0
-			"pressed":
 				style.content_margin_top = 6.0
+			"pressed":
+				style.content_margin_bottom = 6.0
 		theme.set_stylebox(state, type, style)
+
+
+## Content-sized buttons instead of full-panel width. Only buttons stacked in a
+## VBox are affected; rows and dialogs keep their layout.
+static func limit_widths(root: Node) -> void:
+	if root == null:
+		return
+	for node: Node in root.find_children("*", "Button", true, false):
+		var button := node as Button
+		if button == null:
+			continue
+		var parent := button.get_parent()
+		if parent is VBoxContainer and not button.flat:
+			button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+
+
+## Per-card background: `ui/tower_card_<id>.png`, falling back to
+## `ui/panel_tower_card.png`, then leaving the themed button as-is.
+static func apply_card_background(button: Button, slot: String) -> void:
+	if button == null:
+		return
+	var texture := ArtLibrary.file("ui", "tower_card_%s" % slot)
+	if texture == null:
+		texture = ArtLibrary.file("ui", "panel_tower_card")
+	if texture == null:
+		return
+	var style := _nine_patch(texture)
+	button.add_theme_stylebox_override("normal", style)
+	button.add_theme_stylebox_override("hover", style)
+	button.add_theme_stylebox_override("pressed", style)
+	button.add_theme_stylebox_override("disabled", style)
 
 
 static func _button_prefix(type: String) -> String:
