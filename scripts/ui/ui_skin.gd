@@ -68,8 +68,13 @@ static func apply_icon(button: Button, slot: String) -> void:
 	var texture := ArtLibrary.file("ui", "icon_%s" % slot)
 	if texture == null:
 		return
+	# The art becomes the button face; the label (II, X, 1x) draws on top.
 	button.icon = texture
-	button.add_theme_constant_override("icon_max_width", int(texture.get_width()))
+	button.flat = true
+	button.expand_icon = true
+	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+	button.remove_theme_constant_override("icon_max_width")
 
 
 static func _apply_panel_slots(theme: Theme) -> void:

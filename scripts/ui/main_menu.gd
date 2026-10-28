@@ -37,6 +37,7 @@ const TAB_MUTED := Color(0.72549, 0.768627, 0.658824, 1)
 @onready var _toast: Toast = %Toast
 
 var _screens: Dictionary = {}
+var _bundle_rail: VBoxContainer = null
 var _tab_buttons: Dictionary = {}
 var _active_id := ""
 var _active_screen: MenuScreen
@@ -48,6 +49,8 @@ func _ready() -> void:
 	_apply_menu_background()
 	_build_currency_pills()
 	UISkin.limit_widths(self)
+	_build_bundle_rail()
+	_refresh_bundles_remote()
 	AudioManager.play_menu_music()
 	_battle_shortcut.pressed.connect(_on_battle_pressed)
 	for child in _tab_bar.get_children():
@@ -81,6 +84,7 @@ func select_tab(tab_id: String) -> void:
 		_active_screen.visible = false
 	_active_id = tab_id
 	_active_screen = screen
+	_update_bundle_rail_visibility()
 	screen.visible = true
 	for id: String in _tab_buttons:
 		var button := _tab_buttons[id] as Button
@@ -319,6 +323,90 @@ const MENU_BACKGROUND_PATH := "res://assets/art/ui/menu_background.png"
 
 
 ## Adds optional coin/gem icons and a "+" shortcut that opens the Shop tab.
+## Right-side offer rail. Bundles come from `BundleFeed` (server cache or the
+## bundled JSON) and can be added, reordered or disabled without an update.
+func _build_bundle_rail() -> void:
+	if _bundle_rail != null:
+		_bundle_rail.queue_free()
+		_bundle_rail = null
+	var bundles := BundleFeed.load_bundles()
+	if bundles.is_empty():
+		return
+	_bundle_rail = VBoxContainer.new()
+	_bundle_rail.name = "BundleRail"
+	_bundle_rail.add_theme_constant_override("separation", 12)
+	add_child(_bundle_rail)
+	_bundle_rail.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	_bundle_rail.offset_left = -320.0
+	_bundle_rail.offset_right = -16.0
+	_bundle_rail.offset_top = -300.0
+	_bundle_rail.offset_bottom = -120.0
+	for entry: Variant in bundles:
+		var bundle := entry as Dictionary
+		var button := Button.new()
+		button.theme_type_variation = &"RowButton"
+		button.custom_minimum_size = Vector2(0.0, 64.0)
+		button.clip_text = true
+		button.add_theme_font_size_override("font_size", 18)
+		button.text = str(bundle.get("title", ""))
+		button.tooltip_text = str(bundle.get("subtitle", ""))
+		button.pressed.connect(_on_bundle_pressed.bind(bundle))
+		_bundle_rail.add_child(button)
+	_update_bundle_rail_visibility()
+
+
+func _update_bundle_rail_visibility() -> void:
+	if _bundle_rail != null:
+		_bundle_rail.visible = _active_id == "home"
+
+
+func _on_bundle_pressed(bundle: Dictionary) -> void:
+	AudioManager.play_ui("ui_click")
+	var title := str(bundle.get("title", ""))
+	open_modal(
+		Loc.t_key("BUNDLE_CONFIRM_TITLE"),
+		Loc.t_key("BUNDLE_CONFIRM_BODY", {"name": title}),
+		Loc.t_key("BUNDLE_BUY"),
+		"COMMON_CANCEL",
+		func() -> void: _buy_bundle(str(bundle.get("product_id", "")))
+	)
+
+
+func _buy_bundle(product_id: String) -> void:
+	if product_id.is_empty():
+		return
+	Monetization.purchase(product_id, func(outcome: StringName) -> void:
+		if outcome == &"success":
+			show_toast(Loc.t_key("BUNDLE_BOUGHT"))
+		elif outcome == &"owned":
+			show_toast(Loc.t_key("BUNDLE_OWNED"))
+		else:
+			show_toast(Loc.t_key("BUNDLE_FAILED"))
+	)
+
+
+## Optional remote refresh: set `the_tree/bundles_url` in Project Settings to a
+## JSON endpoint; a 200 response replaces the cached list.
+func _refresh_bundles_remote() -> void:
+	var url := str(ProjectSettings.get_setting("the_tree/bundles_url", ""))
+	if url.is_empty():
+		return
+	var http := HTTPRequest.new()
+	add_child(http)
+	http.request_completed.connect(_on_bundles_fetched.bind(http))
+	if http.request(url) != OK:
+		http.queue_free()
+
+
+func _on_bundles_fetched(
+	result: int, code: int, _headers: PackedStringArray, body: PackedByteArray, http: HTTPRequest
+) -> void:
+	http.queue_free()
+	if result == HTTPRequest.RESULT_SUCCESS and code == 200:
+		if BundleFeed.save_cache(body.get_string_from_utf8()):
+			_build_bundle_rail()
+
+
 ## Builds the coin/gem pills: icon, value and a "+" that opens the Shop tab.
 func _build_currency_pills() -> void:
 	var top_bar := $SafeArea/Column/TopBar as HBoxContainer

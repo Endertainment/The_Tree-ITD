@@ -38,6 +38,7 @@ layout_mode = 2
 theme_override_constants/separation = 24
 
 [node name="HpBox" type="VBoxContainer" parent="TopSafe/TopBar"]
+size_flags_vertical = 4
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -60,6 +61,7 @@ value = 1000.0
 show_percentage = false
 
 [node name="CenterBox" type="VBoxContainer" parent="TopSafe/TopBar"]
+size_flags_vertical = 4
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 2
@@ -87,6 +89,7 @@ text = ""
 horizontal_alignment = 1
 
 [node name="RightBox" type="HBoxContainer" parent="TopSafe/TopBar"]
+size_flags_vertical = 4
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 2

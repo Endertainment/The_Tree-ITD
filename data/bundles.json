@@ -1,0 +1,23 @@
+{
+	"version": 1,
+	"bundles": [
+		{
+			"id": "starter",
+			"product_id": "starter_bundle",
+			"title": "STARTER PACK",
+			"subtitle": "300 Gems · 3000 Gold",
+			"icon": "res://assets/art/ui/icon_gems.png",
+			"order": 10,
+			"enabled": true
+		},
+		{
+			"id": "gems_550",
+			"product_id": "gems_550",
+			"title": "GEM POUCH",
+			"subtitle": "550 Gems",
+			"icon": "res://assets/art/ui/icon_gems.png",
+			"order": 20,
+			"enabled": true
+		}
+	]
+}

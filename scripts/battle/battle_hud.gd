@@ -106,7 +106,7 @@ func _ready() -> void:
 	UISkin.apply_panel(get_node("PauseMenu/Center/PausePanel") as Control, "pause")
 	UISkin.apply_icon(_pause_button, "pause")
 	_pause_button.flat = true
-	_speed_button.flat = true
+	UISkin.apply_icon(_speed_button, "speed")
 	UISkin.limit_widths(get_node("PauseMenu/Center/PausePanel"))
 	_build_wave_bar()
 	_apply_safe_area()

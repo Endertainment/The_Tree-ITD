@@ -400,3 +400,9 @@ BOSS_AIRSHIP,Orc Airship,Орочий дирижабль
 TOWER_SPIRIT_NAME,Spirit Tower,Вежа духа
 TOWER_SPIRIT_ROLE,Roots enemies,Знерухомлює ворогів
 SET_FREEZE_SHEET,Freeze game while building,Зупиняти гру під час будівництва
+BUNDLE_CONFIRM_TITLE,Buy bundle,Купити набір
+BUNDLE_CONFIRM_BODY,Buy {name}?,Купити {name}?
+BUNDLE_BUY,BUY,КУПИТИ
+BUNDLE_BOUGHT,Thanks! Your bundle is on the way.,Дякуємо! Набір уже в дорозі.
+BUNDLE_OWNED,You already own this bundle.,Цей набір уже придбано.
+BUNDLE_FAILED,Purchase cancelled or failed.,Скасовано або помилка.
